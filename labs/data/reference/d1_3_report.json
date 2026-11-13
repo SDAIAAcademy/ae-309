@@ -1,0 +1,17 @@
+{
+ "quick": {
+  "frames": {
+   "train": 780,
+   "val": 130,
+   "test": 164,
+   "drop": 126
+  },
+  "segments": {
+   "train": 44,
+   "val": 7,
+   "test": 9
+  },
+  "segments_shared": 0,
+  "duplicate_pairs_across_splits": 0
+ }
+}

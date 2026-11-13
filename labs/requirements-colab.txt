@@ -1,0 +1,6 @@
+# What the labs need on top of a Google Colab runtime (PyTorch, torchvision, NumPy, Pillow,
+# matplotlib and scikit-learn are already there)
+timm>=1.0.15
+open-clip-torch>=2.30
+onnx>=1.17
+onnxruntime>=1.21

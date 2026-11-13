@@ -9,7 +9,7 @@
     "en": "Computer Vision Engineering",
     "ar": "هندسة رؤية الحاسب"
   },
-  "tagline": "REPLACE: one line under the title: what participants can do after the course",
+  "tagline": "Build vision systems that are measured by condition, fitted to a roadside processor and released with evidence",
   "description": "Participants build vision systems for a fictional municipal roads and traffic department that must keep working in glare, dust, rain and at night. On public road-damage images and synthetic traffic-camera clips they audit and extend annotations, fine-tune convolutional and transformer backbones, train a pothole detector and a crack segmenter, track and count vehicles, and fit the chosen model to the latency and memory budget of a processor-only roadside unit. Each lab ends with a test under changed lighting, blur or camera position. Vision-language models and multimodal applications are AE-408.",
   "track": "ai-engineering",
   "level": 300,
@@ -22,7 +22,8 @@
     "AE-201 Machine Learning Foundations and Model Evaluation",
     "AE-202 Deep Learning and Generative AI Fundamentals",
     "Trains a neural network with a hand-written training loop",
-    "Computes precision and recall from a confusion matrix"
+    "Computes precision and recall from a confusion matrix",
+    "Setup: Google Colab with a free GPU runtime, or a laptop with uv (every lab has a quick mode for a laptop processor). Day 2 downloads pretrained backbones from their public hubs. Run 00_setup_check before Day 1; see labs/README.md."
   ],
   "site": {
     "url": "https://sdaiaacademy.github.io/computer-vision/",
@@ -67,8 +68,8 @@
     }
   ],
   "case_study": {
-    "name": "REPLACE: the name of the fictional organisation every lab works on",
-    "summary": "REPLACE: two sentences on the case study and its synthetic data"
+    "name": "Al-Manar Municipality Roads and Traffic Department",
+    "summary": "A fictional city department that inspects road damage from survey-vehicle cameras and counts vehicles from pole cameras, on a processor-only roadside unit that must keep working in glare, dust, rain and at night. Participants build Rasid, its inspection and counting system: they audit and extend the annotations, split by road segment, fine-tune two backbones, train a pothole detector and a crack segmenter, track and count vehicles, fit the detector to the unit's latency and size budget and test it under field conditions before a release decision. All data is synthetic and drawn with a fixed seed: 6,000 road frames in 300 segments over five districts, crack masks, traffic clips with ground-truth counts, street frames with invented faces and plates, and a 30-day stream of camera statistics."
   },
   "format": "intensive",
   "format_note": "Intensive: 4 teaching days of four sessions and a capstone day, with guided pre-work and a tracked follow-up task",
@@ -90,68 +91,162 @@
         {
           "title": "How vision systems fail in the field",
           "outcomes": [
-            "REPLACE: what a participant can do after this session"
+            "Name the conditions a roadside camera meets that a survey set does not",
+            "Break one accuracy number into slices by lighting, blur and viewpoint",
+            "Write a failure note that names the worst slice and its size"
           ],
           "lo": [
-            "LO2"
+            "LO2",
+            "LO6"
           ],
           "lab": {
             "id": "1.1",
-            "title": "Run a pretrained classifier on 200 road images and sort its errors by lighting, blur and viewpoint",
-            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "title": "Errors by condition",
+            "summary": "Run the pilot classifier on 200 field crops and sort its errors by lighting, blur and viewpoint.",
             "minutes": 25,
-            "href": "D1_1_run_pretrained_classifier.ipynb"
-          }
+            "href": "D1_1_errors_by_condition.ipynb",
+            "steps": [
+              {
+                "text": "Load the pilot classifier and score 200 field crops",
+                "minutes": 5
+              },
+              {
+                "text": "Accuracy by lighting, blur and viewpoint",
+                "minutes": 8
+              },
+              {
+                "text": "Look at 16 errors of the worst slice",
+                "minutes": 6
+              },
+              {
+                "text": "Write a three-line failure note for the head of maintenance",
+                "minutes": 6
+              }
+            ],
+            "stretch": "Cross lighting with viewpoint and find the worst cell"
+          },
+          "summary": "A pilot classifier that scores well in daylight fails on the road: accuracy by lighting, blur and viewpoint"
         },
         {
           "title": "Annotation guidelines and agreement",
           "outcomes": [
-            "REPLACE: what a participant can do after this session"
+            "Read boxes and masks in a common annotation format",
+            "Compute raw agreement and Cohen's kappa between two annotators",
+            "Revise a guideline from the disagreements and measure again"
           ],
           "lo": [
             "LO1"
           ],
           "lab": {
             "id": "1.2",
-            "title": "Annotate 30 images for a new defect class with a partner and compute agreement",
-            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "title": "Agree on a new class",
+            "summary": "Annotate 30 crops for the new class, alligator cracking, with a partner, compute agreement, revise the guideline and measure again. AI assistants stay off.",
             "minutes": 25,
-            "href": "D1_2_annotate_30_images.ipynb"
-          }
+            "href": "D1_2_annotation_agreement.ipynb",
+            "steps": [
+              {
+                "text": "Read guideline v1 and label the 30 crops",
+                "minutes": 8
+              },
+              {
+                "text": "Raw agreement and Cohen's kappa with your partner",
+                "minutes": 6
+              },
+              {
+                "text": "Read the disagreements and write the rule that settles them",
+                "minutes": 6
+              },
+              {
+                "text": "Kappa on the second pass and overlap of the boxes",
+                "minutes": 5
+              }
+            ],
+            "stretch": "Score each annotator against the adjudicated labels"
+          },
+          "summary": "Boxes, masks and their formats; a guideline that two people can follow; agreement as a number"
         },
         {
           "title": "Leakage by site and near-duplicates",
           "outcomes": [
-            "REPLACE: what a participant can do after this session"
+            "Find near-duplicate frames with a difference hash",
+            "Split by road segment so that no segment is shared",
+            "Report how much a leaking split inflates a score"
           ],
           "lo": [
             "LO1"
           ],
           "lab": {
             "id": "1.3",
-            "title": "Find near-duplicate frames and re-split the data by road segment",
-            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "title": "Split by road segment",
+            "summary": "Find near-duplicate frames, give frames without a segment the segment of their duplicates, re-split by road segment and write the split report.",
             "minutes": 25,
-            "href": "D1_3_find_near_duplicate.ipynb"
-          }
+            "href": "D1_3_split_by_segment.ipynb",
+            "steps": [
+              {
+                "text": "Difference hash and near-duplicate pairs",
+                "minutes": 7
+              },
+              {
+                "text": "Count the pairs that straddle the inherited split",
+                "minutes": 4
+              },
+              {
+                "text": "Recover the missing segment ids from the duplicates",
+                "minutes": 5
+              },
+              {
+                "text": "Split by segment and write the split report",
+                "minutes": 5
+              },
+              {
+                "text": "Score one model on both test sets",
+                "minutes": 4
+              }
+            ],
+            "stretch": "Find the duplicates with embeddings instead of hashes"
+          },
+          "summary": "Frames of one road spot look alike: a random split puts them on both sides and inflates the test score"
         },
         {
           "title": "Augmentation and what it assumes",
           "outcomes": [
-            "REPLACE: what a participant can do after this session"
+            "Apply one transform to an image, its boxes and its mask together",
+            "Measure how often a transform changes what the label means",
+            "Choose augmentations from the conditions the field will bring"
           ],
           "lo": [
             "LO1"
           ],
           "lab": {
             "id": "1.4",
-            "title": "Build an augmentation pipeline and find the transform that changes what a label means",
-            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "title": "Augment without changing labels",
+            "summary": "Build an augmentation pipeline for crops with masks, measure the label-change rate of six transforms and find the ones that change what a label means.",
             "minutes": 25,
-            "href": "D1_4_build_augmentation_pipeline.ipynb"
-          }
+            "href": "D1_4_augmentation.ipynb",
+            "steps": [
+              {
+                "text": "Build the pipeline for images and masks",
+                "minutes": 7
+              },
+              {
+                "text": "Label-change rate of six transforms",
+                "minutes": 8
+              },
+              {
+                "text": "Keep the safe transforms, remove the two that change meaning",
+                "minutes": 4
+              },
+              {
+                "text": "Train a probe with and without the unsafe transform",
+                "minutes": 6
+              }
+            ],
+            "stretch": "Add a night transform and measure the night slice"
+          },
+          "summary": "Every augmentation claims that a change does not matter: some claims are false for a road defect"
         }
-      ]
+      ],
+      "subtitle": "Before any model: how the field breaks a classifier, what a label means, who drew it, and which frames may share a split"
     },
     {
       "id": "day2",
@@ -162,68 +257,166 @@
         {
           "title": "Convolutional networks and vision transformers",
           "outcomes": [
-            "REPLACE: what a participant can do after this session"
+            "Contrast the assumptions of convolutional networks and vision transformers",
+            "Fine-tune two pretrained backbones on the same crops",
+            "Compare two models by condition slice with bootstrap intervals"
           ],
           "lo": [
             "LO2"
           ],
           "lab": {
             "id": "2.1",
-            "title": "Fine-tune two pretrained backbones on defect crops and compare them by slice",
-            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "title": "Two backbones by slice",
+            "summary": "Fine-tune a ResNet-18 and a ViT-Tiny on defect crops on a short schedule and compare them by lighting slice with bootstrap intervals.",
             "minutes": 25,
-            "href": "D2_1_fine_tune_two.ipynb"
-          }
+            "href": "D2_1_two_backbones.ipynb",
+            "steps": [
+              {
+                "text": "Put a five-class head on each backbone",
+                "minutes": 4
+              },
+              {
+                "text": "Fine-tune each on a short schedule",
+                "minutes": 9
+              },
+              {
+                "text": "Accuracy by lighting slice",
+                "minutes": 5
+              },
+              {
+                "text": "Bootstrap intervals and the comparison table",
+                "minutes": 7
+              }
+            ],
+            "stretch": "Bootstrap the difference between the two models on paired crops"
+          },
+          "summary": "What a convolutional network and a vision transformer assume about an image, and how to compare them fairly"
         },
         {
           "title": "How much to fine-tune",
           "outcomes": [
-            "REPLACE: what a participant can do after this session"
+            "Train a linear probe on frozen features",
+            "Compare a probe with full fine-tuning at two label budgets",
+            "Decide whether more labels or more training is the next step"
           ],
           "lo": [
             "LO2"
           ],
           "lab": {
             "id": "2.2",
-            "title": "Train a linear probe on 10% of the labels and compare it with supplied full fine-tuning runs on 10% and 100%",
-            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "title": "Probe or fine-tune",
+            "summary": "Train a linear probe on 10% of the labels and compare it with the supplied full fine-tuning runs on 10% and 100%.",
             "minutes": 25,
-            "href": "D2_2_train_linear_probe.ipynb"
-          }
+            "href": "D2_2_probe_or_finetune.ipynb",
+            "steps": [
+              {
+                "text": "Freeze the backbone and extract features for 10% of the labels",
+                "minutes": 6
+              },
+              {
+                "text": "Train the linear probe",
+                "minutes": 5
+              },
+              {
+                "text": "Load the supplied full fine-tuning runs",
+                "minutes": 4
+              },
+              {
+                "text": "One table: method, labels, accuracy by slice, minutes",
+                "minutes": 6
+              },
+              {
+                "text": "Decide what to do next: label or train",
+                "minutes": 4
+              }
+            ],
+            "stretch": "Unfreeze the last block only and place it in the table"
+          },
+          "summary": "Linear probe, partial and full fine-tuning: what each costs in labels, time and risk"
         },
         {
           "title": "Zero-shot baselines",
           "outcomes": [
-            "REPLACE: what a participant can do after this session"
+            "Explain how an image-text model classifies without task labels",
+            "Score a zero-shot baseline on the defect classes",
+            "Use the floor to judge whether training was worth its labels"
           ],
           "lo": [
             "LO2"
           ],
           "lab": {
             "id": "2.3",
-            "title": "Score an open-vocabulary model on the defect classes as the floor to beat",
-            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "title": "The zero-shot floor",
+            "summary": "Score an open-vocabulary model on the defect classes from text prompts, compare two prompt sets and record the floor to beat.",
             "minutes": 25,
-            "href": "D2_3_score_open_vocabulary.ipynb"
-          }
+            "href": "D2_3_zero_shot_floor.ipynb",
+            "steps": [
+              {
+                "text": "Write one prompt per class",
+                "minutes": 5
+              },
+              {
+                "text": "Score the open-vocabulary model on the test crops",
+                "minutes": 7
+              },
+              {
+                "text": "Compare two prompt sets",
+                "minutes": 6
+              },
+              {
+                "text": "Place the floor beside the probe and the fine-tuned runs",
+                "minutes": 4
+              },
+              {
+                "text": "Name the class the floor is worst at",
+                "minutes": 3
+              }
+            ],
+            "stretch": "Build a five-shot prototype classifier from image embeddings"
+          },
+          "summary": "An open-vocabulary model classifies from text prompts with no training: the floor every trained model must beat"
         },
         {
           "title": "Licences of open-weight backbones",
           "outcomes": [
-            "REPLACE: what a participant can do after this session"
+            "Separate the licence of the code, of the weights and of the training data",
+            "Read licence metadata from a model hub",
+            "Record a deployment decision with its conditions"
           ],
           "lo": [
-            "LO2"
+            "LO2",
+            "LO6"
           ],
           "lab": {
             "id": "2.4",
-            "title": "Check the licence and data terms of three backbones and record which the department may deploy",
-            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "title": "Which backbone may ship",
+            "summary": "Check the licence and data terms of three backbones and record which the department may deploy on its roadside units.",
             "minutes": 25,
-            "href": "D2_4_check_licence_data.ipynb"
-          }
+            "href": "D2_4_backbone_licences.ipynb",
+            "steps": [
+              {
+                "text": "Read the licence metadata of three backbones",
+                "minutes": 6
+              },
+              {
+                "text": "Separate code, weights and training-data terms",
+                "minutes": 7
+              },
+              {
+                "text": "Apply the department's deployment rule",
+                "minutes": 6
+              },
+              {
+                "text": "Write the deployment record",
+                "minutes": 6
+              }
+            ],
+            "stretch": "Check the licence of a detection library the same way"
+          },
+          "summary": "Code, weights and training data each carry terms: which backbones a municipality may deploy"
         }
-      ]
+      ],
+      "subtitle": "Two families of pretrained backbone, how much of one to train, the zero-shot floor, and what a licence lets the department deploy"
     },
     {
       "id": "day3",
@@ -234,68 +427,165 @@
         {
           "title": "Detection and its metrics",
           "outcomes": [
-            "REPLACE: what a participant can do after this session"
+            "Explain how a detector turns score maps into boxes",
+            "Apply non-maximum suppression and say what it removes",
+            "Compute average precision at two overlap thresholds"
           ],
           "lo": [
             "LO3"
           ],
           "lab": {
             "id": "3.1",
-            "title": "Train a pothole detector on a short schedule and compute average precision at two overlap thresholds",
-            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "title": "Train and score a detector",
+            "summary": "Train the pothole detector on a short schedule from a supplied checkpoint and compute average precision at two overlap thresholds.",
             "minutes": 25,
-            "href": "D3_1_train_pothole_detector.ipynb"
-          }
+            "href": "D3_1_detector_ap.ipynb",
+            "steps": [
+              {
+                "text": "Load the warm checkpoint and look at detections before and after suppression",
+                "minutes": 5
+              },
+              {
+                "text": "Train a short schedule",
+                "minutes": 7
+              },
+              {
+                "text": "Write average precision from sorted detections",
+                "minutes": 8
+              },
+              {
+                "text": "Average precision at 0.5 and 0.75, before and after",
+                "minutes": 5
+              }
+            ],
+            "stretch": "Sweep the suppression threshold and plot average precision"
+          },
+          "summary": "Boxes, overlap, non-maximum suppression and average precision at more than one threshold"
         },
         {
           "title": "Detector error analysis",
           "outcomes": [
-            "REPLACE: what a participant can do after this session"
+            "Sort detector errors into localisation, class, duplicate and missed",
+            "Estimate what fixing each error type would be worth",
+            "Justify the next improvement from the error breakdown"
           ],
           "lo": [
             "LO3"
           ],
           "lab": {
             "id": "3.2",
-            "title": "Sort 50 supplied detector errors into localisation, class, duplicate and missed, and choose a fix",
-            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "title": "Sort fifty errors",
+            "summary": "Sort 50 supplied detector errors into localisation, class, duplicate and missed, and choose a fix. AI assistants stay off.",
             "minutes": 25,
-            "href": "D3_2_sort_50_supplied.ipynb"
-          }
+            "href": "D3_2_error_analysis.ipynb",
+            "steps": [
+              {
+                "text": "Sort 12 errors by eye",
+                "minutes": 6
+              },
+              {
+                "text": "Write the rule that types an error",
+                "minutes": 8
+              },
+              {
+                "text": "Type all 50 and count",
+                "minutes": 4
+              },
+              {
+                "text": "What fixing each type would be worth",
+                "minutes": 4
+              },
+              {
+                "text": "Choose a fix and justify it",
+                "minutes": 3
+              }
+            ],
+            "stretch": "Break the missed defects down by lighting"
+          },
+          "summary": "A detector is wrong in four ways, and each way has a different fix"
         },
         {
           "title": "Segmenting cracks",
           "outcomes": [
-            "REPLACE: what a participant can do after this session"
+            "Compute intersection over union and Dice for masks",
+            "Fine-tune a segmenter on a short schedule",
+            "Compare a segmenter with a thresholding baseline by condition"
           ],
           "lo": [
             "LO3"
           ],
           "lab": {
             "id": "3.3",
-            "title": "Fine-tune a segmenter and compare its overlap score with a thresholding baseline",
-            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "title": "Segment cracks",
+            "summary": "Fine-tune the crack segmenter on a short schedule and compare its overlap score with a thresholding baseline.",
             "minutes": 25,
-            "href": "D3_3_fine_tune_segmenter.ipynb"
-          }
+            "href": "D3_3_segment_cracks.ipynb",
+            "steps": [
+              {
+                "text": "A thresholding baseline and its overlap score",
+                "minutes": 6
+              },
+              {
+                "text": "Fine-tune the segmenter from the warm checkpoint",
+                "minutes": 8
+              },
+              {
+                "text": "IoU and Dice against the baseline",
+                "minutes": 5
+              },
+              {
+                "text": "Compare the two by lighting",
+                "minutes": 6
+              }
+            ],
+            "stretch": "Score with a two-pixel tolerance and explain the change"
+          },
+          "summary": "Masks, overlap metrics and why thin structures are hard; a baseline that needs no training"
         },
         {
           "title": "Tracking and counting",
           "outcomes": [
-            "REPLACE: what a participant can do after this session"
+            "Associate detections to tracks by overlap",
+            "Count line crossings once per track",
+            "Measure count error and identity switches against ground truth"
           ],
           "lo": [
             "LO4"
           ],
           "lab": {
             "id": "3.4",
-            "title": "Track and count vehicles across a line in a clip and measure count error against the labels",
-            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "title": "Track and count",
+            "summary": "Track and count vehicles across a line in synthetic clips and measure count error and identity switches against the labels.",
             "minutes": 25,
-            "href": "D3_4_track_count_vehicles.ipynb"
-          }
+            "href": "D3_4_track_count.ipynb",
+            "steps": [
+              {
+                "text": "Associate detections to tracks by overlap",
+                "minutes": 8
+              },
+              {
+                "text": "Count each track once when it crosses the line",
+                "minutes": 5
+              },
+              {
+                "text": "Count error per clip",
+                "minutes": 4
+              },
+              {
+                "text": "Identity switches against the ground-truth tracks",
+                "minutes": 4
+              },
+              {
+                "text": "Tune patience and minimum hits on the gantry and night clips",
+                "minutes": 4
+              }
+            ],
+            "stretch": "Predict each track forward at constant velocity"
+          },
+          "summary": "Tracking by detection: association, identity switches and a counting rule that counts once"
         }
-      ]
+      ],
+      "subtitle": "A pothole detector and what its number means, its errors by type, a crack segmenter against a simple baseline, and vehicles counted across a line"
     },
     {
       "id": "day4",
@@ -306,80 +596,173 @@
         {
           "title": "Export to an interchange format",
           "outcomes": [
-            "REPLACE: what a participant can do after this session"
+            "Export a model to an interchange format with a dynamic input size",
+            "Check that the runtime's outputs match the original within a tolerance",
+            "Find a preprocessing mismatch between training and serving"
           ],
           "lo": [
             "LO5"
           ],
           "lab": {
             "id": "4.1",
-            "title": "Export the supplied detector and check its outputs match the original within tolerance",
-            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "title": "Export and check parity",
+            "summary": "Export the supplied detector to ONNX and check that its outputs match the original within tolerance.",
             "minutes": 25,
-            "href": "D4_1_export_supplied_detector.ipynb"
-          }
+            "href": "D4_1_export_parity.ipynb",
+            "steps": [
+              {
+                "text": "Export the detector with a dynamic input size",
+                "minutes": 6
+              },
+              {
+                "text": "Run it in the runtime and compare the raw outputs",
+                "minutes": 6
+              },
+              {
+                "text": "Compare the final boxes after decoding",
+                "minutes": 6
+              },
+              {
+                "text": "Find and fix the planted preprocessing mismatch",
+                "minutes": 7
+              }
+            ],
+            "stretch": "Check parity at a second input size"
+          },
+          "summary": "A model leaves the training framework as a graph: export it, then prove the copy behaves like the original"
         },
         {
           "title": "Resolution and precision against latency",
           "outcomes": [
-            "REPLACE: what a participant can do after this session"
+            "Measure per-frame latency as a median and a 95th percentile",
+            "Quantise a model to 8-bit integers and re-measure its accuracy",
+            "Choose an operating point that meets a stated budget"
           ],
           "lo": [
             "LO5"
           ],
           "lab": {
             "id": "4.2",
-            "title": "Measure latency and accuracy at three resolutions and two precisions on a laptop processor",
-            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "title": "Fit the latency budget",
+            "summary": "Measure latency and accuracy at three resolutions and two precisions on a laptop processor and choose the operating point for the roadside unit.",
             "minutes": 25,
-            "href": "D4_2_measure_latency_accuracy.ipynb"
-          }
+            "href": "D4_2_latency_budget.ipynb",
+            "steps": [
+              {
+                "text": "Latency at three resolutions: median and 95th percentile",
+                "minutes": 6
+              },
+              {
+                "text": "Average precision at each resolution",
+                "minutes": 5
+              },
+              {
+                "text": "Quantise to 8-bit integers with calibration frames",
+                "minutes": 6
+              },
+              {
+                "text": "The benchmark table: latency, size, accuracy",
+                "minutes": 4
+              },
+              {
+                "text": "Choose the operating point for the unit's budget",
+                "minutes": 4
+              }
+            ],
+            "stretch": "Repeat the latency runs with one thread"
+          },
+          "summary": "Resolution, batch size and numeric precision trade accuracy for latency and memory: measure, then choose"
         },
         {
           "title": "Corruption and shift tests",
           "outcomes": [
-            "REPLACE: what a participant can do after this session"
+            "Build paired test sets for corruption and camera shift",
+            "Report the drop per condition with an interval",
+            "Decide to release, release with conditions or hold"
           ],
           "lo": [
             "LO6"
           ],
           "lab": {
             "id": "4.3",
-            "title": "Run the model on rain, glare, night and moved-camera sets and report the drop for each",
-            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "title": "Field-condition tests",
+            "summary": "Run the detector on rain, glare, night and moved-camera sets, report the drop for each and decide on release.",
             "minutes": 25,
-            "href": "D4_3_run_model_rain.ipynb"
-          }
+            "href": "D4_3_field_tests.ipynb",
+            "steps": [
+              {
+                "text": "Average precision on the clean test frames",
+                "minutes": 4
+              },
+              {
+                "text": "Average precision under rain, glare, night and a moved camera",
+                "minutes": 8
+              },
+              {
+                "text": "The drop per condition with bootstrap intervals",
+                "minutes": 7
+              },
+              {
+                "text": "The release decision against the department's rule",
+                "minutes": 6
+              }
+            ],
+            "stretch": "Sweep the severity of the worst condition"
+          },
+          "summary": "The test that decides a release: the same frames under rain, glare, night and from a moved camera"
         },
         {
           "title": "Privacy and monitoring in the field",
           "outcomes": [
-            "REPLACE: what a participant can do after this session"
+            "Blur faces and plates before a frame is stored and measure what still leaks",
+            "Define monitors that separate a moved or dirty camera from weather",
+            "Write the sections of a model card for a vision system"
           ],
           "lo": [
             "LO6"
           ],
           "lab": {
             "id": "4.4",
-            "title": "Add face and plate blurring before storage and define two camera-drift monitors, then choose the capstone task",
-            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "title": "Blur, monitor, choose",
+            "summary": "Add face and plate blurring before storage and define two camera-drift monitors, then choose the capstone task.",
             "minutes": 25,
-            "href": "D4_4_add_face_plate.ipynb"
-          }
+            "href": "D4_4_privacy_monitoring.ipynb",
+            "steps": [
+              {
+                "text": "Blur faces and plates before storage",
+                "minutes": 7
+              },
+              {
+                "text": "Measure what still leaks and fix it",
+                "minutes": 6
+              },
+              {
+                "text": "Two camera-drift monitors on the 30-day stream",
+                "minutes": 8
+              },
+              {
+                "text": "Choose your capstone task and write its budget",
+                "minutes": 4
+              }
+            ],
+            "stretch": "Add a third monitor on detections per frame that ignores rain"
+          },
+          "summary": "Faces and plates are personal data: blur before storage, watch the cameras for drift, document the model"
         }
-      ]
+      ],
+      "subtitle": "Export, the latency and size budget of the roadside unit, tests under rain, glare, night and a moved camera, privacy before storage, and the release decision"
     },
     {
       "id": "capstone",
       "kind": "capstone",
-      "title": "Capstone project presentations",
+      "title": "Capstone: a service that meets its budget, defended on a failure",
       "deck": "slides/capstone.html",
-      "subtitle": "REPLACE: the catalog gives no length for the presentations; set capstone.talk_minutes and capstone.qa_minutes in course.json, write them on the format slide, add a timer for each to the now-presenting slide, and remove this line"
+      "subtitle": "An inspection or counting service for Al-Manar with its field-conditions test set, model card and release memo"
     }
   ],
   "capstone": {
     "summary": "An inspection or counting service that meets a stated latency and accuracy budget, submitted as a public repository with a field-conditions test set, model card and release memo, defended on a failure case the assessor picks",
-    "submission": "REPLACE: what participants submit and how: a public repository link, or a shared folder for a course without code",
+    "submission": "A public GitHub repository link: the service, a field-conditions test set, a benchmark table against the stated latency and accuracy budget, a model card with results per condition and district and the privacy controls, a release memo, and the training logs, checkpoints and commit history. Then a live defence: an eight-minute talk and four minutes on a failure case the assessor picks, with the evaluation re-run on a held-back condition.",
     "rubric": [
       {
         "criterion": "Data and splits",
@@ -401,7 +784,9 @@
         "criterion": "Reproducibility",
         "weight": 10
       }
-    ]
+    ],
+    "talk_minutes": 8,
+    "qa_minutes": 4
   },
   "labs": {
     "kind": "notebooks",
@@ -456,6 +841,141 @@
       "examples": [
         "a free notebook GPU",
         "Academy GPU hours"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "group": "Frameworks and model libraries",
+      "items": [
+        {
+          "title": "torchvision: models and pretrained weights",
+          "url": "https://docs.pytorch.org/vision/stable/models.html"
+        },
+        {
+          "title": "torchvision: transforms v2",
+          "url": "https://docs.pytorch.org/vision/stable/transforms.html"
+        },
+        {
+          "title": "timm (PyTorch Image Models) documentation",
+          "url": "https://huggingface.co/docs/timm/index"
+        },
+        {
+          "title": "OpenCLIP: an open source implementation of CLIP",
+          "url": "https://github.com/mlfoundations/open_clip"
+        },
+        {
+          "title": "Ultralytics: licensing",
+          "url": "https://www.ultralytics.com/license"
+        }
+      ]
+    },
+    {
+      "group": "Export and inference runtimes",
+      "items": [
+        {
+          "title": "PyTorch: torch.onnx",
+          "url": "https://docs.pytorch.org/docs/stable/onnx.html"
+        },
+        {
+          "title": "ONNX Runtime: quantize ONNX models",
+          "url": "https://onnxruntime.ai/docs/performance/model-optimizations/quantization.html"
+        },
+        {
+          "title": "OpenVINO documentation",
+          "url": "https://docs.openvino.ai/"
+        },
+        {
+          "title": "LiteRT overview",
+          "url": "https://ai.google.dev/edge/litert"
+        }
+      ]
+    },
+    {
+      "group": "Papers",
+      "items": [
+        {
+          "title": "He et al., Deep Residual Learning for Image Recognition (2015)",
+          "url": "https://arxiv.org/abs/1512.03385"
+        },
+        {
+          "title": "Dosovitskiy et al., An Image is Worth 16x16 Words (2020)",
+          "url": "https://arxiv.org/abs/2010.11929"
+        },
+        {
+          "title": "Radford et al., Learning Transferable Visual Models From Natural Language Supervision (2021)",
+          "url": "https://arxiv.org/abs/2103.00020"
+        },
+        {
+          "title": "Tian et al., FCOS: Fully Convolutional One-Stage Object Detection (2019)",
+          "url": "https://arxiv.org/abs/1904.01355"
+        },
+        {
+          "title": "Bolya et al., TIDE: A General Toolbox for Identifying Object Detection Errors (2020)",
+          "url": "https://arxiv.org/abs/2008.08115"
+        },
+        {
+          "title": "Bewley et al., Simple Online and Realtime Tracking (2016)",
+          "url": "https://arxiv.org/abs/1602.00763"
+        },
+        {
+          "title": "Hendrycks and Dietterich, Benchmarking Neural Network Robustness to Common Corruptions and Perturbations (2019)",
+          "url": "https://arxiv.org/abs/1903.12261"
+        },
+        {
+          "title": "Mitchell et al., Model Cards for Model Reporting (2018)",
+          "url": "https://arxiv.org/abs/1810.03993"
+        },
+        {
+          "title": "Arya et al., RDD2022: A multi-national image dataset for automatic Road Damage Detection (2022)",
+          "url": "https://arxiv.org/abs/2209.08538"
+        }
+      ]
+    },
+    {
+      "group": "Annotation and dataset tools",
+      "items": [
+        {
+          "title": "CVAT documentation",
+          "url": "https://docs.cvat.ai/"
+        },
+        {
+          "title": "Label Studio documentation",
+          "url": "https://labelstud.io/guide/"
+        },
+        {
+          "title": "FiftyOne documentation",
+          "url": "https://docs.voxel51.com/"
+        },
+        {
+          "title": "cleanlab documentation",
+          "url": "https://docs.cleanlab.ai/"
+        },
+        {
+          "title": "COCO: data format",
+          "url": "https://cocodataset.org/#format-data"
+        }
+      ]
+    },
+    {
+      "group": "National references",
+      "items": [
+        {
+          "title": "Personal Data Protection Law",
+          "url": "https://sdaia.gov.sa/en/SDAIA/about/Documents/PersonalDataProtectionLaw.pdf"
+        },
+        {
+          "title": "Implementing Regulation of the Personal Data Protection Law",
+          "url": "https://sdaia.gov.sa/en/SDAIA/about/Documents/ImplementingRegulationPersonalDataProtectionLaw.pdf"
+        },
+        {
+          "title": "Data Classification Policy (National Data Management Office)",
+          "url": "https://sdaia.gov.sa/en/SDAIA/about/Documents/DataClassificationPolicy.pdf"
+        },
+        {
+          "title": "Principles of AI Ethics",
+          "url": "https://sdaia.gov.sa/en/SDAIA/about/Documents/ai-principles.pdf"
+        }
       ]
     }
   ]

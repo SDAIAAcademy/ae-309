@@ -1,158 +1,546 @@
+<!-- ======================= OPENING ======================= -->
 <section class="slide title" id="title" data-auto="title">
-  <aside class="notes">REPLACE: welcome; introduce yourself; one question to the room that calibrates the pace; the rhythm of the day</aside>
+  <aside class="notes"><p>Welcome the room. Quick poll: who has trained an image classifier? Who has put a vision model on a device with no GPU? This is a 300-level course: participants write training loops and compute precision and recall already (AE-201, AE-202), so no session re-teaches them. Say the promise of the week in one line: a vision system is judged where it works, not where it was built.</p></aside>
+</section>
+
+<section class="slide" id="four-days-one-system" data-label="The week">
+  <div class="kicker">The course at a glance</div>
+  <h2>Four days, one system that reaches the roadside, and a capstone</h2>
+  <div class="cols cols-4 gap-s">
+    <div class="card c-teal"><h4>Day 1 · Visual data first</h4><p class="small mb0">How the field breaks a model, annotation and agreement, leakage by site, augmentation.</p></div>
+    <div class="card c-cyan"><h4>Day 2 · Backbones and transfer</h4><p class="small mb0">Convolutional networks and transformers, how much to fine-tune, the zero-shot floor, licences.</p></div>
+    <div class="card c-coral"><h4>Day 3 · Detect, segment, track</h4><p class="small mb0">A pothole detector and its errors, a crack segmenter, vehicles counted across a line.</p></div>
+    <div class="card c-purple"><h4>Day 4 · Fit the budget and release</h4><p class="small mb0">Export, latency and size on a processor, field-condition tests, privacy and monitoring.</p></div>
+  </div>
+  <div class="callout tip mt"><b>Day 5 · Capstone.</b> An inspection or counting service that meets a stated budget, in a public repository, defended on a failure case the assessor picks.</div>
+  <aside class="notes"><p>One sentence per day; do not teach yet. The capstone is scored on five criteria: data and splits 20, model quality and error analysis 25, latency budget 20, field-condition tests and privacy 25, reproducibility 10. Each day builds one or two of them. Vision-language models and multimodal applications are a separate course, AE-408.</p></aside>
+</section>
+
+<section class="slide" id="how-we-work" data-label="How we work">
+  <div class="kicker">How this course works</div>
+  <h2>Every lab ends with a test under changed conditions</h2>
+  <div class="cols cols-3 gap-s">
+    <div class="card c-navy"><h4>Data before models</h4><p class="small mb0">The first model is trained on Day 2. Day 1 decides what the labels mean and which frames may meet.</p></div>
+    <div class="card c-teal"><h4>Slices and intervals</h4><p class="small mb0">No result is one number. It is a table by lighting, weather and district, with an interval on each cell.</p></div>
+    <div class="card c-coral"><h4>Short schedules</h4><p class="small mb0">Each lab starts from a supplied checkpoint and trains for minutes, on a free notebook GPU or a laptop processor.</p></div>
+  </div>
+  <div class="callout warn small mt"><b>AI policy.</b> AI off in the supervised checks and in labs 1.2 and 3.2. Elsewhere an assistant may explain code and errors, not write the pipeline. In the capstone, anything goes.</div>
+  <aside class="notes"><p>Say the AI policy out loud and why: labelling against a guideline and reading a detector's errors are judgement skills that the supervised checks test without help. The policy comes from the catalog entry, it is not the trainer's choice. Assessment: supervised entry and exit checks 20%, capstone repository 60%, live defence 20%; passing is 70% overall and at least 60% on the capstone rubric.</p></aside>
+</section>
+
+<section class="slide" id="al-manar-and-rasid" data-label="Case study">
+  <div class="kicker">One case study all week</div>
+  <h2>Al-Manar's roads department and its system, Rasid</h2>
+  <p class="lead">A fictional city. Survey vehicles film the road surface, pole cameras watch the traffic. You build <b>Rasid</b> (<span class="ar">راصد</span>), which finds road damage and counts vehicles.</p>
+  <div class="cols cols-3 gap-s mt-s">
+    <div class="card c-teal flat"><h4>Road frames</h4><p class="small mb0">6,000 frames from 300 road segments in five districts: potholes, cracks, patches, under five kinds of light.</p></div>
+    <div class="card c-cyan flat"><h4>Traffic clips</h4><p class="small mb0">Twelve clips with ground-truth tracks and counts: day, queue, a gantry, night.</p></div>
+    <div class="card c-coral flat"><h4>A roadside unit</h4><p class="small mb0">A two-core processor, no accelerator, a metered link. The model must fit its budget.</p></div>
+  </div>
+  <aside class="notes"><p>Name the people; they return all week. Rakan Al-Shammari heads road maintenance and signs the release. Abeer Al-Juhani leads traffic operations and wants the counts. Yousef Al-Maliki is the field systems engineer who owns the roadside unit and its budget. Wejdan Al-Rashidi is the data protection officer. Sultan Al-Yami is the lead road inspector and runs annotation. Everything is synthetic, drawn by labs/prepare_data.py from one seed: no real road, camera or person. Planted problems wait in the data; do not reveal them yet.</p></aside>
+</section>
+
+<section class="slide" id="five-kinds-of-light" data-label="The data">
+  <div class="kicker">The data</div>
+  <h2>One road spot, five kinds of light and a moved camera</h2>
+  <figure class="figure">
+    <img src="../assets/conditions.jpg" alt="The same road spot drawn six times: daylight, glare with a bright washed-out area, dust that turns the frame sand-coloured and soft, rain with streaks and a dark surface, night with noise and little contrast, and a rotated, smaller view from a pole camera">
+    <figcaption>Left to right: day, glare, dust, rain, night, and the same spot from a pole camera. Synthetic frames from the course generator.</figcaption>
+  </figure>
+  <aside class="notes"><p>Let the room look for ten seconds. Ask: in which of these six would you, as a person, still find the defect? Keep the answers; session 1 returns to them. The districts differ on purpose: Al-Sinaiya, the industrial district, is dustier, Al-Corniche wetter, Al-Qalaa, the old town, has the most worn roads. That is why results are reported by district later.</p></aside>
+</section>
+
+<section class="slide" id="setup-check" data-label="Setup">
+  <div class="kicker">Lab environment</div>
+  <h2>Open Colab, or use uv on a laptop, and run the setup check</h2>
+  <div class="cols cols-2">
+    <ol class="bullets">
+      <li><b>Colab:</b> open a lab from the course page. Its first cell clones the repository and installs what Colab lacks.</li>
+      <li>Run <code>00_setup_check.ipynb</code>. It draws the data pack once, a few minutes.</li>
+      <li>Each lab starts from a <b>supplied checkpoint</b> and the supplied split. No lab needs an earlier one.</li>
+    </ol>
+    <pre class="code s" data-file="terminal (laptop option)"><code class="language-bash">git clone https://github.com/SDAIAAcademy/computer-vision
+cd computer-vision/labs
+uv sync
+export CV_QUICK=1        # the quick mode for a processor
+uv run jupyter lab</code></pre>
+  </div>
+  <aside class="notes"><p>Make everyone run the setup check now, before session 1 reaches its lab. Quick mode (CV_QUICK=1) uses the first 60 road segments, 1,200 frames, and shorter schedules; every lab runs in it on a laptop processor. On Colab choose a GPU runtime for Days 2 and 3. Common failures: Colab disconnected while the pack was drawn (run the cell again, it resumes from scratch in a few minutes); on Windows PowerShell the variable is set with $env:CV_QUICK = "1". The numbers on the slides come from quick-mode runs unless a slide says otherwise.</p></aside>
 </section>
 
 <section class="slide" id="agenda" data-auto="agenda"></section>
 
-<!-- Session 1 -->
-
+<!-- ======================= SESSION 1 ======================= -->
 <section class="slide section" id="s1" data-auto="section" data-session="1"></section>
 
-<section class="slide" id="s1-idea" data-lo="LO2">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
+<section class="slide" id="pilot-that-passed" data-lo="LO2 LO6">
+  <div class="kicker">The pilot</div>
+  <h2>A classifier that passed its test and was about to ship</h2>
+  <div class="cols cols-2 mid">
     <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
+      <li>Trained on crops from the survey vehicle: <b>clean daylight, a sharp camera</b></li>
+      <li>Five classes: clear, pothole, longitudinal crack, transverse crack, patch</li>
+      <li>Validated on held-out crops <b>of the same kind</b></li>
+      <li>Next step in the plan: the roadside units</li>
     </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
+    <div class="stat center"><div class="big">95.5%</div><div class="lbl">accuracy on survey-style validation crops (lab 1.1, 156 crops)</div></div>
   </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+  <aside class="notes"><p>Tell it as it happened in the case: the team did everything a first course teaches. A held-out set, no training data in it, a good number. Ask the room what could still be wrong. Do not answer yet: the next slide does. The number is from the lab's quick-mode run of the supplied checkpoint pilot_classifier.</p></aside>
 </section>
 
-<section class="slide" id="s1-steps" data-lo="LO2">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="the-field-number" data-lo="LO2 LO6">
+  <div class="kicker">The same model, the field</div>
+  <h2>On 200 crops as the roadside sees them, it is right less than half the time</h2>
+  <div class="bars">
+    <div class="row"><span>Day</span><div class="bar c-teal" style="--w:88%"></div><span class="val">88%</span></div>
+    <div class="row"><span>Glare</span><div class="bar c-amber" style="--w:65%"></div><span class="val">65%</span></div>
+    <div class="row"><span>Night</span><div class="bar c-navy" style="--w:34%"></div><span class="val">34%</span></div>
+    <div class="row"><span>Rain</span><div class="bar c-cyan" style="--w:18%"></div><span class="val">18%</span></div>
+    <div class="row"><span>Dust</span><div class="bar c-coral" style="--w:12%"></div><span class="val">12%</span></div>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <p class="small muted mt-s">Lab 1.1: 200 field crops, 31 to 47 per lighting condition. Overall accuracy 43%.</p>
+  <aside class="notes"><p>The validation number was not wrong. It answered a different question: how the model does on clean daylight crops from the survey vehicle. Point at dust: 12% on five classes is below what guessing gives. Note the slice sizes on the caption line: 40 crops per slice means each number moves by 2.5 points per crop. Tomorrow these get intervals. Blur and viewpoint tell the same story: 33% on blurred crops against 46% on sharp ones, 33% from pole cameras against 46% from the vehicle.</p></aside>
+</section>
+
+<section class="slide" id="three-ways-the-field-differs" data-lo="LO6">
+  <div class="kicker">Distribution shift</div>
+  <h2>The field differs from the survey in three ways</h2>
+  <div class="cols cols-3">
+    <div class="card c-amber"><h4>Corruption</h4><p class="small mb0">The same scene, a worse picture: glare, dust, rain, night, motion blur, a dirty lens.</p></div>
+    <div class="card c-cyan"><h4>Viewpoint</h4><p class="small mb0">The same road from elsewhere: a pole in place of a vehicle changes scale and angle.</p></div>
+    <div class="card c-purple"><h4>Population</h4><p class="small mb0">Other roads: a district with older asphalt, other markings, defects the survey never met.</p></div>
+  </div>
+  <div class="callout note mt"><b>Each has its own test.</b> Corruption and viewpoint can be imitated on frames you already have. A new population can only be collected.</div>
+  <aside class="notes"><p>These three words organise Day 4. Corruption tests follow the idea of the common-corruptions benchmarks: take a clean test set, apply the corruption at several severities, report the drop. Viewpoint is the moved-camera test. Population is why results are reported by district. Sources: Hendrycks and Dietterich, 2019, for corruption benchmarks.</p></aside>
+</section>
+
+<section class="slide" id="slice-before-you-average" data-lo="LO2">
+  <div class="kicker">The method</div>
+  <h2>Slice before you average</h2>
+  <div class="cols cols-2">
+    <pre class="code" data-file="lab 1.1"><code class="language-python">def by_slice(rows, correct, key):
+    out = {}
+    for value in sorted({r[key] for r in rows}):
+        hit = [c for r, c in zip(rows, correct)
+               if r[key] == value]
+        out[value] = (len(hit), float(np.mean(hit)))
+    return out</code></pre>
+    <ul class="bullets">
+      <li>Every test item carries <b>metadata</b>: lighting, blur, viewpoint, district</li>
+      <li>The result is <b>count and score</b> per value, never the score alone</li>
+      <li>A small slice is a reason to collect, not a finding</li>
+    </ul>
+  </div>
+  <aside class="notes"><p>The function is eight lines and it is the most reused idea of the week. Insist on the count: a slice of five crops reads 0% or 100% by chance. The lab asks for a minimum of 20 before a slice may be named the worst. Metadata must be recorded when the frame is taken; it cannot be guessed afterwards. That is a requirement on the capture pipeline, and worth saying to the people who run the cameras.</p></aside>
+</section>
+
+<section class="slide" id="person-test" data-lo="LO6">
+  <div class="kicker">Reading errors</div>
+  <h2>Could a person name the defect in this crop?</h2>
+  <div class="cols cols-2">
+    <div class="card c-teal"><h4>Yes, and the model cannot</h4><p class="small mb0">The model has not seen the condition. Data, augmentation or fine-tuning can fix it.</p></div>
+    <div class="card c-coral"><h4>No, nobody can</h4><p class="small mb0">The information is not in the picture. Only the camera, the lighting or the time of capture can fix it.</p></div>
+  </div>
+  <div class="callout tip mt"><b>Look at sixteen errors of the worst slice before you plan anything.</b> Five minutes of looking decides which of the two you are facing.</div>
+  <aside class="notes"><p>This is task 3 of the lab. In heavy dust the generator blends the frame towards sand colour and blurs it: for shallow potholes the answer is "nobody can", for cracks a person still can. Ask participants to say which they saw. The second card matters for the people who buy cameras: no amount of labelled data replaces an exposure setting.</p></aside>
+</section>
+
+<section class="slide" id="failure-note" data-lo="LO6">
+  <div class="kicker">Reporting</div>
+  <h2>A failure note is three lines: promised, found, asked</h2>
+  <table class="t">
+    <tr><th>Line</th><th>From lab 1.1</th></tr>
+    <tr><td><b>Promised</b></td><td>96% on survey-style crops: clean daylight, vehicle camera</td></tr>
+    <tr><td><b>Found</b></td><td>43% on 200 field crops; worst slice dust, 12% on 40 crops</td></tr>
+    <tr class="hl"><td><b>Asked</b></td><td>Do not deploy. Label crops under dust, night, rain and glare and from pole cameras; report every later model by these slices</td></tr>
+  </table>
+  <aside class="notes"><p>Rakan Al-Shammari reads three lines, not a notebook. The middle line names the slice and its size. The last line asks for something a manager can grant: a labelling budget and a reporting rule. A note that ends with "the model is bad" changes nothing.</p></aside>
+</section>
+
+<section class="slide" id="checkpoint-1" data-lo="LO6">
+  <div class="kicker">Checkpoint</div>
+  <h2>Where do you look first?</h2>
+  <div class="quiz" data-type="single" data-lo="LO6">
+    <p class="lead">A crack classifier scores 94% on its validation set. On 300 crops from roadside cameras it scores 61%. What do you do first?</p>
+    <div class="opts">
+      <div class="opt" data-why="Assumes the gap is a capacity problem: a larger model trained on the same daylight crops meets the same unseen conditions">Train a larger backbone on the same training crops</div>
+      <div class="opt" data-why="Treats the field set as noise: averaging the two numbers hides the gap that needs explaining">Report the average of the two numbers as the expected accuracy</div>
+      <div class="opt" data-ok>Break the 300 crops down by lighting, blur and viewpoint, with counts</div>
+      <div class="opt" data-why="Fixes before diagnosing: without slices you do not know which augmentation, if any, addresses the failure">Add every augmentation available and retrain</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> The gap says the field differs from the validation set. Slices say how, and each cause has a different fix.</div>
+  </div>
+  <aside class="notes"><p>Answer: C. If many pick the larger backbone, return to the bars: the pilot is not too small, it is untaught. If many pick augmentation, say that Day 1 session 4 comes back to it, after the diagnosis.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-1-1" data-auto="lab" data-lab="1.1">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI policy: an assistant may explain code and errors. Walk the room. The first run draws the data pack if the setup check was skipped. Expected in quick mode: 95.5% on 156 survey-style crops, 43% on the 200 field crops, worst slice dust at 12% on 40 crops. Ask early finishers for the stretch: the worst cell of lighting by viewpoint, and whether it holds enough crops to believe.</p></aside>
 </section>
 
-<!-- Session 2 -->
-
+<!-- ======================= SESSION 2 ======================= -->
 <section class="slide section" id="s2" data-auto="section" data-session="2"></section>
 
-<section class="slide" id="s2-idea" data-lo="LO1">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
+<section class="slide" id="what-a-label-is" data-lo="LO1">
+  <div class="kicker">Annotation</div>
+  <h2>A label is a class, a place and a decision someone made</h2>
+  <div class="cols cols-3">
+    <div class="card c-teal"><h4>Class</h4><p class="small mb0">One name for the whole crop. Cheap, and enough for a classifier.</p></div>
+    <div class="card c-cyan"><h4>Box</h4><p class="small mb0">Four numbers around an object. What a detector learns from. A crack's box is mostly road.</p></div>
+    <div class="card c-coral"><h4>Mask</h4><p class="small mb0">One decision per pixel. Needed for length and area. Many times the labelling cost of a box.</p></div>
   </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+  <figure class="figure mt-s">
+    <img src="../assets/classes.jpg" alt="Five example crops: a clear road surface, a pothole as a dark irregular hole, a longitudinal crack running up the crop, a transverse crack running across, and a repair patch of darker asphalt, here a round one that is easy to take for a pothole">
+    <figcaption>Al-Manar's five crop classes: clear, pothole, longitudinal crack, transverse crack, patch.</figcaption>
+  </figure>
+  <aside class="notes"><p>Choose the cheapest label that answers the question. The maintenance team needs potholes located (boxes) and crack extent measured (masks); a class per crop is enough to triage. Longitudinal means along the direction of travel, which is up the image in these crops; transverse means across. Keep that definition in mind for session 4.</p></aside>
 </section>
 
-<section class="slide" id="s2-steps" data-lo="LO1">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="annotation-formats" data-lo="LO1">
+  <div class="kicker">Formats</div>
+  <h2>The same box is written in at least three ways</h2>
+  <div class="cols cols-2">
+    <table class="t small">
+      <tr><th>Convention</th><th>A box is</th></tr>
+      <tr><td>COCO</td><td>x, y of the top-left corner, width, height, in pixels</td></tr>
+      <tr><td>Pascal VOC, torchvision</td><td>x0, y0, x1, y1 of two corners, in pixels</td></tr>
+      <tr><td>YOLO text files</td><td>centre x, centre y, width, height, as fractions of the image</td></tr>
+    </table>
+    <pre class="code s" data-file="annotations_coco.json (one box)"><code class="language-json">{"id": 0, "image_id": 0,
+ "category_id": 1,
+ "bbox": [131, 84, 21, 26],
+ "iscrowd": 0}</code></pre>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <div class="callout warn mt"><b>A wrong convention does not raise an error.</b> It trains a detector on boxes that are somewhere else. Draw ten boxes on their images after every conversion.</div>
+  <aside class="notes"><p>The data pack writes cache/roads/annotations_coco.json in the COCO layout: images, annotations, categories. The annotation tools named in the course, CVAT and Label Studio, export it; so do dataset inspection tools such as FiftyOne. roadkit uses two corners internally, as torchvision does. Masks are stored as images or as run-length encodings; polygons are a third form. Sources: the COCO data format page.</p></aside>
+</section>
+
+<section class="slide" id="new-class-alligator" data-lo="LO1">
+  <div class="kicker">A new class</div>
+  <h2>The inspectors want a class the old labels never had</h2>
+  <div class="cols cols-2 mid">
+    <div>
+      <p><b>Alligator cracking:</b> cracks that join into a pattern like crocodile skin. It means the road base is failing, and a patch will not hold.</p>
+      <p class="small muted">In the old labels each such area was filed under one of the two crack classes, more or less at random.</p>
+    </div>
+    <figure class="figure">
+      <img src="../assets/alligator.jpg" alt="Three crops: a dense network of cracks enclosing several cells, two cracks that cross without enclosing anything, and a sparse network with a single closed cell">
+      <figcaption>Clearly alligator cracking; two cracks that cross; one closed cell. Which of the last two counts?</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><p>Ask the room to vote on the second and third crop before reading further. The vote will split, and that split is the lesson of the session: "like crocodile skin" asks for a judgement of resemblance. The 30-crop batch of the lab holds 9 clear cases, 8 borderline ones and 13 negatives.</p></aside>
+</section>
+
+<section class="slide" id="guideline-anatomy" data-lo="LO1">
+  <div class="kicker">Guidelines</div>
+  <h2>A guideline is written so that two strangers agree</h2>
+  <ul class="bullets">
+    <li><b>A definition that can be checked:</b> something to count or measure, not a resemblance</li>
+    <li><b>Positive and negative examples,</b> with the nearest wrong class beside each</li>
+    <li><b>The borderline cases named</b> and decided: cut by the edge, partly hidden, two classes at once</li>
+    <li><b>How to draw:</b> how tight a box, where a mask ends, the smallest object worth a label</li>
+    <li><b>What to do when unsure:</b> a flag, never a guess</li>
+  </ul>
+  <aside class="notes"><p>A guideline has a version and a change log, like code: labels made under v1 and v2 are different data. Point at the fourth bullet now, it returns on Day 3: in Al-Manar's pack one annotator leaves a margin around every box and the others draw tight, and the detector's score at a strict overlap threshold pays for it.</p></aside>
+</section>
+
+<section class="slide" id="raw-agreement-misleads" data-lo="LO1">
+  <div class="kicker">Agreement</div>
+  <h2>Raw agreement flatters a rare class</h2>
+  <div class="cols cols-2 mid">
+    <div>
+      <p>Two annotators, 100 crops, a class that appears in about 5.</p>
+      <ul class="bullets">
+        <li>Each says "no" to about 95</li>
+        <li>They agree on about 90 by saying "no" alike</li>
+        <li><b>Raw agreement: 90%</b>, and they may not agree on one positive</li>
+      </ul>
+    </div>
+    <div class="card c-navy tint"><h4>Cohen's kappa</h4>
+      <p class="mb0">kappa = (p<sub>observed</sub> &minus; p<sub>chance</sub>) / (1 &minus; p<sub>chance</sub>)</p>
+      <p class="small mb0 mt-s">p<sub>chance</sub> = P(a says 1) &times; P(b says 1) + P(a says 0) &times; P(b says 0)</p>
+      <p class="small mb0 mt-s">0 is agreement by chance, 1 is perfect agreement.</p>
+    </div>
+  </div>
+  <aside class="notes"><p>Work the example aloud: p_chance = 0.05 × 0.05 + 0.95 × 0.95 = 0.905. With an observed agreement of 0.90, kappa is slightly below zero. Common reading bands (below 0.4 the guideline is not working, 0.6 to 0.8 usable, above 0.8 strong) are a convention, not a law: report the number and the task. For more than two annotators there is Fleiss' kappa and Krippendorff's alpha; the idea is the same.</p></aside>
+</section>
+
+<section class="slide" id="kappa-before-after" data-lo="LO1">
+  <div class="kicker">From the lab</div>
+  <h2>One rule that can be counted moved kappa from 0.44 to 0.85</h2>
+  <div class="cols cols-2">
+    <div class="card c-coral"><h4>Guideline v1</h4><p class="small">"Cracks that join into a pattern like crocodile skin."</p><div class="stat"><div class="big">0.44</div><div class="lbl">kappa, 9 disagreements in 30 crops</div></div></div>
+    <div class="card c-teal"><h4>Guideline v2</h4><p class="small">"Interconnected cracks that enclose at least three closed cells."</p><div class="stat"><div class="big">0.85</div><div class="lbl">kappa on the second pass</div></div></div>
+  </div>
+  <aside class="notes"><p>Numbers from lab 1.2 with the two supplied annotators: raw agreement 0.70 and kappa 0.44 on the first pass. The disagreements were not carelessness: one annotator read v1 generously, the other strictly, and both were following it. The fix was not a vote. It was a rule that a second person can count. Participants' own numbers will differ; ask two pairs to read theirs out.</p></aside>
+</section>
+
+<section class="slide" id="boxes-disagree-too" data-lo="LO1">
+  <div class="kicker">Label noise</div>
+  <h2>Annotators can agree on what and still disagree on where</h2>
+  <div class="cols cols-2 mid">
+    <ul class="bullets">
+      <li>After v2 the two annotators box the same crops</li>
+      <li>One hugs the cracks, one leaves a margin: <b>mean IoU 0.71</b> between their boxes</li>
+      <li>A detector cannot be more consistent with the labels than the labels are with themselves</li>
+    </ul>
+    <div class="callout warn"><b>Label noise has kinds.</b> A wrong class, a loose or shifted box, a missing object. Each one costs a different metric, and an agreement check on a sample is how you find out which you have.</div>
+  </div>
+  <aside class="notes"><p>The 0.71 is from lab 1.2, task 4. Missing objects are the costliest kind for a detector: an unlabelled pothole is taught as background. Tools that surface suspect labels, such as cleanlab, rank items where a trained model confidently disagrees with the label; they propose, a person decides. Partial labels are a property of Al-Manar's pack: manhole covers were never labelled and alligator cracking was filed under the crack classes.</p></aside>
+</section>
+
+<section class="slide" id="checkpoint-2" data-lo="LO1">
+  <div class="kicker">Checkpoint</div>
+  <h2>What does a low kappa call for?</h2>
+  <div class="quiz" data-type="single" data-lo="LO1">
+    <p class="lead">Two inspectors label 200 crops for "edge break". Raw agreement is 88%, Cohen's kappa is 0.31. What is the next step?</p>
+    <div class="opts">
+      <div class="opt" data-ok>Read the crops they disagree on and rewrite the definition</div>
+      <div class="opt" data-why="Trusts raw agreement on a rare class: most of the 88% is both saying no">Accept the labels, since they agree on 88% of crops</div>
+      <div class="opt" data-why="Settles these 200 labels and leaves the rule that produced the disagreement in place for the next 2,000">Add a third inspector and take the majority vote</div>
+      <div class="opt" data-why="Treats a definition problem as an effort problem: the same guideline produces the same split again">Ask both to label the 200 crops again, more carefully</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> A kappa of 0.31 says agreement is barely above chance. The disagreements show what the guideline failed to decide.</div>
+  </div>
+  <aside class="notes"><p>Answer: A. If the room picks the majority vote, ask what happens when the next batch arrives: the vote must be bought again for every crop, the rule only once.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-1-2" data-auto="lab" data-lab="1.2">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI off in this lab: say it before they start. Pair people up; each labels the 30 crops alone, then they exchange dictionaries. Someone working alone uses the supplied annotator B. Expected with the two supplied annotators: kappa 0.44, then 0.85; box IoU 0.71 with every pair above 0.5. Do not show guideline v2 until pairs have written their own rule. Common slip: computing chance agreement from one annotator's rate only.</p></aside>
 </section>
 
-<!-- Session 3 -->
-
+<!-- ======================= SESSION 3 ======================= -->
 <section class="slide section" id="s3" data-auto="section" data-session="3"></section>
 
-<section class="slide" id="s3-idea" data-lo="LO1">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
-  </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+<section class="slide" id="same-spot-twice" data-lo="LO1">
+  <div class="kicker">Near-duplicates</div>
+  <h2>The survey vehicle films every spot several times</h2>
+  <figure class="figure">
+    <img src="../assets/duplicates.jpg" alt="Three pairs of road frames; within each pair the two frames show the same cracks and markings shifted by a pixel or two">
+    <figcaption>Three pairs found by a difference hash in lab 1.3. Each pair is one road spot on two passes.</figcaption>
+  </figure>
+  <aside class="notes"><p>Ask: if the left frame of a pair is in training and the right one in the test set, what does the test measure? It measures memory. Video is the extreme case: consecutive frames are near-duplicates by construction. In Al-Manar's pack a road segment has four spots and each spot was filmed five times.</p></aside>
 </section>
 
-<section class="slide" id="s3-steps" data-lo="LO1">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="random-split-leaks" data-lo="LO1">
+  <div class="kicker">Leakage</div>
+  <h2>A split drawn frame by frame puts one spot on both sides</h2>
+  <div class="cols cols-2 mid">
+    <div class="stat center"><div class="big">150 of 274</div><div class="lbl">near-duplicate pairs straddle the inherited split (lab 1.3, 1,200 frames)</div></div>
+    <ul class="bullets">
+      <li>The model is tested on pictures it has, in effect, already seen</li>
+      <li>The test score rises, and the rise is not skill</li>
+      <li>The better a model memorises, the more it gains</li>
+    </ul>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <aside class="notes"><p>With a 70/15/15 split drawn independently per frame, two frames of a pair land in different splits a little under half the time, which is what the lab finds. Leakage is not only pixels: frames of one segment share surface, markings and wear even when they are not near-duplicates. So the unit that must stay together is the site, here the road segment. In medical imaging the unit is the patient; in retail, the store.</p></aside>
+</section>
+
+<section class="slide" id="difference-hash" data-lo="LO1">
+  <div class="kicker">Finding them</div>
+  <h2>A difference hash turns a frame into 256 bits</h2>
+  <div class="flow">
+    <div class="step c-teal"><b>1 · Shrink</b>grey, 17 by 16 pixels</div>
+    <div class="arrow">→</div>
+    <div class="step c-cyan"><b>2 · Compare</b>is each pixel brighter than its left neighbour?</div>
+    <div class="arrow">→</div>
+    <div class="step c-purple"><b>3 · Count</b>bits that differ between two frames</div>
+    <div class="arrow">→</div>
+    <div class="step c-coral"><b>4 · Threshold</b>30 bits or fewer: a near-duplicate</div>
+  </div>
+  <div class="callout note mt"><b>What it finds and what it misses.</b> The same spot in the same light, shifted by a pixel or two: found. The same spot at night, or shifted by a car's width: missed.</div>
+  <aside class="notes"><p>Comparing with the neighbour makes the hash indifferent to overall brightness. All pairs are compared with two matrix products; for millions of frames use an index. In the quick pack the hash finds 274 pairs with almost no false matches, a small fraction of all same-spot pairs. That is fine: the hash is the evidence that the problem exists. It is not the repair. Embeddings from a pretrained model find more, with more false matches; dataset inspection tools such as FiftyOne offer both.</p></aside>
+</section>
+
+<section class="slide" id="split-by-group" data-lo="LO1">
+  <div class="kicker">The repair</div>
+  <h2>Split by road segment, and every frame of a segment moves together</h2>
+  <div class="cols cols-2">
+    <pre class="code" data-file="lab 1.3"><code class="language-python">def split_by_segment(seg):
+    return ["drop" if s is None
+            else segment_split(s)
+            for s in seg]</code></pre>
+    <ul class="bullets">
+      <li>The split is a function of the <b>segment id</b>, never of the frame</li>
+      <li>It does not rely on the hash having found every duplicate</li>
+      <li>A frame whose segment is unknown is <b>dropped</b>: it is safe on neither side</li>
+    </ul>
+  </div>
+  <aside class="notes"><p>In the pack 170 of 1,200 frames lost their segment id in an export. The hash recovers 44 of them through a duplicate that kept its id; 126 stay unknown and are dropped. Ask why not put them into training: one of them may belong to a test segment, and then the test is no longer unseen road. scikit-learn has GroupShuffleSplit and GroupKFold for the same idea.</p></aside>
+</section>
+
+<section class="slide" id="split-report" data-lo="LO1">
+  <div class="kicker">Evidence</div>
+  <h2>The split report states what is shared: nothing</h2>
+  <table class="t">
+    <tr><th>Split</th><th class="num">Frames</th><th class="num">Segments</th></tr>
+    <tr><td>Train</td><td class="num">780</td><td class="num">44</td></tr>
+    <tr><td>Validation</td><td class="num">130</td><td class="num">7</td></tr>
+    <tr><td>Test</td><td class="num">164</td><td class="num">9</td></tr>
+    <tr><td>Dropped, segment unknown</td><td class="num">126</td><td class="num"></td></tr>
+    <tr class="hl"><td>Segments in more than one split</td><td class="num"></td><td class="num">0</td></tr>
+    <tr class="hl"><td>Near-duplicate pairs across splits</td><td class="num">0</td><td class="num"></td></tr>
+  </table>
+  <aside class="notes"><p>This table is part of the evidence for outcome 1 and goes into the dataset card. The last two rows are assertions, checked by code in the lab: the notebook stops if a segment is shared. Also report the class and condition mix per split in a real card: a test set with no night frames cannot answer a question about night.</p></aside>
+</section>
+
+<section class="slide" id="what-the-leak-was-worth" data-lo="LO1">
+  <div class="kicker">The price</div>
+  <h2>The leak was worth 33 points to a model that learnt nothing general</h2>
+  <div class="cols cols-2 mid">
+    <div class="bars">
+      <div class="row"><span>Inherited split</span><div class="bar c-coral" style="--w:63%"></div><span class="val">63%</span></div>
+      <div class="row"><span>Split by segment</span><div class="bar c-teal" style="--w:30%"></div><span class="val">30%</span></div>
+    </div>
+    <p class="small">A one-nearest-neighbour classifier on 16 by 16 grey pixels: it answers with the label of the most similar training crop. It can only memorise. (Lab 1.3, quick pack.)</p>
+  </div>
+  <div class="callout warn mt"><b>A leaking split rewards the wrong model.</b> It ranks memorisers above models that generalise, so it misleads every choice made with it.</div>
+  <aside class="notes"><p>The 30% is close to the share of the largest class: on unseen road the memoriser knows nothing. A good model gains less from the leak than a memoriser does, which is exactly why a leaking split is dangerous for model selection, not only for the headline number. From here on every lab uses the supplied split by segment.</p></aside>
+</section>
+
+<section class="slide" id="checkpoint-3" data-lo="LO1">
+  <div class="kicker">Checkpoint</div>
+  <h2>Why did the score fall?</h2>
+  <div class="quiz" data-type="single" data-lo="LO1">
+    <p class="lead">A crack classifier scores 96% with a random split of frames and 81% when whole road segments are held out. Nothing else changed. Which number do you report to the department?</p>
+    <div class="opts">
+      <div class="opt" data-why="Believes the random split is the standard and the grouped one a harsher variant: the random one tested on near-copies of training frames">96%: a random split is the standard way to evaluate</div>
+      <div class="opt" data-why="Averages a leaking estimate with an honest one, which is still a leaking estimate">The mean of the two, about 88%</div>
+      <div class="opt" data-why="Reads the lower score as a worse model: the model is the same, only the question changed">Neither: the model got worse and must be retrained</div>
+      <div class="opt" data-ok>81%: it is the score on roads the model has not seen</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> The department will run the model on new roads. Only the split by segment tests that; the other 15 points were memory of near-duplicate frames.</div>
+  </div>
+  <aside class="notes"><p>Answer: D. If someone argues for 96% because "that is how benchmarks do it", ask what unit the deployment generalises over: frames, or roads.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-1-3" data-auto="lab" data-lab="1.3">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI policy: an assistant may explain code and errors. Expected in quick mode: 274 pairs, 150 straddling, 170 unknown segments reduced to 126, zero shared segments, one-nearest-neighbour accuracy 0.629 against 0.300. In full mode the pair matrix needs about 150 MB, which Colab has. Common slip: comparing bits as integers that overflow; the lab stores them as floats for that reason.</p></aside>
 </section>
 
-<!-- Session 4 -->
-
+<!-- ======================= SESSION 4 ======================= -->
 <section class="slide section" id="s4" data-auto="section" data-session="4"></section>
 
-<section class="slide" id="s4-idea" data-lo="LO1">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
-  </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+<section class="slide" id="augmentation-is-a-claim" data-lo="LO1">
+  <div class="kicker">Augmentation</div>
+  <h2>Every augmentation claims that a change does not matter</h2>
+  <table class="t">
+    <tr><th>Transform</th><th>The claim it makes</th></tr>
+    <tr><td>Mirror left-right</td><td>The label does not depend on which side things are</td></tr>
+    <tr><td>Brightness and contrast</td><td>The label does not depend on exposure</td></tr>
+    <tr><td>Blur</td><td>The label survives a softer picture</td></tr>
+    <tr><td>Quarter turn</td><td>The label does not depend on direction</td></tr>
+    <tr><td>Tight random crop</td><td>Any part of the picture carries the label</td></tr>
+  </table>
+  <aside class="notes"><p>Read the right column aloud, one line at a time, and ask for each: true for Al-Manar's classes? The room will hesitate at the quarter turn. That hesitation is the session. An augmentation teaches the model an invariance; if the task depends on the thing declared irrelevant, the model is taught to ignore its own label.</p></aside>
 </section>
 
-<section class="slide" id="s4-steps" data-lo="LO1">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="move-labels-with-pixels" data-lo="LO1">
+  <div class="kicker">Mechanics</div>
+  <h2>The pixels, the boxes and the mask move together</h2>
+  <div class="cols cols-2">
+    <pre class="code s" data-file="lab 1.4"><code class="language-python">from torchvision import tv_tensors
+from torchvision.transforms import v2
+
+def apply(transform, img, mask):
+    image = tv_tensors.Image(
+        torch.from_numpy(img).permute(2, 0, 1))
+    target = tv_tensors.Mask(torch.from_numpy(mask))
+    image, target = transform(image, target)
+    return (image.permute(1, 2, 0).numpy(),
+            target.numpy().astype(bool))</code></pre>
+    <ul class="bullets">
+      <li>Tell the library <b>what each input is</b>: image, mask, boxes</li>
+      <li>A geometric transform then moves all of them; a colour transform touches the image only</li>
+      <li>The failure it prevents is silent: a flipped picture with its old boxes</li>
+    </ul>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <aside class="notes"><p>torchvision's v2 transforms dispatch on the type of each input: tv_tensors.Image, Mask, BoundingBoxes. Other libraries do the same with their own conventions. The lab's first check flips a crop and asserts that the mask flipped with it. Sources: the torchvision transforms v2 documentation.</p></aside>
+</section>
+
+<section class="slide" id="label-change-rate" data-lo="LO1">
+  <div class="kicker">From the lab</div>
+  <h2>Two of six transforms change what the crop shows</h2>
+  <div class="cols cols-2 mid">
+    <div class="bars">
+      <div class="row"><span>Mirror left-right</span><div class="bar c-teal" style="--w:1%"></div><span class="val">0%</span></div>
+      <div class="row"><span>Mirror up-down</span><div class="bar c-teal" style="--w:1%"></div><span class="val">0%</span></div>
+      <div class="row"><span>Brightness, contrast</span><div class="bar c-teal" style="--w:1%"></div><span class="val">0%</span></div>
+      <div class="row"><span>Gaussian blur</span><div class="bar c-teal" style="--w:1%"></div><span class="val">0%</span></div>
+      <div class="row"><span>Quarter turn</span><div class="bar c-coral" style="--w:42%"></div><span class="val">42%</span></div>
+      <div class="row"><span>Tight random crop</span><div class="bar c-coral" style="--w:42%"></div><span class="val">42%</span></div>
+    </div>
+    <figure class="figure">
+      <img src="../assets/augment.jpg" alt="A crop with a longitudinal crack shown four ways: unchanged, mirrored, turned by a quarter so the crack runs across, and cropped tightly so that no crack is left">
+      <figcaption>Original, mirrored, quarter turn (now transverse), tight crop (now clear).</figcaption>
+    </figure>
+  </div>
+  <aside class="notes"><p>Label-change rate on 240 daylight defect crops in lab 1.4: the share of crops whose meaning, read from the transformed mask, no longer matches the label. The quarter turn changes every crack crop and no pothole or patch, 42% in all. The tight crop loses the defect in 42% of crops. The measurement needs a mask or a box per label; with class labels only you could not have computed it, which is one more argument for richer labels on a sample.</p></aside>
+</section>
+
+<section class="slide" id="one-wrong-claim" data-lo="LO1">
+  <div class="kicker">The cost</div>
+  <h2>One false claim took crack accuracy from 95% to 76%</h2>
+  <div class="cols cols-2 mid">
+    <div class="bars">
+      <div class="row"><span>Safe pipeline</span><div class="bar c-teal" style="--w:95%"></div><span class="val">95%</span></div>
+      <div class="row"><span>Quarter-turned copies</span><div class="bar c-coral" style="--w:76%"></div><span class="val">76%</span></div>
+    </div>
+    <p class="small">A probe on frozen features, trained on 240 crops plus one augmented copy of each, scored on 37 validation crops of the two crack classes. (Lab 1.4, quick pack.)</p>
+  </div>
+  <div class="callout warn mt"><b>Nothing failed loudly.</b> The training ran, the loss fell. Half of the copies of each crack class showed the other class under the old label.</div>
+  <aside class="notes"><p>The slice is small, 37 crops, so read the gap and not the decimals. The fix has two forms: remove the transform, or recompute the label after the transform. Detection pipelines do the second for crops: a box that keeps too little of its area is dropped. For direction-dependent classes a rotation could swap the two labels, if someone writes that rule down.</p></aside>
+</section>
+
+<section class="slide" id="choose-from-the-field" data-lo="LO1 LO6">
+  <div class="kicker">Choosing</div>
+  <h2>Choose augmentations from the conditions the field will bring</h2>
+  <div class="cols cols-2">
+    <div class="card c-teal"><h4>Start from the failure table</h4><p class="small mb0">Session 1 said: dust, rain, night, blur, pole cameras. Augment towards those: exposure, haze, noise, motion blur, scale and small rotations.</p></div>
+    <div class="card c-coral"><h4>Then check each claim</h4><p class="small mb0">Which label could this transform change? How often does it? Measure on a sample with masks before it enters the pipeline.</p></div>
+  </div>
+  <div class="callout note mt"><b>Imitation is not the condition.</b> Darkened daylight is not night. Augmentation narrows the gap; the field test on Day 4 says by how much.</div>
+  <aside class="notes"><p>Augmentation is cheap data with assumptions attached. It never replaces collecting the condition, and the release test must use frames the augmentation did not produce. Heavier policies (random mixes of transforms, mixing two images) exist; the same question applies to each: what does it claim about the label?</p></aside>
+</section>
+
+<section class="slide" id="checkpoint-4" data-lo="LO1">
+  <div class="kicker">Checkpoint</div>
+  <h2>Which transform breaks this label?</h2>
+  <div class="quiz" data-type="single" data-lo="LO1">
+    <p class="lead">A new class, "faded lane marking", is defined as paint that has lost most of its brightness against the road. Which augmentation is unsafe for it?</p>
+    <div class="opts">
+      <div class="opt" data-why="Assumes any geometric change is risky: a mirrored marking is still as faded as before">A left-right mirror</div>
+      <div class="opt" data-ok>Strong random brightness and contrast changes</div>
+      <div class="opt" data-why="Confuses a small shift in position with a change in the property that defines the class">A shift of a few pixels in any direction</div>
+      <div class="opt" data-why="Believes the class depends on direction as the crack classes do: fading does not turn with the picture">A rotation by a few degrees</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> The class is defined by contrast. A transform that changes contrast at random can make a fresh marking look faded and a faded one look fresh.</div>
+  </div>
+  <aside class="notes"><p>Answer: B. The point generalises: the unsafe transform is the one that changes the property the definition is written in. For the crack classes that property was direction; here it is contrast.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-1-4" data-auto="lab" data-lab="1.4">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI policy: an assistant may explain code and errors. Expected in quick mode: label-change rates of 0 for the four safe transforms, 0.42 for the quarter turn and 0.42 for the tight crop; probe accuracy 0.946 against 0.757. The rates of the random transforms move a little with the seed. Common slip: building the tv_tensors from H x W x 3 without moving the channel axis first.</p></aside>
 </section>
 
-<section class="slide" id="wrap-up">
-  <div class="kicker">Day 1 · wrap-up</div>
+<!-- ======================= CLOSE ======================= -->
+<section class="slide" id="wrap-up" data-label="Day 1 recap">
+  <div class="kicker">Day 1 recap</div>
   <h2>Three things to keep</h2>
   <div class="cols cols-3">
-    <div class="card c-teal"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
-    <div class="card c-coral"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
-    <div class="card c-purple"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
+    <div class="card c-teal"><h4>Slice before you average</h4><p class="small mb0">95.5% in the survey's conditions was 43% in the field, and 12% in dust. Report by condition, with counts.</p></div>
+    <div class="card c-cyan"><h4>A label is a decision</h4><p class="small mb0">A rule that can be counted took kappa from 0.44 to 0.85. Disagreement is information about the guideline.</p></div>
+    <div class="card c-coral"><h4>Keep sites together</h4><p class="small mb0">Split by road segment. Check what every augmentation claims about the label before it enters the pipeline.</p></div>
   </div>
+  <aside class="notes"><p>Ask each table for the one number they will remember. Then collect the pieces of the dataset card they now have: guideline v2 with its two kappas, the split report, the list of safe augmentations. The capstone's first rubric criterion, data and splits, is built from exactly these.</p></aside>
 </section>
 
-<section class="slide dark" id="next" data-label="Next">
-  <div class="kicker">Next</div>
-  <h2>Day 2: Backbones and transfer</h2>
-  <p class="lead">REPLACE: what participants prepare before then; unfinished labs can be finished at home</p>
-  <aside class="notes">REPLACE: accounts, installs or reading participants need before the next unit</aside>
+<section class="slide dark" id="next" data-label="Tomorrow">
+  <div class="kicker">Tomorrow</div>
+  <h1>Day 2 · Backbones and transfer</h1>
+  <p class="lead">Two families of pretrained backbone on the same crops, how much of one to train, the zero-shot floor, and which weights the department may deploy.</p>
+  <ul class="bullets">
+    <li>On Colab, switch the runtime to a GPU before the first lab</li>
+    <li>Lab 2.3 downloads an open-vocabulary model of about 350 MB: start it on a good connection</li>
+  </ul>
+  <aside class="notes"><p>Remind laptop users that quick mode covers Day 2 as well: two backbones fine-tuned on 320 crops for one pass take a few minutes on a processor.</p></aside>
 </section>

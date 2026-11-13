@@ -5,7 +5,7 @@
 
 AI Engineering Track · SDAIA Academy · AE-309 · Level 300
 
-REPLACE: one line under the title: what participants can do after the course
+Build vision systems that are measured by condition, fitted to a roadside processor and released with evidence
 
 Participants build vision systems for a fictional municipal roads and traffic department that must keep working in glare, dust, rain and at night. On public road-damage images and synthetic traffic-camera clips they audit and extend annotations, fine-tune convolutional and transformer backbones, train a pothole detector and a crack segmenter, track and count vehicles, and fit the chosen model to the latency and memory budget of a processor-only roadside unit. Each lab ends with a test under changed lighting, blur or camera position. Vision-language models and multimodal applications are AE-408.
 
@@ -34,12 +34,43 @@ Participants build vision systems for a fictional municipal roads and traffic de
 | Day 2 | Backbones and transfer | Convolutional networks and vision transformers; How much to fine-tune; Zero-shot baselines; Licences of open-weight backbones | [`slides/day2.html`](slides/day2.html) |
 | Day 3 | Detect, segment and track | Detection and its metrics; Detector error analysis; Segmenting cracks; Tracking and counting | [`slides/day3.html`](slides/day3.html) |
 | Day 4 | Fit the budget and release | Export to an interchange format; Resolution and precision against latency; Corruption and shift tests; Privacy and monitoring in the field | [`slides/day4.html`](slides/day4.html) |
-| Capstone | Capstone project presentations |  | [`slides/capstone.html`](slides/capstone.html) |
+| Capstone | Capstone: a service that meets its budget, defended on a failure |  | [`slides/capstone.html`](slides/capstone.html) |
 <!-- /academy:units -->
 
 ## Case study
 
-**REPLACE: the name of the fictional organisation every lab works on.** REPLACE: two sentences on the case study and its synthetic data
+**Al-Manar Municipality Roads and Traffic Department**, a fictional city department, and **Rasid (راصد)**, the system
+participants build for it: road-damage inspection from survey-vehicle cameras and vehicle counting from pole cameras, on a
+processor-only roadside unit that must keep working in glare, dust, rain and at night.
+
+All data is synthetic and drawn from one seed by `labs/prepare_data.py`: 6,000 road frames from 300 road segments in five
+districts (potholes, cracks, patches, alligator cracking, with manhole covers and shadows as confusers, under day, glare,
+dust, rain and night), instance maps for boxes and crack masks, twelve traffic clips with ground-truth tracks and counts,
+forty street frames with drawn faces and plates, and a 30-day stream of camera statistics. No real road, camera or person
+appears. Problems are planted for the labs to find: a pilot classifier trained on clean daylight only, a random split that
+shares road spots, missing segment ids, a class two annotators read differently, transforms that change a label, a gantry
+that breaks tracks, a serving function with the wrong preprocessing, a camera that was knocked and a lens gathering dust.
+
+The catalog describes this course on public road-damage images. This edition runs on the synthetic pack, so that every lab
+runs offline, on a laptop processor in a quick mode, with known planted problems. The capstone may use a public road-damage
+set (for example RDD2022) under its own licence.
+
+## How the labs run
+
+Google Colab with a free GPU runtime, or a laptop with [uv](https://docs.astral.sh/uv/) and the quick mode (`CV_QUICK=1`).
+Each lab starts from a supplied checkpoint and the supplied split by road segment; no lab needs an earlier one. Day 2
+downloads pretrained backbones from their public hubs. No lab calls a language model. See [labs/README.md](labs/README.md).
+
+## How the course is assessed
+
+- Supervised entry and exit checks without AI assistance, on metrics, splits and error types: 20%
+- The capstone repository on a five-criterion rubric (data and splits 20, model quality and error analysis 25, latency
+  budget 20, field-condition tests and privacy 25, reproducibility 10): 60%
+- A live defence on a failure case the assessor picks: 20%
+
+Passing is 70% overall and at least 60% on the capstone rubric. AI assistants are off in the supervised checks and in the
+annotation and error-analysis labs (1.2 and 3.2), may explain code and errors in the other labs, and are unrestricted in
+the capstone, which is defended live.
 
 <!-- academy:labs -->
 ## Labs
@@ -48,29 +79,32 @@ Every lab is a notebook in `labs/`. Open it in Google Colab from the course page
 
 | | Session | Lab | File |
 |---|---|---|---|
-| 1.1 | Day 1 · Session 1 | Run a pretrained classifier on 200 road images and sort its errors by lighting, blur and viewpoint | [`D1_1_run_pretrained_classifier.ipynb`](labs/D1_1_run_pretrained_classifier.ipynb) |
-| 1.2 | Day 1 · Session 2 | Annotate 30 images for a new defect class with a partner and compute agreement | [`D1_2_annotate_30_images.ipynb`](labs/D1_2_annotate_30_images.ipynb) |
-| 1.3 | Day 1 · Session 3 | Find near-duplicate frames and re-split the data by road segment | [`D1_3_find_near_duplicate.ipynb`](labs/D1_3_find_near_duplicate.ipynb) |
-| 1.4 | Day 1 · Session 4 | Build an augmentation pipeline and find the transform that changes what a label means | [`D1_4_build_augmentation_pipeline.ipynb`](labs/D1_4_build_augmentation_pipeline.ipynb) |
-| 2.1 | Day 2 · Session 1 | Fine-tune two pretrained backbones on defect crops and compare them by slice | [`D2_1_fine_tune_two.ipynb`](labs/D2_1_fine_tune_two.ipynb) |
-| 2.2 | Day 2 · Session 2 | Train a linear probe on 10% of the labels and compare it with supplied full fine-tuning runs on 10% and 100% | [`D2_2_train_linear_probe.ipynb`](labs/D2_2_train_linear_probe.ipynb) |
-| 2.3 | Day 2 · Session 3 | Score an open-vocabulary model on the defect classes as the floor to beat | [`D2_3_score_open_vocabulary.ipynb`](labs/D2_3_score_open_vocabulary.ipynb) |
-| 2.4 | Day 2 · Session 4 | Check the licence and data terms of three backbones and record which the department may deploy | [`D2_4_check_licence_data.ipynb`](labs/D2_4_check_licence_data.ipynb) |
-| 3.1 | Day 3 · Session 1 | Train a pothole detector on a short schedule and compute average precision at two overlap thresholds | [`D3_1_train_pothole_detector.ipynb`](labs/D3_1_train_pothole_detector.ipynb) |
-| 3.2 | Day 3 · Session 2 | Sort 50 supplied detector errors into localisation, class, duplicate and missed, and choose a fix | [`D3_2_sort_50_supplied.ipynb`](labs/D3_2_sort_50_supplied.ipynb) |
-| 3.3 | Day 3 · Session 3 | Fine-tune a segmenter and compare its overlap score with a thresholding baseline | [`D3_3_fine_tune_segmenter.ipynb`](labs/D3_3_fine_tune_segmenter.ipynb) |
-| 3.4 | Day 3 · Session 4 | Track and count vehicles across a line in a clip and measure count error against the labels | [`D3_4_track_count_vehicles.ipynb`](labs/D3_4_track_count_vehicles.ipynb) |
-| 4.1 | Day 4 · Session 1 | Export the supplied detector and check its outputs match the original within tolerance | [`D4_1_export_supplied_detector.ipynb`](labs/D4_1_export_supplied_detector.ipynb) |
-| 4.2 | Day 4 · Session 2 | Measure latency and accuracy at three resolutions and two precisions on a laptop processor | [`D4_2_measure_latency_accuracy.ipynb`](labs/D4_2_measure_latency_accuracy.ipynb) |
-| 4.3 | Day 4 · Session 3 | Run the model on rain, glare, night and moved-camera sets and report the drop for each | [`D4_3_run_model_rain.ipynb`](labs/D4_3_run_model_rain.ipynb) |
-| 4.4 | Day 4 · Session 4 | Add face and plate blurring before storage and define two camera-drift monitors, then choose the capstone task | [`D4_4_add_face_plate.ipynb`](labs/D4_4_add_face_plate.ipynb) |
+| 1.1 | Day 1 · Session 1 | Errors by condition | [`D1_1_errors_by_condition.ipynb`](labs/D1_1_errors_by_condition.ipynb) |
+| 1.2 | Day 1 · Session 2 | Agree on a new class | [`D1_2_annotation_agreement.ipynb`](labs/D1_2_annotation_agreement.ipynb) |
+| 1.3 | Day 1 · Session 3 | Split by road segment | [`D1_3_split_by_segment.ipynb`](labs/D1_3_split_by_segment.ipynb) |
+| 1.4 | Day 1 · Session 4 | Augment without changing labels | [`D1_4_augmentation.ipynb`](labs/D1_4_augmentation.ipynb) |
+| 2.1 | Day 2 · Session 1 | Two backbones by slice | [`D2_1_two_backbones.ipynb`](labs/D2_1_two_backbones.ipynb) |
+| 2.2 | Day 2 · Session 2 | Probe or fine-tune | [`D2_2_probe_or_finetune.ipynb`](labs/D2_2_probe_or_finetune.ipynb) |
+| 2.3 | Day 2 · Session 3 | The zero-shot floor | [`D2_3_zero_shot_floor.ipynb`](labs/D2_3_zero_shot_floor.ipynb) |
+| 2.4 | Day 2 · Session 4 | Which backbone may ship | [`D2_4_backbone_licences.ipynb`](labs/D2_4_backbone_licences.ipynb) |
+| 3.1 | Day 3 · Session 1 | Train and score a detector | [`D3_1_detector_ap.ipynb`](labs/D3_1_detector_ap.ipynb) |
+| 3.2 | Day 3 · Session 2 | Sort fifty errors | [`D3_2_error_analysis.ipynb`](labs/D3_2_error_analysis.ipynb) |
+| 3.3 | Day 3 · Session 3 | Segment cracks | [`D3_3_segment_cracks.ipynb`](labs/D3_3_segment_cracks.ipynb) |
+| 3.4 | Day 3 · Session 4 | Track and count | [`D3_4_track_count.ipynb`](labs/D3_4_track_count.ipynb) |
+| 4.1 | Day 4 · Session 1 | Export and check parity | [`D4_1_export_parity.ipynb`](labs/D4_1_export_parity.ipynb) |
+| 4.2 | Day 4 · Session 2 | Fit the latency budget | [`D4_2_latency_budget.ipynb`](labs/D4_2_latency_budget.ipynb) |
+| 4.3 | Day 4 · Session 3 | Field-condition tests | [`D4_3_field_tests.ipynb`](labs/D4_3_field_tests.ipynb) |
+| 4.4 | Day 4 · Session 4 | Blur, monitor, choose | [`D4_4_privacy_monitoring.ipynb`](labs/D4_4_privacy_monitoring.ipynb) |
 <!-- /academy:labs -->
 
 ## Capstone
 
 An inspection or counting service that meets a stated latency and accuracy budget, submitted as a public repository with a field-conditions test set, model card and release memo, defended on a failure case the assessor picks
 
-**Submission:** REPLACE: what participants submit and how: a public repository link, or a shared folder for a course without code
+**Submission:** a public GitHub repository link: the service, a field-conditions test set, a benchmark table against the
+stated latency and accuracy budget, a model card with results per condition and district and the privacy controls, a
+release memo, and the training logs, checkpoints and commit history. Then a live defence: an eight-minute talk and four
+minutes on a failure case the assessor picks, with the evaluation re-run on a held-back condition.
 
 ## Prerequisites
 
@@ -96,12 +130,53 @@ Each line is a capability; the examples are interchangeable.
 <!-- academy:sources -->
 ## Sources
 
-- REPLACE: every source the course cites, with its address, in course.json under "sources"; this list is written from there
-<!-- /academy:sources -->
+### Frameworks and model libraries
+
+- [torchvision: models and pretrained weights](https://docs.pytorch.org/vision/stable/models.html)
+- [torchvision: transforms v2](https://docs.pytorch.org/vision/stable/transforms.html)
+- [timm (PyTorch Image Models) documentation](https://huggingface.co/docs/timm/index)
+- [OpenCLIP: an open source implementation of CLIP](https://github.com/mlfoundations/open_clip)
+- [Ultralytics: licensing](https://www.ultralytics.com/license)
+
+### Export and inference runtimes
+
+- [PyTorch: torch.onnx](https://docs.pytorch.org/docs/stable/onnx.html)
+- [ONNX Runtime: quantize ONNX models](https://onnxruntime.ai/docs/performance/model-optimizations/quantization.html)
+- [OpenVINO documentation](https://docs.openvino.ai/)
+- [LiteRT overview](https://ai.google.dev/edge/litert)
+
+### Papers
+
+- [He et al., Deep Residual Learning for Image Recognition (2015)](https://arxiv.org/abs/1512.03385)
+- [Dosovitskiy et al., An Image is Worth 16x16 Words (2020)](https://arxiv.org/abs/2010.11929)
+- [Radford et al., Learning Transferable Visual Models From Natural Language Supervision (2021)](https://arxiv.org/abs/2103.00020)
+- [Tian et al., FCOS: Fully Convolutional One-Stage Object Detection (2019)](https://arxiv.org/abs/1904.01355)
+- [Bolya et al., TIDE: A General Toolbox for Identifying Object Detection Errors (2020)](https://arxiv.org/abs/2008.08115)
+- [Bewley et al., Simple Online and Realtime Tracking (2016)](https://arxiv.org/abs/1602.00763)
+- [Hendrycks and Dietterich, Benchmarking Neural Network Robustness to Common Corruptions and Perturbations (2019)](https://arxiv.org/abs/1903.12261)
+- [Mitchell et al., Model Cards for Model Reporting (2018)](https://arxiv.org/abs/1810.03993)
+- [Arya et al., RDD2022: A multi-national image dataset for automatic Road Damage Detection (2022)](https://arxiv.org/abs/2209.08538)
+
+### Annotation and dataset tools
+
+- [CVAT documentation](https://docs.cvat.ai/)
+- [Label Studio documentation](https://labelstud.io/guide/)
+- [FiftyOne documentation](https://docs.voxel51.com/)
+- [cleanlab documentation](https://docs.cleanlab.ai/)
+- [COCO: data format](https://cocodataset.org/#format-data)
 
 ### National references
 
-- Personal Data Protection Law and its implementing regulations: REPLACE: the address of the official text
-- NDMO Data Classification Policy: REPLACE: the address of the official text
-- SDAIA AI Ethics Principles: REPLACE: the address of the official text
-- National AI Risk Management Framework: REPLACE: the address of the official text
+- [Personal Data Protection Law](https://sdaia.gov.sa/en/SDAIA/about/Documents/PersonalDataProtectionLaw.pdf)
+- [Implementing Regulation of the Personal Data Protection Law](https://sdaia.gov.sa/en/SDAIA/about/Documents/ImplementingRegulationPersonalDataProtectionLaw.pdf)
+- [Data Classification Policy (National Data Management Office)](https://sdaia.gov.sa/en/SDAIA/about/Documents/DataClassificationPolicy.pdf)
+- [Principles of AI Ethics](https://sdaia.gov.sa/en/SDAIA/about/Documents/ai-principles.pdf)
+<!-- /academy:sources -->
+
+## National references
+
+- Personal Data Protection Law: https://sdaia.gov.sa/en/SDAIA/about/Documents/PersonalDataProtectionLaw.pdf
+- Implementing Regulation of the Personal Data Protection Law: https://sdaia.gov.sa/en/SDAIA/about/Documents/ImplementingRegulationPersonalDataProtectionLaw.pdf
+- Data Classification Policy (National Data Management Office): https://sdaia.gov.sa/en/SDAIA/about/Documents/DataClassificationPolicy.pdf
+- Principles of AI Ethics (SDAIA): https://sdaia.gov.sa/en/SDAIA/about/Documents/ai-principles.pdf
+- National AI Risk Management Framework: cited by name; no official address was found for it when this edition was written
