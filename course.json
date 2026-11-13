@@ -1,0 +1,462 @@
+{
+  "$schema": "https://sdaiaacademy.github.io/engine/schemas/course.schema.json",
+  "engine": "1",
+  "id": "computer-vision",
+  "code": "AE-309",
+  "version": "2027.1.0",
+  "lang": "en",
+  "title": {
+    "en": "Computer Vision Engineering",
+    "ar": "هندسة رؤية الحاسب"
+  },
+  "tagline": "REPLACE: one line under the title: what participants can do after the course",
+  "description": "Participants build vision systems for a fictional municipal roads and traffic department that must keep working in glare, dust, rain and at night. On public road-damage images and synthetic traffic-camera clips they audit and extend annotations, fine-tune convolutional and transformer backbones, train a pothole detector and a crack segmenter, track and count vehicles, and fit the chosen model to the latency and memory budget of a processor-only roadside unit. Each lab ends with a test under changed lighting, blur or camera position. Vision-language models and multimodal applications are AE-408.",
+  "track": "ai-engineering",
+  "level": 300,
+  "badge": {
+    "name": "AI Engineering",
+    "level": "Associate"
+  },
+  "audience": "Practitioners. Engineers who have completed the level 200 set or can show equivalent work: a deployed model or language model application they built and can explain.",
+  "prerequisites": [
+    "AE-201 Machine Learning Foundations and Model Evaluation",
+    "AE-202 Deep Learning and Generative AI Fundamentals",
+    "Trains a neural network with a hand-written training loop",
+    "Computes precision and recall from a confusion matrix"
+  ],
+  "site": {
+    "url": "https://sdaiaacademy.github.io/computer-vision/",
+    "repo": "SDAIAAcademy/computer-vision"
+  },
+  "outcomes": [
+    {
+      "id": "LO1",
+      "text": "Prepare an image dataset with annotation guidelines, an agreement check, splits that keep each road segment in one split, and augmentations that preserve label meaning, given road images with partial labels and near-duplicate frames",
+      "level": "Applied",
+      "evidence": "a dataset card, an agreement score and a split report with no road segment shared across splits"
+    },
+    {
+      "id": "LO2",
+      "text": "Implement transfer learning with two pretrained backbones and compare them by condition slice with intervals, given defect crops and a free notebook GPU",
+      "level": "Applied",
+      "evidence": "a comparison table by lighting and weather slice with bootstrap intervals"
+    },
+    {
+      "id": "LO3",
+      "text": "Build a detector and a segmenter and diagnose their errors by type to choose the next improvement, given pothole boxes and crack masks",
+      "level": "Performance",
+      "evidence": "average precision and overlap metrics, an error breakdown and a justified next step"
+    },
+    {
+      "id": "LO4",
+      "text": "Measure tracking and counting accuracy for vehicles crossing a line in video, given synthetic camera clips with ground-truth counts",
+      "level": "Applied",
+      "evidence": "count error per clip and the number of identity switches"
+    },
+    {
+      "id": "LO5",
+      "text": "Optimise a model to a per-frame latency and memory budget on a processor through export, input resolution and quantisation, re-measuring accuracy at each step, given the roadside unit's stated budget",
+      "level": "Performance",
+      "evidence": "a benchmark table and the chosen operating point"
+    },
+    {
+      "id": "LO6",
+      "text": "Evaluate the model under corruption and camera shift and decide whether to release it, given rain, glare, night and moved-camera test sets",
+      "level": "Performance",
+      "evidence": "a model card with results per condition, privacy controls and a release decision defended live"
+    }
+  ],
+  "case_study": {
+    "name": "REPLACE: the name of the fictional organisation every lab works on",
+    "summary": "REPLACE: two sentences on the case study and its synthetic data"
+  },
+  "format": "intensive",
+  "format_note": "Intensive: 4 teaching days of four sessions and a capstone day, with guided pre-work and a tracked follow-up task",
+  "hours": {
+    "instruction": 6,
+    "lab": 7,
+    "guided_self_study": 6,
+    "assessment": 1,
+    "capstone": 6
+  },
+  "unit": "day",
+  "days": [
+    {
+      "id": "day1",
+      "kind": "day",
+      "title": "Visual data first",
+      "deck": "slides/day1.html",
+      "sessions": [
+        {
+          "title": "How vision systems fail in the field",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO2"
+          ],
+          "lab": {
+            "id": "1.1",
+            "title": "Run a pretrained classifier on 200 road images and sort its errors by lighting, blur and viewpoint",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D1_1_run_pretrained_classifier.ipynb"
+          }
+        },
+        {
+          "title": "Annotation guidelines and agreement",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO1"
+          ],
+          "lab": {
+            "id": "1.2",
+            "title": "Annotate 30 images for a new defect class with a partner and compute agreement",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D1_2_annotate_30_images.ipynb"
+          }
+        },
+        {
+          "title": "Leakage by site and near-duplicates",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO1"
+          ],
+          "lab": {
+            "id": "1.3",
+            "title": "Find near-duplicate frames and re-split the data by road segment",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D1_3_find_near_duplicate.ipynb"
+          }
+        },
+        {
+          "title": "Augmentation and what it assumes",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO1"
+          ],
+          "lab": {
+            "id": "1.4",
+            "title": "Build an augmentation pipeline and find the transform that changes what a label means",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D1_4_build_augmentation_pipeline.ipynb"
+          }
+        }
+      ]
+    },
+    {
+      "id": "day2",
+      "kind": "day",
+      "title": "Backbones and transfer",
+      "deck": "slides/day2.html",
+      "sessions": [
+        {
+          "title": "Convolutional networks and vision transformers",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO2"
+          ],
+          "lab": {
+            "id": "2.1",
+            "title": "Fine-tune two pretrained backbones on defect crops and compare them by slice",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D2_1_fine_tune_two.ipynb"
+          }
+        },
+        {
+          "title": "How much to fine-tune",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO2"
+          ],
+          "lab": {
+            "id": "2.2",
+            "title": "Train a linear probe on 10% of the labels and compare it with supplied full fine-tuning runs on 10% and 100%",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D2_2_train_linear_probe.ipynb"
+          }
+        },
+        {
+          "title": "Zero-shot baselines",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO2"
+          ],
+          "lab": {
+            "id": "2.3",
+            "title": "Score an open-vocabulary model on the defect classes as the floor to beat",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D2_3_score_open_vocabulary.ipynb"
+          }
+        },
+        {
+          "title": "Licences of open-weight backbones",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO2"
+          ],
+          "lab": {
+            "id": "2.4",
+            "title": "Check the licence and data terms of three backbones and record which the department may deploy",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D2_4_check_licence_data.ipynb"
+          }
+        }
+      ]
+    },
+    {
+      "id": "day3",
+      "kind": "day",
+      "title": "Detect, segment and track",
+      "deck": "slides/day3.html",
+      "sessions": [
+        {
+          "title": "Detection and its metrics",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO3"
+          ],
+          "lab": {
+            "id": "3.1",
+            "title": "Train a pothole detector on a short schedule and compute average precision at two overlap thresholds",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D3_1_train_pothole_detector.ipynb"
+          }
+        },
+        {
+          "title": "Detector error analysis",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO3"
+          ],
+          "lab": {
+            "id": "3.2",
+            "title": "Sort 50 supplied detector errors into localisation, class, duplicate and missed, and choose a fix",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D3_2_sort_50_supplied.ipynb"
+          }
+        },
+        {
+          "title": "Segmenting cracks",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO3"
+          ],
+          "lab": {
+            "id": "3.3",
+            "title": "Fine-tune a segmenter and compare its overlap score with a thresholding baseline",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D3_3_fine_tune_segmenter.ipynb"
+          }
+        },
+        {
+          "title": "Tracking and counting",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO4"
+          ],
+          "lab": {
+            "id": "3.4",
+            "title": "Track and count vehicles across a line in a clip and measure count error against the labels",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D3_4_track_count_vehicles.ipynb"
+          }
+        }
+      ]
+    },
+    {
+      "id": "day4",
+      "kind": "day",
+      "title": "Fit the budget and release",
+      "deck": "slides/day4.html",
+      "sessions": [
+        {
+          "title": "Export to an interchange format",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO5"
+          ],
+          "lab": {
+            "id": "4.1",
+            "title": "Export the supplied detector and check its outputs match the original within tolerance",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D4_1_export_supplied_detector.ipynb"
+          }
+        },
+        {
+          "title": "Resolution and precision against latency",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO5"
+          ],
+          "lab": {
+            "id": "4.2",
+            "title": "Measure latency and accuracy at three resolutions and two precisions on a laptop processor",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D4_2_measure_latency_accuracy.ipynb"
+          }
+        },
+        {
+          "title": "Corruption and shift tests",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO6"
+          ],
+          "lab": {
+            "id": "4.3",
+            "title": "Run the model on rain, glare, night and moved-camera sets and report the drop for each",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D4_3_run_model_rain.ipynb"
+          }
+        },
+        {
+          "title": "Privacy and monitoring in the field",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session"
+          ],
+          "lo": [
+            "LO6"
+          ],
+          "lab": {
+            "id": "4.4",
+            "title": "Add face and plate blurring before storage and define two camera-drift monitors, then choose the capstone task",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D4_4_add_face_plate.ipynb"
+          }
+        }
+      ]
+    },
+    {
+      "id": "capstone",
+      "kind": "capstone",
+      "title": "Capstone project presentations",
+      "deck": "slides/capstone.html",
+      "subtitle": "REPLACE: the catalog gives no length for the presentations; set capstone.talk_minutes and capstone.qa_minutes in course.json, write them on the format slide, add a timer for each to the now-presenting slide, and remove this line"
+    }
+  ],
+  "capstone": {
+    "summary": "An inspection or counting service that meets a stated latency and accuracy budget, submitted as a public repository with a field-conditions test set, model card and release memo, defended on a failure case the assessor picks",
+    "submission": "REPLACE: what participants submit and how: a public repository link, or a shared folder for a course without code",
+    "rubric": [
+      {
+        "criterion": "Data and splits",
+        "weight": 20
+      },
+      {
+        "criterion": "Model quality and error analysis",
+        "weight": 25
+      },
+      {
+        "criterion": "Latency budget",
+        "weight": 20
+      },
+      {
+        "criterion": "Field-condition tests and privacy",
+        "weight": 25
+      },
+      {
+        "criterion": "Reproducibility",
+        "weight": 10
+      }
+    ]
+  },
+  "labs": {
+    "kind": "notebooks",
+    "base": "labs/"
+  },
+  "tools": [
+    {
+      "slot": "Deep learning framework and pretrained vision models",
+      "examples": [
+        "PyTorch with torchvision",
+        "timm"
+      ]
+    },
+    {
+      "slot": "Detection and segmentation library",
+      "examples": [
+        "torchvision detection and segmentation models",
+        "Ultralytics"
+      ]
+    },
+    {
+      "slot": "Annotation tool",
+      "examples": [
+        "CVAT",
+        "Label Studio"
+      ]
+    },
+    {
+      "slot": "Dataset inspection",
+      "examples": [
+        "FiftyOne",
+        "cleanlab"
+      ]
+    },
+    {
+      "slot": "Image and video processing",
+      "examples": [
+        "OpenCV",
+        "Pillow"
+      ]
+    },
+    {
+      "slot": "Interchange format and inference runtime",
+      "examples": [
+        "ONNX Runtime",
+        "OpenVINO",
+        "LiteRT"
+      ]
+    },
+    {
+      "slot": "Compute",
+      "examples": [
+        "a free notebook GPU",
+        "Academy GPU hours"
+      ]
+    }
+  ]
+}
