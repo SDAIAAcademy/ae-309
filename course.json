@@ -911,8 +911,16 @@
           "url": "https://arxiv.org/abs/1904.01355"
         },
         {
+          "title": "Lin et al., Focal Loss for Dense Object Detection (2017)",
+          "url": "https://arxiv.org/abs/1708.02002"
+        },
+        {
           "title": "Bolya et al., TIDE: A General Toolbox for Identifying Object Detection Errors (2020)",
           "url": "https://arxiv.org/abs/2008.08115"
+        },
+        {
+          "title": "Ronneberger et al., U-Net: Convolutional Networks for Biomedical Image Segmentation (2015)",
+          "url": "https://arxiv.org/abs/1505.04597"
         },
         {
           "title": "Bewley et al., Simple Online and Realtime Tracking (2016)",
@@ -954,6 +962,10 @@
         {
           "title": "COCO: data format",
           "url": "https://cocodataset.org/#format-data"
+        },
+        {
+          "title": "COCO: detection evaluation",
+          "url": "https://cocodataset.org/#detection-eval"
         }
       ]
     },

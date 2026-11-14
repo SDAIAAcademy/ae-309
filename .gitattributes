@@ -13,3 +13,5 @@
 *.docx binary
 *.pptx binary
 *.parquet binary
+*.pt binary
+*.onnx binary

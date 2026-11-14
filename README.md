@@ -151,7 +151,9 @@ Each line is a capability; the examples are interchangeable.
 - [Dosovitskiy et al., An Image is Worth 16x16 Words (2020)](https://arxiv.org/abs/2010.11929)
 - [Radford et al., Learning Transferable Visual Models From Natural Language Supervision (2021)](https://arxiv.org/abs/2103.00020)
 - [Tian et al., FCOS: Fully Convolutional One-Stage Object Detection (2019)](https://arxiv.org/abs/1904.01355)
+- [Lin et al., Focal Loss for Dense Object Detection (2017)](https://arxiv.org/abs/1708.02002)
 - [Bolya et al., TIDE: A General Toolbox for Identifying Object Detection Errors (2020)](https://arxiv.org/abs/2008.08115)
+- [Ronneberger et al., U-Net: Convolutional Networks for Biomedical Image Segmentation (2015)](https://arxiv.org/abs/1505.04597)
 - [Bewley et al., Simple Online and Realtime Tracking (2016)](https://arxiv.org/abs/1602.00763)
 - [Hendrycks and Dietterich, Benchmarking Neural Network Robustness to Common Corruptions and Perturbations (2019)](https://arxiv.org/abs/1903.12261)
 - [Mitchell et al., Model Cards for Model Reporting (2018)](https://arxiv.org/abs/1810.03993)
@@ -164,6 +166,7 @@ Each line is a capability; the examples are interchangeable.
 - [FiftyOne documentation](https://docs.voxel51.com/)
 - [cleanlab documentation](https://docs.cleanlab.ai/)
 - [COCO: data format](https://cocodataset.org/#format-data)
+- [COCO: detection evaluation](https://cocodataset.org/#detection-eval)
 
 ### National references
 
