@@ -1,158 +1,483 @@
+<!-- ======================= OPENING ======================= -->
 <section class="slide title" id="title" data-auto="title">
-  <aside class="notes">REPLACE: welcome; introduce yourself; one question to the room that calibrates the pace; the rhythm of the day</aside>
+  <aside class="notes"><p>Yesterday no model was trained; today four are. Ask the room: who has fine-tuned a pretrained vision model, and who chose the backbone for a reason they could defend? Keep the answers for session 4. The day has one table that grows from session to session: models as rows, lighting conditions as columns, an interval on every cell. On Colab, switch the runtime to a GPU now; laptop users set CV_QUICK=1.</p></aside>
 </section>
 
 <section class="slide" id="agenda" data-auto="agenda"></section>
 
-<!-- Session 1 -->
-
-<section class="slide section" id="s1" data-auto="section" data-session="1"></section>
-
-<section class="slide" id="s1-idea" data-lo="LO2">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
+<section class="slide" id="review-day-1" data-label="Review" data-lo="LO6">
+  <div class="kicker">Review of Day 1</div>
+  <h2>Which slice goes into the failure note?</h2>
+  <div class="quiz" data-type="single" data-lo="LO6">
+    <p class="lead">A field batch is sliced by lighting and viewpoint. The cell "night, pole camera" holds 6 crops and scores 17%; "dust, survey vehicle" holds 38 and scores 21%. What does the failure note say?</p>
+    <div class="opts">
+      <div class="opt" data-why="Reads the lowest percentage without its count: on 6 crops one crop moves the score by 17 points">Night from a pole camera is the worst slice, at 17%</div>
+      <div class="opt" data-why="Averages two cells into a number that describes neither and hides which condition to collect">The two worst slices average 19%</div>
+      <div class="opt" data-ok>Dust from the vehicle is the worst slice with enough crops; the night cell needs more</div>
+      <div class="opt" data-why="Drops the cross-table because one cell is small, and loses the dust finding that 38 crops support">Slices this small say nothing: report the overall score only</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> A slice is named the worst only when it holds enough crops to believe; lab 1.1 asked for 20. The small cell is a request to collect.</div>
   </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+  <aside class="notes"><p>Answer: C. This was the stretch item of lab 1.1. It sets up today's method: every number gets a count, and from session 1 on, an interval.</p></aside>
 </section>
 
-<section class="slide" id="s1-steps" data-lo="LO2">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
+<!-- ======================= SESSION 1 ======================= -->
+<section class="slide section" id="s1" data-auto="section" data-session="1" data-label="Two families of backbone"></section>
+
+<section class="slide" id="start-from-a-backbone" data-lo="LO2" data-label="Two families of backbone">
+  <div class="kicker">Transfer learning</div>
+  <h2>Nobody trains a vision model from nothing: start from a backbone</h2>
   <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+    <div class="step c-navy"><b>1 · Pretrained backbone</b>trained by someone else on a million or more images</div>
+    <div class="arrow">→</div>
+    <div class="step c-teal"><b>2 · New head</b>its last layer replaced by one for your five classes</div>
+    <div class="arrow">→</div>
+    <div class="step c-coral"><b>3 · Fine-tune</b>a short schedule on your own crops</div>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <div class="callout note mt"><b>What transfers:</b> edges, textures, shapes. A network that has learnt them from a million photographs needs hundreds of road crops, not hundreds of thousands, to learn "pothole".</div>
+  <aside class="notes"><p>Participants know training loops from AE-202; the new decisions today are which backbone, how much of it to train and what it may legally be used for. The department has about 7,000 labelled training crops, far too few to train a network of eleven million weights from random values. The pilot classifier of Day 1 was itself built on a pretrained trunk; its failure was its training data, not its starting point.</p></aside>
+</section>
+
+<section class="slide" id="what-a-convnet-assumes" data-lo="LO2" data-label="Two families of backbone">
+  <div class="kicker">Family one</div>
+  <h2>A convolutional network assumes that nearby pixels belong together</h2>
+  <div class="cols cols-3">
+    <div class="card c-teal"><h4>Locality</h4><p class="small mb0">Each unit looks at a small window. Edges first, then textures, then parts.</p></div>
+    <div class="card c-cyan"><h4>Shared weights</h4><p class="small mb0">The same filter slides over the whole image: a crack is a crack wherever it lies.</p></div>
+    <div class="card c-coral"><h4>A pyramid</h4><p class="small mb0">Resolution falls and the view widens, layer by layer.</p></div>
+  </div>
+  <div class="callout tip mt"><b>These assumptions are true of photographs,</b> so the network does not have to learn them from data. That is why it does well with little.</div>
+  <aside class="notes"><p>The built-in assumptions are called inductive bias. ResNet-18, today's convolutional backbone, has 11.2 million weights in the lab and was trained on ImageNet-1k, about 1.3 million images. Its residual connections are what made deep networks trainable. The pyramid also explains what convolutional networks find hard: relating two distant parts of an image takes many layers. Sources: He et al., 2015.</p></aside>
+</section>
+
+<section class="slide" id="what-a-vit-assumes" data-lo="LO2" data-label="Two families of backbone">
+  <div class="kicker">Family two</div>
+  <h2>A vision transformer assumes almost nothing and looks everywhere at once</h2>
+  <div class="flow">
+    <div class="step c-navy"><b>1 · Patches</b>a 128-pixel crop is cut into 64 patches of 16 by 16</div>
+    <div class="arrow">→</div>
+    <div class="step c-teal"><b>2 · Tokens</b>each patch becomes a vector, plus where it was</div>
+    <div class="arrow">→</div>
+    <div class="step c-cyan"><b>3 · Attention</b>every patch can use every other patch, from the first layer</div>
+    <div class="arrow">→</div>
+    <div class="step c-coral"><b>4 · Class token</b>one summary vector feeds the head</div>
+  </div>
+  <div class="callout warn mt"><b>Fewer assumptions, more data.</b> What a convolutional network is given, a transformer must learn, so it depends more on large-scale pretraining and on a careful schedule.</div>
+  <aside class="notes"><p>ViT-Tiny, today's transformer, has 5.5 million weights in the lab and was pretrained on ImageNet-21k, about 14 million images, then on ImageNet-1k. It learnt its position embeddings for 224-pixel inputs; the lab passes img_size=128 so that the library resamples them, a detail that silently hurts accuracy when forgotten. Hybrids (hierarchical transformers, modernised convolutional networks) have blurred the line between the families; the two questions on these slides still apply to each. Sources: Dosovitskiy et al., 2020.</p></aside>
+</section>
+
+<section class="slide" id="a-fair-comparison" data-lo="LO2" data-label="Two families of backbone">
+  <div class="kicker">The experiment</div>
+  <h2>A fair comparison fixes everything that is not the question</h2>
+  <table class="t">
+    <tr><th></th><th>ResNet-18</th><th>ViT-Tiny</th></tr>
+    <tr><td>Training crops, passes, input size</td><td colspan="2">The same: 320 crops, one pass, 128 pixels (lab 2.1, quick mode)</td></tr>
+    <tr><td>Test crops</td><td colspan="2">The same 304, from road segments neither has seen</td></tr>
+    <tr><td>Learning rate</td><td>0.0003</td><td>0.0001</td></tr>
+    <tr><td>Weights</td><td class="num">11.2 million</td><td class="num">5.5 million</td></tr>
+    <tr><td>Pretraining data</td><td>ImageNet-1k</td><td>ImageNet-21k, then ImageNet-1k</td></tr>
+  </table>
+  <div class="callout note mt"><b>The last three rows still differ.</b> You compare two available starting points under one budget. You do not compare two families.</div>
+  <aside class="notes"><p>The learning rate differs on purpose: each model gets a rate that suits it, because a transformer fine-tuned at a convolutional network's rate looks worse than it is. Fair means each candidate is treated well, not that every setting is equal. Say the limit of the conclusion out loud: whatever the table shows, it is about these two sets of weights on this budget. A claim about "transformers" needs many of each.</p></aside>
+</section>
+
+<section class="slide" id="bootstrap-interval" data-lo="LO2" data-label="Two families of backbone">
+  <div class="kicker">The interval</div>
+  <h2>The bootstrap asks: how far would this number move on another sample?</h2>
+  <div class="cols cols-2">
+    <pre class="code s" data-file="lab 2.1"><code class="language-python">def bootstrap_ci(values, n_boot=1000, seed=0):
+    values = np.asarray(values, dtype=float)
+    r = np.random.default_rng(seed)
+    idx = r.integers(0, len(values),
+                     (n_boot, len(values)))
+    means = values[idx].mean(axis=1)
+    return (float(values.mean()),
+            float(np.percentile(means, 2.5)),
+            float(np.percentile(means, 97.5)))</code></pre>
+    <ul class="bullets">
+      <li><code>values</code> holds one 0 or 1 per test crop</li>
+      <li>Draw the crops again <b>with replacement</b>, a thousand times</li>
+      <li>The middle 95% of the resampled means is the interval</li>
+      <li>It needs no formula, so it works for any metric</li>
+    </ul>
+  </div>
+  <aside class="notes"><p>The interval describes the test set, not the model: it says how much the score depends on which crops happened to be in the sample. It does not cover a second training run with another seed, which is a different source of variation. The lab's check: 80 correct of 100 gives an interval from about 0.72 to 0.88. The same eight lines return on Day 4 for the drop under rain and at night.</p></aside>
+</section>
+
+<section class="slide" id="two-backbones-by-slice" data-lo="LO2" data-label="Two families of backbone">
+  <div class="kicker">From the lab</div>
+  <h2>After one short pass the ResNet leads, and only two rows can say so</h2>
+  <table class="t small">
+    <tr><th>Slice</th><th class="num">Crops</th><th>ResNet-18</th><th>ViT-Tiny</th><th>Intervals overlap</th></tr>
+    <tr class="hl"><td>All</td><td class="num">304</td><td>0.73 (0.68 to 0.78)</td><td>0.51 (0.45 to 0.56)</td><td>No</td></tr>
+    <tr class="hl"><td>Day</td><td class="num">185</td><td>0.78 (0.72 to 0.84)</td><td>0.52 (0.46 to 0.60)</td><td>No</td></tr>
+    <tr><td>Glare</td><td class="num">35</td><td>0.66 (0.51 to 0.80)</td><td>0.54 (0.40 to 0.69)</td><td>Yes</td></tr>
+    <tr><td>Dust</td><td class="num">33</td><td>0.73 (0.58 to 0.88)</td><td>0.67 (0.52 to 0.82)</td><td>Yes</td></tr>
+    <tr><td>Rain</td><td class="num">35</td><td>0.57 (0.40 to 0.71)</td><td>0.31 (0.17 to 0.49)</td><td>Yes</td></tr>
+    <tr><td>Night</td><td class="num">16</td><td>0.56 (0.31 to 0.81)</td><td>0.31 (0.13 to 0.56)</td><td>Yes</td></tr>
+  </table>
+  <div class="callout warn mt"><b>Sixteen night crops give an interval fifty points wide.</b> A gap of 25 points at night is not yet a finding.</div>
+  <aside class="notes"><p>Lab 2.1 in quick mode, one pass over 320 crops on a laptop processor, under half a minute per model. This table is the evidence form for outcome 2. Two readings. First, the widths: the interval on 16 crops is five times wider than on 304. Second, the conclusion's scope: on this schedule the convolutional network converges faster, which is what its built-in assumptions predict. Session 2 shows the supplied full runs, where the transformer is level or ahead. One pass on 320 crops ranks schedules as much as models. The stretch item resamples the per-crop difference, which is narrower because both models saw the same crops.</p></aside>
+</section>
+
+<section class="slide" id="reading-overlap" data-lo="LO2" data-label="Two families of backbone">
+  <div class="kicker">Reading the table</div>
+  <h2>Overlap means "this test cannot tell", not "these are equal"</h2>
+  <div class="cols cols-3">
+    <div class="card c-teal"><h4>Intervals apart</h4><p class="small mb0">A finding on this test set. Write it down, with the slice and its count.</p></div>
+    <div class="card c-amber"><h4>Intervals overlap</h4><p class="small mb0">No evidence either way. Collect more crops of that condition, or pair the comparison.</p></div>
+    <div class="card c-coral"><h4>Never</h4><p class="small mb0">"Equally good at night", or "better at night by 25 points". Neither is supported by 16 crops.</p></div>
+  </div>
+  <div class="callout tip mt"><b>Slice by condition, because the release question is about conditions.</b> Slicing by class answers another useful question: which defect is hard.</div>
+  <aside class="notes"><p>Comparing two separate intervals is the cautious test: intervals can overlap a little while the paired difference is clearly above zero. So the rule in practice: when intervals overlap and the decision matters, bootstrap the difference on paired crops before collecting more data. Results by lighting, weather and district are also the course's responsible-use commitment: no part of the city is served worse unnoticed.</p></aside>
+</section>
+
+<section class="slide" id="checkpoint-1" data-lo="LO2" data-label="Two families of backbone">
+  <div class="kicker">Checkpoint</div>
+  <h2>How do you settle it?</h2>
+  <div class="quiz" data-type="single" data-lo="LO2">
+    <p class="lead">Two backbones are scored on the same 320 test crops. A reaches 88% with an interval from 84% to 91%, B 90% with an interval from 87% to 93%. The department must choose one this week. What is the next step?</p>
+    <div class="opts">
+      <div class="opt" data-ok>Bootstrap the difference between the two per crop and read its interval</div>
+      <div class="opt" data-why="Reads a two-point gap between point estimates as settled, although each interval contains the other's score">Choose B: it is two points better</div>
+      <div class="opt" data-why="Takes overlapping intervals as proof of equality: two separate intervals are a cautious test and can overlap when one model is reliably better">Declare a tie and choose the smaller model</div>
+      <div class="opt" data-why="Changes the models to rescue the test: longer training alters both candidates and answers a different question">Train both for longer until the intervals separate</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> Both models saw the same crops, so the per-crop difference can be resampled directly. Its interval is narrower than the two separate ones and answers the question that was asked.</div>
+  </div>
+  <aside class="notes"><p>Answer: A. This is the stretch item of the lab. If the paired interval still includes zero, the honest report is that the test cannot rank them, and the choice falls to cost, licence and latency, which are the subjects of session 4 and Day 4.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-2-1" data-auto="lab" data-lab="2.1">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI policy: an assistant may explain code and errors; it does not write the training or the comparison. The lab downloads the two sets of pretrained weights, about 45 MB and 25 MB, on first use. Expected in quick mode: 11.2 and 5.5 million weights; test accuracy 0.727 and 0.507 after one pass; the table as on the slide, with "NO" for all crops and for day only. Accuracies move by a few points between machines; the pattern of overlaps is what to compare. On a Colab GPU the full mode runs three passes over 3,000 crops in a few minutes. Common slips: forgetting img_size=128 for the transformer; drawing the resample without replacement, which returns the same mean every time.</p></aside>
 </section>
 
-<!-- Session 2 -->
-
+<!-- ======================= SESSION 2 ======================= -->
 <section class="slide section" id="s2" data-auto="section" data-session="2"></section>
 
-<section class="slide" id="s2-idea" data-lo="LO2">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
+<section class="slide" id="three-depths" data-lo="LO2">
+  <div class="kicker">How much to train</div>
+  <h2>Fine-tuning has three depths</h2>
+  <div class="cols cols-3">
+    <div class="card c-teal"><h4>Linear probe</h4><p class="small mb0">The backbone is frozen. Only the new last layer is trained: 2,565 weights on a ResNet-18.</p></div>
+    <div class="card c-cyan"><h4>Partial fine-tuning</h4><p class="small mb0">The last block and the head are trained. The early layers, which hold edges and textures, stay as they are.</p></div>
+    <div class="card c-coral"><h4>Full fine-tuning</h4><p class="small mb0">Every weight moves: 11.2 million on a ResNet-18.</p></div>
   </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+  <div class="callout note mt"><b>The deeper you train, the more labels and care it takes.</b> Millions of weights and a few hundred labels can overfit, or forget what pretraining taught.</div>
+  <aside class="notes"><p>The probe's 2,565 weights are 512 features times five classes plus five biases. Between the three depths lie more options: a lower learning rate for the backbone than for the head, unfreezing layer by layer, and small adapter modules inside a frozen backbone. The same question governs all of them: how many weights can my labels support? The stretch item of the lab trains the last block only and places it in the table.</p></aside>
 </section>
 
-<section class="slide" id="s2-steps" data-lo="LO2">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="features-once" data-lo="LO2">
+  <div class="kicker">The probe</div>
+  <h2>A probe runs the backbone once and trains on what comes out</h2>
+  <div class="cols cols-2">
+    <pre class="code s" data-file="lab 2.2"><code class="language-python">def frozen_features(name, X):
+    model = U.backbone(name)
+    if name == "resnet18":
+        model[1].fc = nn.Identity()
+    else:
+        model[1].head = nn.Identity()
+    return U.predict(model, X, size=128)
+
+def linear_probe(F_train, y_train, F_test):
+    mu, sd = F_train.mean(0), F_train.std(0) + 1e-6
+    clf = LogisticRegression(max_iter=2000)
+    clf.fit((F_train - mu) / sd, y_train)
+    return clf.predict((F_test - mu) / sd)</code></pre>
+    <ul class="bullets">
+      <li>A frozen backbone gives the same output for a crop every time: <b>compute it once</b></li>
+      <li>The classifier is a logistic regression on 512 or 192 numbers per crop</li>
+      <li>Under half a minute on a laptop for 717 crops</li>
+      <li>It measures how much of the task the pretrained features <b>already</b> solve</li>
+    </ul>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <aside class="notes"><p>The probe is the cheapest experiment in transfer learning and should be the first one run on any new task. Standardising the features with the training mean and standard deviation matters for the regression to converge. The stored features can be reused for every later experiment on a frozen backbone: other classifiers, other label budgets, a search for mislabelled crops.</p></aside>
+</section>
+
+<section class="slide" id="probe-against-fine-tuning" data-lo="LO2">
+  <div class="kicker">From the lab</div>
+  <h2>Training every weight bought 8 to 16 points; ten times the labels bought 1 to 3</h2>
+  <table class="t small">
+    <tr><th>Backbone</th><th>Method</th><th class="num">Labels</th><th class="num">All</th><th class="num">Day</th><th class="num">Glare</th><th class="num">Dust</th><th class="num">Rain</th><th class="num">Night</th><th class="num">Minutes</th></tr>
+    <tr><td>ResNet-18</td><td>Linear probe</td><td class="num">717</td><td class="num">0.81</td><td class="num">0.87</td><td class="num">0.80</td><td class="num">0.76</td><td class="num">0.66</td><td class="num">0.75</td><td class="num">0.4</td></tr>
+    <tr><td>ResNet-18</td><td>Full fine-tuning</td><td class="num">717</td><td class="num">0.90</td><td class="num">0.94</td><td class="num">0.82</td><td class="num">0.86</td><td class="num">0.87</td><td class="num">0.81</td><td class="num">6.6</td></tr>
+    <tr><td>ResNet-18</td><td>Full fine-tuning</td><td class="num">7,171</td><td class="num">0.92</td><td class="num">0.95</td><td class="num">0.89</td><td class="num">0.91</td><td class="num">0.90</td><td class="num">0.89</td><td class="num">15.0</td></tr>
+    <tr><td>ViT-Tiny</td><td>Linear probe</td><td class="num">717</td><td class="num">0.76</td><td class="num">0.81</td><td class="num">0.75</td><td class="num">0.77</td><td class="num">0.69</td><td class="num">0.44</td><td class="num">0.4</td></tr>
+    <tr><td>ViT-Tiny</td><td>Full fine-tuning</td><td class="num">717</td><td class="num">0.92</td><td class="num">0.94</td><td class="num">0.91</td><td class="num">0.90</td><td class="num">0.88</td><td class="num">0.88</td><td class="num">4.1</td></tr>
+    <tr class="hl"><td>ViT-Tiny</td><td>Full fine-tuning</td><td class="num">7,171</td><td class="num">0.94</td><td class="num">0.96</td><td class="num">0.93</td><td class="num">0.89</td><td class="num">0.90</td><td class="num">0.89</td><td class="num">10.0</td></tr>
+  </table>
+  <p class="small muted mt-s">Lab 2.2, full mode: accuracy on 1,575 test crops (895 day, 219 glare, 174 dust, 183 rain, 104 night). Minutes on a laptop processor.</p>
+  <aside class="notes"><p>The four fine-tuning rows are the supplied runs, made by the course author on a laptop processor: eight passes on 10% of the labels, two passes on all of them. The probes were run in the lab's full mode on the same 717 crops. Three readings. The probe already solves most of the task in daylight and collapses where pretraining never looked: the transformer's probe scores 0.44 at night. Full fine-tuning on the same 717 labels adds 8 points for the ResNet and 16 for the transformer. Ten times the labels add 3 points and 1 point. And the transformer, behind after one short pass in lab 2.1, is level or ahead once it is given a full schedule. In quick mode participants see a wider gap, because their probe is trained on about 140 crops; the lab says so.</p></aside>
+</section>
+
+<section class="slide" id="label-or-train" data-lo="LO2">
+  <div class="kicker">Deciding</div>
+  <h2>The table answers the budget question: label more, or train more?</h2>
+  <div class="cols cols-2 mid">
+    <div class="bars">
+      <div class="row"><span>Train every weight</span><div class="bar c-teal" style="--w:82%"></div><span class="val">+0.163</span></div>
+      <div class="row"><span>Ten times the labels</span><div class="bar c-coral" style="--w:7%"></div><span class="val">+0.014</span></div>
+    </div>
+    <ul class="bullets">
+      <li>On ViT-Tiny, from the probe on 717 labels: <b>train</b>. The compute is minutes; labels cost inspectors' time</li>
+      <li>Then spend labels where the table is weak: glare, dust, rain, night</li>
+      <li>A larger random sample mostly adds daylight</li>
+    </ul>
+  </div>
+  <div class="callout warn mt"><b>The answer belongs to this data.</b> On another task ten times the labels may be worth twenty points. The method transfers; the conclusion does not.</div>
+  <aside class="notes"><p>The lab's rule of thumb compares two gains on the best backbone: from the probe to full fine-tuning at 10% of the labels, and from 10% to 100% under full fine-tuning. Here 0.163 against 0.014. The synthetic defect classes are easier than real road damage, which is one reason so few labels go so far; say it. What the table cannot tell is the cost of a label: Sultan Al-Yami's inspectors label crops between their inspections, and every hour of labelling is an hour off the road.</p></aside>
+</section>
+
+<section class="slide" id="when-the-probe-wins" data-lo="LO2">
+  <div class="kicker">Choosing a depth</div>
+  <h2>Start shallow, and go deeper only when the table says so</h2>
+  <table class="t">
+    <tr><th>You have</th><th>Start with</th><th>Because</th></tr>
+    <tr><td>Tens of labels per class</td><td>A linear probe</td><td>A few thousand weights cannot overfit much, and it runs in seconds</td></tr>
+    <tr><td>Hundreds per class, a task close to photographs</td><td>The last block and the head</td><td>Early features already fit; fewer weights to move</td></tr>
+    <tr><td>Hundreds per class, pictures unlike the pretraining data</td><td>Full fine-tuning at a low rate</td><td>The features themselves must change: night, dust, a view from above</td></tr>
+  </table>
+  <div class="callout tip mt"><b>A probe that beats full fine-tuning is a warning about the fine-tuning,</b> not a miracle: too few labels, too high a rate, or too many passes.</div>
+  <aside class="notes"><p>Road crops seen from straight above, in dust or at night, are unlike ImageNet's photographs, which is why full fine-tuning pays here even on 717 labels. Practical care when every weight moves: a learning rate ten or more times lower than for training from scratch, a warm-up, and watching the validation slices for the pass at which they stop improving. U.fit in roadkit is the plain loop participants know, with AdamW and a one-cycle schedule.</p></aside>
+</section>
+
+<section class="slide" id="checkpoint-2" data-lo="LO2">
+  <div class="kicker">Checkpoint</div>
+  <h2>What does this result tell you?</h2>
+  <div class="quiz" data-type="single" data-lo="LO2">
+    <p class="lead">On 150 labelled crops a linear probe scores 79%. Full fine-tuning of the same backbone on the same crops, for 30 passes at a from-scratch learning rate, scores 71%. What is the likely explanation?</p>
+    <div class="opts">
+      <div class="opt" data-why="Blames the backbone for a result the frozen backbone contradicts: its features already support 79%">The backbone is unsuited to road images</div>
+      <div class="opt" data-why="Assumes more trained weights can only help: with 150 labels, millions of free weights are a risk, not a gain">The fine-tuning code has a bug: it can never score below a probe</div>
+      <div class="opt" data-why="Asks for labels before fixing a schedule that is wasting the labels already there">There are too few labels: 2,000 more crops must come first</div>
+      <div class="opt" data-ok>The fine-tuning damaged the pretrained features: too high a rate, too many passes</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> The probe shows what the pretrained features can do. A fine-tuning that ends below it has damaged them; the rate and the passes are the first suspects.</div>
+  </div>
+  <aside class="notes"><p>Answer: D. The fix to try first costs nothing: a rate ten times lower, fewer passes, or the last block only. If the room picks "more labels", agree that they would help, and ask which is cheaper to try this afternoon.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-2-2" data-auto="lab" data-lab="2.2">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI policy: an assistant may explain code and errors. The four full fine-tuning runs are supplied as files, so the lab trains only the two probes and needs no result of lab 2.1. Expected in quick mode: 139 labelled crops and 304 test crops; probe accuracy 0.757 for the ResNet and 0.674 for the transformer; the four supplied rows at 0.938, 0.938, 0.941 and 0.944 on those 304 crops; decision "train". In full mode, on Colab: the table on the slide. Tell quick-mode participants about the unequal label counts before they read the gap. Common slip: standardising the test features with their own mean and not the training mean.</p></aside>
 </section>
 
-<!-- Session 3 -->
-
+<!-- ======================= SESSION 3 ======================= -->
 <section class="slide section" id="s3" data-auto="section" data-session="3"></section>
 
-<section class="slide" id="s3-idea" data-lo="LO2">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
+<section class="slide" id="images-and-text-in-one-space" data-lo="LO2">
+  <div class="kicker">Open-vocabulary models</div>
+  <h2>An image-text model puts pictures and sentences in one space</h2>
   <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
+    <div class="card c-navy"><h4>How it was trained</h4><p class="small mb0">On hundreds of millions of pictures with their captions: an image tower and a text tower learn to give a picture and its own caption nearby vectors.</p></div>
+    <div class="card c-teal"><h4>What that allows</h4><p class="small mb0">Describe a class in words, and the model can score any picture against the description. No task labels, no training.</p></div>
   </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+  <div class="callout note mt"><b>Open vocabulary:</b> the classes are not fixed when the model is trained. You name them when you use it.</div>
+  <aside class="notes"><p>The model in the lab is CLIP with a ViT-B/32 image tower, loaded through OpenCLIP: about 350 MB, and it runs on a laptop processor because nothing is trained. Radford et al. report 400 million image-text pairs for its training. This session uses such a model for one purpose: a baseline. Vision-language models as systems (questions about images, grounding, multimodal applications) are the subject of AE-408. Sources: Radford et al., 2021; the OpenCLIP repository.</p></aside>
 </section>
 
-<section class="slide" id="s3-steps" data-lo="LO2">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="prompts-are-the-classifier" data-lo="LO2">
+  <div class="kicker">Zero-shot classification</div>
+  <h2>The classifier is a list of sentences</h2>
+  <div class="cols cols-2">
+    <pre class="code s" data-file="lab 2.3"><code class="language-python">@torch.no_grad()
+def zero_shot(prompts, image_emb):
+    t = clip.encode_text(
+        tokenizer(prompts).to(U.DEV)).float()
+    t = (t / t.norm(dim=-1, keepdim=True)).cpu()
+    return (image_emb @ t.T).argmax(dim=1).numpy()</code></pre>
+    <ol class="bullets">
+      <li>Write one sentence per class</li>
+      <li>Embed the sentences and the crops, scale each vector to unit length</li>
+      <li>Similarity is a matrix product</li>
+      <li>Each crop gets the class of its most similar sentence</li>
+    </ol>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <aside class="notes"><p>Six lines, and no label was used. The image embeddings are computed once, like the probe's features, so trying another set of prompts costs a fraction of a second. That makes prompt wording an experiment anyone can run, and also a way to tune on the test set without noticing: choose prompts on validation crops, report on test crops.</p></aside>
+</section>
+
+<section class="slide" id="the-zero-shot-floor" data-lo="LO2">
+  <div class="kicker">From the lab</div>
+  <h2>With no labels at all: 51%. With careless prompts: worse than a constant answer</h2>
+  <div class="bars">
+    <div class="row"><span>Bare class names</span><div class="bar c-coral" style="--w:28%"></div><span class="val">28%</span></div>
+    <div class="row"><span>Always the most common class</span><div class="bar c-navy" style="--w:32%"></div><span class="val">32%</span></div>
+    <div class="row"><span>Described prompts</span><div class="bar c-amber" style="--w:51%"></div><span class="val">51%</span></div>
+    <div class="row"><span>Full fine-tuning, 717 labels</span><div class="bar c-teal" style="--w:94%"></div><span class="val">94%</span></div>
+  </div>
+  <p class="small muted mt-s">Lab 2.3, quick mode: 300 test crops, five classes. Last row: the supplied ViT-Tiny run on the same crops.</p>
+  <aside class="notes"><p>The floor to beat is the best answer available without labels: here 0.51, the described prompts. The fine-tuned run stands 43 points above it, and that distance, not the distance above 20% chance, is what the department's 717 labels bought. Had the floor been 0.90, the labelling budget would have been hard to defend. Report the model and the prompts with the number: a zero-shot score belongs to both.</p></aside>
+</section>
+
+<section class="slide" id="wording-is-a-setting" data-lo="LO2">
+  <div class="kicker">Prompts</div>
+  <h2>The wording moved the score by 23 points without one new label</h2>
+  <div class="cols cols-2">
+    <table class="t small">
+      <tr><th>Class</th><th class="num">True</th><th class="num">Bare names</th><th class="num">Described</th></tr>
+      <tr><td>Clear</td><td class="num">97</td><td class="num">14</td><td class="num">67</td></tr>
+      <tr><td>Pothole</td><td class="num">57</td><td class="num">33</td><td class="num">38</td></tr>
+      <tr><td>Longitudinal crack</td><td class="num">69</td><td class="num">6</td><td class="num">58</td></tr>
+      <tr class="hl"><td>Transverse crack</td><td class="num">47</td><td class="num">225</td><td class="num">66</td></tr>
+      <tr><td>Patch</td><td class="num">30</td><td class="num">22</td><td class="num">71</td></tr>
+    </table>
+    <div>
+      <p class="small"><b>Bare:</b> "clear", "pothole", "longitudinal crack", "transverse crack", "patch".</p>
+      <p class="small"><b>Described:</b> "a top-down photo of an asphalt road surface with a long vertical crack", and four more of the kind.</p>
+      <div class="callout warn"><b>Three crops in four went to one sentence.</b> The bare word "clear" or "patch" fits thousands of unrelated web pictures.</div>
+    </div>
+  </div>
+  <aside class="notes"><p>The table counts predictions per class, 300 crops in each column. With bare names the model pours 225 crops into "transverse crack"; with a viewpoint, a surface and a description of the defect, predictions spread roughly as the truth does. The described prompts give the model what its training captions had: context. Even so the lowest recall is on "clear", the class with nothing in it to describe. Ask the room to improve one prompt; the lab lets them try in seconds.</p></aside>
+</section>
+
+<section class="slide" id="what-a-floor-is-for" data-lo="LO2">
+  <div class="kicker">Using the floor</div>
+  <h2>A floor tells you what your labels were worth</h2>
+  <div class="cols cols-3">
+    <div class="card c-teal"><h4>Far above the floor</h4><p class="small mb0">Rasid: 94% against 51%. The labels and the training earned their cost.</p></div>
+    <div class="card c-amber"><h4>Just above it</h4><p class="small mb0">A few points for thousands of labels: ask whether the simple baseline, with no training to maintain, is the better system.</p></div>
+    <div class="card c-coral"><h4>Below a constant answer</h4><p class="small mb0">The zero-shot model is no classifier for this task. Say so and move on.</p></div>
+  </div>
+  <div class="callout tip mt"><b>The same model can still help with the data:</b> searching frames by a sentence, proposing labels for a person to confirm, a few-shot classifier from five labelled crops per class.</div>
+  <aside class="notes"><p>The stretch item builds the few-shot variant: average the image embeddings of five training crops per class and classify by the nearest average, 25 labels and no training. Dataset inspection tools such as FiftyOne use the same embeddings for search by text. Proposed labels are proposals: yesterday's agreement check applies to a model's labels as it does to a person's. The cheap-baseline habit returns on Day 3 with a thresholding baseline for the crack segmenter.</p></aside>
+</section>
+
+<section class="slide" id="checkpoint-3" data-lo="LO2">
+  <div class="kicker">Checkpoint</div>
+  <h2>What is the floor?</h2>
+  <div class="quiz" data-type="single" data-lo="LO2">
+    <p class="lead">An image-text model scores 28% on five defect classes with the class names as prompts. Always answering the most common class scores 32%. A colleague reports: "the floor is 28%". What do you correct?</p>
+    <div class="opts">
+      <div class="opt" data-why="Compares with a coin although a constant answer already beats it: chance is the weakest baseline, not the floor">Nothing: 28% is above the 20% of chance</div>
+      <div class="opt" data-ok>The floor is the best answer without labels: 32% so far, and better prompts come first</div>
+      <div class="opt" data-why="Discards the baseline because it disappointed, and with it the yardstick for what the labels are worth">The floor is dropped from the report: the model is unsuited</div>
+      <div class="opt" data-why="Spends training effort on the baseline: once it is fine-tuned on task labels it is no longer a floor">The model is fine-tuned on the defect crops, and that score is the floor</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> A floor is the best result for no labels and no training. One careless prompt set does not establish it, and a constant answer already beats 28%.</div>
+  </div>
+  <aside class="notes"><p>Answer: B. In the lab the described prompts take the same model from 28% to 51%. The general rule: give a baseline a fair try before you report it as beaten.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-2-3" data-auto="lab" data-lab="2.3">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI policy: an assistant may explain code and errors. The lab downloads the image-text model, about 350 MB, on first use: start the first cell early on a slow connection. It needs no result of labs 2.1 or 2.2; the fine-tuned runs it compares with are the supplied files. Expected in quick mode with the solution's prompts: 0.280 for bare names, 0.323 for the most common class, 0.510 for described prompts; the supplied runs between 0.937 and 0.943 on the same 300 crops; lowest recall on "clear". Participants' own prompts will land anywhere between 0.3 and 0.6, which is the lesson. Common slip: forgetting to scale the text embeddings to unit length.</p></aside>
 </section>
 
-<!-- Session 4 -->
-
+<!-- ======================= SESSION 4 ======================= -->
 <section class="slide section" id="s4" data-auto="section" data-session="4"></section>
 
-<section class="slide" id="s4-idea" data-lo="LO2">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
+<section class="slide" id="three-things-carry-terms" data-lo="LO2 LO6">
+  <div class="kicker">Licences</div>
+  <h2>"Open" is not one thing: code, weights and data each carry terms</h2>
+  <div class="cols cols-3">
+    <div class="card c-teal"><h4>The code</h4><p class="small mb0">What builds the network. Usually under a permissive software licence.</p></div>
+    <div class="card c-cyan"><h4>The weights</h4><p class="small mb0">What runs on the roadside unit. Licensed separately by whoever trained them, and often differently.</p></div>
+    <div class="card c-coral"><h4>The training data</h4><p class="small mb0">Its terms of access may reach the weights trained on it. The record names it for the legal officer.</p></div>
   </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+  <div class="callout warn mt"><b>The library's licence says nothing about a model's weights.</b> One library ships hundreds of sets of weights under a dozen different terms.</div>
+  <aside class="notes"><p>The usual mistake is to read the licence file of the code repository and stop. What a municipality deploys is the weights. torchvision's documentation reminds users that its pretrained models may carry terms derived from the data they were trained on. Engineers do not settle legal questions; they make sure the questions are asked before the training budget is spent, with the facts collected. That is the lab. Sources: the torchvision documentation on models and pretrained weights.</p></aside>
 </section>
 
-<section class="slide" id="s4-steps" data-lo="LO2">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="licence-kinds" data-lo="LO2 LO6">
+  <div class="kicker">Reading an identifier</div>
+  <h2>Four kinds of terms, four different answers for the department</h2>
+  <table class="t">
+    <tr><th>Kind</th><th>Examples</th><th>For Al-Manar's roadside units</th></tr>
+    <tr><td><b>Permissive</b></td><td>Apache-2.0, MIT, BSD</td><td>May be deployed; keep the notices</td></tr>
+    <tr><td><b>Non-commercial</b></td><td>CC-BY-NC-4.0</td><td>Not on the units; experiments that never leave the lab</td></tr>
+    <tr><td><b>Custom</b></td><td>A publisher's own agreement</td><td>Wait for legal review: someone reads and accepts the text</td></tr>
+    <tr><td><b>Network copyleft</b></td><td>AGPL-3.0</td><td>Needs a commercial licence, or the service's source is published</td></tr>
+  </table>
+  <aside class="notes"><p>The right-hand column is the department's rule in the case study, written by Wejdan Al-Rashidi and the legal officer. Its first line: the units are run by a contractor under a paid contract, which the rule treats as commercial use. Another organisation would write another rule; the point is that there is one, written down, before a backbone is chosen. The identifiers are shorthand. The terms are the licence text, and for a custom agreement there is no shorthand at all.</p></aside>
+</section>
+
+<section class="slide" id="read-the-metadata" data-lo="LO2 LO6">
+  <div class="kicker">From the lab</div>
+  <h2>Three backbones, three different answers</h2>
+  <table class="t small">
+    <tr><th>Backbone (name in timm)</th><th>Weights</th><th>Training data</th><th>Decision</th></tr>
+    <tr><td><code>vit_tiny_patch16_224.augreg_in21k_ft_in1k</code></td><td>apache-2.0</td><td>ImageNet-21k, ImageNet-1k</td><td><b>Deploy</b></td></tr>
+    <tr><td><code>convnextv2_tiny.fcmae_ft_in22k_in1k</code></td><td>cc-by-nc-4.0</td><td>ImageNet, ImageNet-22k, ImageNet-1k</td><td><b>Do not deploy</b></td></tr>
+    <tr><td><code>vit_small_patch16_dinov3.lvd1689m</code></td><td>dinov3-license</td><td>LVD-1689M, web images collected by the publisher</td><td><b>Hold for legal review</b></td></tr>
+  </table>
+  <div class="cols cols-2 mt-s">
+    <pre class="code s" data-file="lab 2.4"><code class="language-python">cfg = timm.get_pretrained_cfg(name)
+cfg.license, cfg.hf_hub_id</code></pre>
+    <div class="callout note"><b>The tag after the dot says where the weights come from.</b> No weights are downloaded: the library ships a small record with each set.</div>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <aside class="notes"><p>Read from timm 1.0.31 on the day the lab was run. The three were chosen to give three answers, not because of their quality: the second and third are strong backbones, and that is the point. The best model in a comparison table may be one the department cannot ship. The identifier is where reading starts: open the model page of each on the hub and find the licence text itself before relying on a field in a record.</p></aside>
+</section>
+
+<section class="slide" id="deployment-record" data-lo="LO2 LO6">
+  <div class="kicker">The record</div>
+  <h2>A decision nobody can find is made again, differently</h2>
+  <div class="cols cols-2">
+    <pre class="code s" data-file="deployment_record.json (one entry)"><code class="language-json">{
+  "name": "vit_tiny_patch16_224.augreg_in21k_ft_in1k",
+  "weights_licence": "apache-2.0",
+  "licence_kind": "permissive",
+  "training_data": ["ImageNet-21k", "ImageNet-1k"],
+  "decision": "deploy",
+  "checked_on": "2026-11-14",
+  "checked_with": "timm 1.0.31"
+}</code></pre>
+    <ul class="bullets">
+      <li>One entry per backbone <b>considered</b>, including those refused</li>
+      <li>The date and the tool version: a publisher can change terms between versions, and a record can be corrected</li>
+      <li>It lives in the repository, beside the model card</li>
+    </ul>
+  </div>
+  <aside class="notes"><p>The record states what was true on one day according to one source. It is the evidence that the question was asked. Add the backbone of Days 3 and 4 to it: a ResNet-18 trunk with torchvision's ImageNet weights. In the capstone the record is part of the repository, and an assessor may ask where the starting weights came from.</p></aside>
+</section>
+
+<section class="slide" id="terms-travel" data-lo="LO2 LO6">
+  <div class="kicker">Two traps</div>
+  <h2>Terms travel with the weights, and libraries have licences too</h2>
+  <div class="cols cols-2">
+    <div class="card c-coral"><h4>Fine-tuning does not wash a licence</h4><p class="small mb0">Weights fine-tuned from non-commercial weights are derived from them. Do not assume they are yours to deploy: choose the starting weights before any training.</p></div>
+    <div class="card c-amber"><h4>The detection library</h4><p class="small mb0">Ultralytics publishes its models and code under AGPL-3.0, with an enterprise licence as the alternative. Under the department's rule: a commercial licence, or another library.</p></div>
+  </div>
+  <div class="callout tip mt"><b>Run the licence check before the first experiment,</b> not after the best model has been found.</div>
+  <aside class="notes"><p>The second card is the stretch item: run a record for the detection library through the same rule. Tool names in this course are examples of a capability, not endorsements; a detection library with network copyleft terms is a normal thing to meet, and both ways forward are legitimate. Other things that carry terms and get forgotten: the labelling tool's export, a public dataset used for pretraining, an image-text model used to propose labels. Sources: the Ultralytics licensing page.</p></aside>
+</section>
+
+<section class="slide" id="checkpoint-4" data-lo="LO2">
+  <div class="kicker">Checkpoint</div>
+  <h2>What goes into the record?</h2>
+  <div class="quiz" data-type="single" data-lo="LO2">
+    <p class="lead">A backbone's record gives the weights licence as "mit". Its model page says the training dataset was released "for research purposes only". The rule lets permissive weights be deployed. What do you write?</p>
+    <div class="opts">
+      <div class="opt" data-why="Stops at the weights licence: the rule also asks for the training data to be named so that its terms can be read">Deploy; the licence is permissive, and nothing else is recorded</div>
+      <div class="opt" data-why="Decides a legal question alone and in the strictest way: whether data terms reach the weights is for the legal officer">Do not deploy; a dataset's terms always override the weights licence</div>
+      <div class="opt" data-ok>The rule's decision, the dataset with its stated terms, and a flag for the legal officer</div>
+      <div class="opt" data-why="Removes the one fact from the record that a reviewer would need in order to disagree">Deploy; the remark is left out, since the record field is what counts</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> The rule decides on the weights licence and wants the training data named. The engineer records both; the legal officer decides whether the data's terms change anything.</div>
+  </div>
+  <aside class="notes"><p>Answer: C. The division of labour is the lesson: the engineer collects and records, the rule decides the routine cases, a person with the authority decides the rest.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-2-4" data-auto="lab" data-lab="2.4">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI policy: an assistant may explain code and errors. The lab downloads nothing and needs no earlier lab: licence records are read from the installed timm package. Expected: apache-2.0, cc-by-nc-4.0 and dinov3-license; kinds permissive, non-commercial and custom; decisions deploy, do not deploy, hold for legal review; a record of three entries with today's date. If a newer timm version reports another identifier for one of the three, that is the lesson of "checked with", not an error: let the participant record what they see. Ask each table to open one model page and find the licence text.</p></aside>
 </section>
 
-<section class="slide" id="wrap-up">
-  <div class="kicker">Day 2 · wrap-up</div>
+<!-- ======================= CLOSE ======================= -->
+<section class="slide" id="wrap-up" data-label="Day 2 recap">
+  <div class="kicker">Day 2 recap</div>
   <h2>Three things to keep</h2>
   <div class="cols cols-3">
-    <div class="card c-teal"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
-    <div class="card c-coral"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
-    <div class="card c-purple"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
+    <div class="card c-teal"><h4>A table by slice, with intervals</h4><p class="small mb0">Two backbones differed on all crops and in daylight; on 16 night crops no test could tell them apart.</p></div>
+    <div class="card c-cyan"><h4>Probe, then floor, then train</h4><p class="small mb0">The probe reached 0.81, the zero-shot floor 0.51, full fine-tuning on 717 labels 0.92. Ten times the labels added a point or two.</p></div>
+    <div class="card c-coral"><h4>Check the licence first</h4><p class="small mb0">Of three backbones one may ship. Weights, code and data carry separate terms, and the record says what was checked and when.</p></div>
   </div>
+  <aside class="notes"><p>Ask each table what they would do first on a new vision task tomorrow morning. The order on the middle card is the answer worth hearing: cheapest experiment first. The pieces for the capstone: the comparison table by slice with intervals belongs to model quality, the deployment record to reproducibility.</p></aside>
 </section>
 
-<section class="slide dark" id="next" data-label="Next">
-  <div class="kicker">Next</div>
-  <h2>Day 3: Detect, segment and track</h2>
-  <p class="lead">REPLACE: what participants prepare before then; unfinished labs can be finished at home</p>
-  <aside class="notes">REPLACE: accounts, installs or reading participants need before the next unit</aside>
+<section class="slide dark" id="next" data-label="Tomorrow">
+  <div class="kicker">Tomorrow</div>
+  <h1>Day 3 · Detect, segment and track</h1>
+  <p class="lead">A pothole detector and what its number means, its errors by type, a crack segmenter against a four-line baseline, and vehicles counted across a line.</p>
+  <ul class="bullets">
+    <li>On Colab, keep the GPU runtime for labs 3.1 and 3.3</li>
+    <li>Lab 3.2 is an AI-off lab: you sort fifty detector errors yourself</li>
+  </ul>
+  <aside class="notes"><p>Day 3 starts from supplied checkpoints of a detector and a segmenter, both on the ResNet-18 trunk that today's record should now list. Nobody needs a finished Day 2 lab.</p></aside>
 </section>

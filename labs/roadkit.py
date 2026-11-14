@@ -331,6 +331,16 @@ def ap_from(scores, is_tp, n_gt):
     return float(np.sum((rec[1:] - rec[:-1]) * prec[1:]))
 
 
+def precision_recall(preds, gts, iou_thr=0.5):
+    """Precision and recall of the detections as they stand (no sweep over scores), over all
+    classes: returns (precision, recall, true positives, false positives, missed)."""
+    tp = fp = n = 0
+    for c in range(len(DET_CLASSES)):
+        _, hit, n_gt = tp_fp(preds, gts, c, iou_thr)
+        tp, fp, n = tp + int(hit.sum()), fp + int((~hit).sum()), n + n_gt
+    return tp / max(tp + fp, 1), tp / max(n, 1), tp, fp, n - tp
+
+
 def mean_ap(preds, gts, iou_thr=0.5):
     """Mean over the detector's classes of the average precision at one IoU threshold."""
     return float(np.mean([ap_from(*tp_fp(preds, gts, c, iou_thr)) for c in range(len(DET_CLASSES))]))
@@ -535,7 +545,7 @@ def fit(model, images, y, epochs=1, lr=1e-3, bs=32, size=None, params=None, augm
             loss.backward()
             opt.step()
             sched.step()
-            total += float(loss) * len(idx)
+            total += float(loss.detach()) * len(idx)
         log(f"  epoch {ep + 1}/{epochs}  loss {total / len(order):.3f}")
     return model.eval()
 
@@ -583,7 +593,7 @@ def det_loss(cls, box, cls_t, box_t):
     l_cls = sigmoid_focal_loss(cls, cls_t, alpha=0.25, gamma=2.0, reduction="sum") / n
     pb, tb = _cells_to_boxes(box)[pos], _cells_to_boxes(box_t)[pos]
     l_box = generalized_box_iou_loss(pb, tb, reduction="sum") / n
-    return l_cls + l_box, float(l_cls), float(l_box)
+    return l_cls + l_box, float(l_cls.detach()), float(l_box.detach())
 
 
 def decode(cls, box, score_thr=0.05, nms_iou=0.5, topk=100, stride=8):
@@ -652,7 +662,7 @@ def fit_detector(model, images, gts, epochs=1, lr=1e-3, bs=16, seed=0, flip=True
             loss.backward()
             opt.step()
             sched.step()
-            tot += np.array([float(loss), lc, lb]) * len(idx)
+            tot += np.array([float(loss.detach()), lc, lb]) * len(idx)
         tot /= len(order)
         hist.append(tot.tolist())
         log(f"  epoch {ep + 1}/{epochs}  loss {tot[0]:.3f} (class {tot[1]:.3f}, box {tot[2]:.3f})")
@@ -693,17 +703,33 @@ def fit_segmenter(model, images, masks, epochs=1, lr=1e-3, bs=8, seed=0, log=pri
             loss.backward()
             opt.step()
             sched.step()
-            tot += float(loss) * len(idx)
+            tot += float(loss.detach()) * len(idx)
         log(f"  epoch {ep + 1}/{epochs}  loss {tot / len(order):.3f}")
     return model.eval()
 
 
 # ---------------------------------------------------------------- error analysis (lab 3.2)
 
-def render_frame(address):
-    """Draw a frame again from its address: (image, ground-truth boxes for the detector)."""
-    img, _, objs, _ = P.render(*address)
+def render_frame(address, **how):
+    """Draw a frame again from its address: (image, ground-truth boxes for the detector).
+    how: the condition, severity, blur and view to draw it under (default: as it was filmed)."""
+    img, _, objs, _ = P.render(*address, **how)
     return img, det_gt(objs)
+
+
+def field_mix(split="val", n=None):
+    """Frames of a split as the roadside prototype met them: each drawn again under a
+    lighting condition chosen at random (day, glare, dust, rain, night, at high severity),
+    one in five from a pole camera. Returns (images, objects per frame, how each was drawn)."""
+    imgs, objs, hows = [], [], []
+    for f in frames(split)[: n or len(frames(split))]:
+        r = np.random.default_rng([P.SEED, 61, P.frame_number(*f["address"])])
+        cond = CONDITIONS[int(r.integers(5))]
+        how = {"condition": cond, "severity": 0.0 if cond == "day" else 0.8, "blur": 0,
+               "view": "pole" if r.random() < 0.2 else "vehicle"}
+        im, _, ob, _ = P.render(*f["address"], **how)
+        imgs.append(im), objs.append(ob), hows.append(how)
+    return np.stack(imgs), objs, hows
 
 
 def oracle_fix(preds, gts, kind):

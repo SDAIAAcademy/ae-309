@@ -126,31 +126,33 @@ def error_type(det, gts, used):
 
 
 def errors():
-    """50 errors of the supplied detector on validation frames, for lab 3.2, with no type given.
-    Non-maximum suppression is set loose (IoU 0.7), as the roadside prototype had it."""
+    """50 errors of the supplied detector for lab 3.2, with no type given: validation frames
+    drawn as the roadside prototype met them (U.field_mix), suppression set loose (IoU 0.7)."""
     m = U.load_ckpt(U.RoadDet(), "detector")
     val = U.frames("val")
-    preds = U.detect(m, U.frame_images(val), score_thr=0.3, nms_iou=0.7)
+    X, objs, hows = U.field_mix("val")
+    preds = U.detect(m, X, score_thr=0.3, nms_iou=0.7)
     pool = {k: [] for k in ("localisation", "class", "duplicate", "missed", "background")}
-    for f, p in zip(val, preds):
-        g = U.det_gt(f["objects"])
+    for f, p, ob, how in zip(val, preds, objs, hows):
+        g = U.det_gt(ob)
         used = set()
+        base = {"frame": f["id"], "address": f["address"], "drawn": how}
         for d in p[np.argsort(-p[:, 4])]:
             kind, j = error_type(d, g, used)
             if kind == "correct":
                 used.add(j)
                 continue
-            pool[kind].append({"frame": f["id"], "address": f["address"], "kind": "detection",
+            pool[kind].append({**base, "kind": "detection",
                                "box": [round(float(v), 1) for v in d[:4]], "score": round(float(d[4]), 2),
                                "cls": U.DET_CLASSES[int(d[5])], "truth": kind,
                                "others": [[round(float(v), 2) for v in q[:5]] + [U.DET_CLASSES[int(q[5])]]
                                           for q in p if not np.array_equal(q, d)]})
         for j in range(len(g)):
             if j not in used and (len(p) == 0 or U.box_iou(g[j:j + 1, :4], p[:, :4]).max() < 0.1):
-                pool["missed"].append({"frame": f["id"], "address": f["address"],
-                                       "kind": "ground truth with no detection",
+                pool["missed"].append({**base, "kind": "ground truth with no detection",
                                        "box": [round(float(v), 1) for v in g[j, :4]], "score": None,
-                                       "cls": U.DET_CLASSES[int(g[j, 4])], "truth": "missed", "others": []})
+                                       "cls": U.DET_CLASSES[int(g[j, 4])], "truth": "missed",
+                                       "others": [[round(float(v), 2) for v in q[:5]] + [U.DET_CLASSES[int(q[5])]] for q in p]})
     print({k: len(v) for k, v in pool.items()})
     r = np.random.default_rng(32)
     want = {"localisation": 14, "class": 8, "duplicate": 10, "missed": 18}

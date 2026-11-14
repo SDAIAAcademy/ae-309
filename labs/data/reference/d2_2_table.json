@@ -1,0 +1,114 @@
+{
+ "quick": {
+  "resnet18|full fine-tuning|10": {
+   "all": 0.938,
+   "day": 0.951,
+   "glare": 0.857,
+   "dust": 0.909,
+   "rain": 0.971,
+   "night": 0.938,
+   "minutes": 6.6
+  },
+  "resnet18|full fine-tuning|100": {
+   "all": 0.938,
+   "day": 0.951,
+   "glare": 0.914,
+   "dust": 0.909,
+   "rain": 0.943,
+   "night": 0.875,
+   "minutes": 15.0
+  },
+  "resnet18|linear probe|10": {
+   "all": 0.757,
+   "day": 0.795,
+   "glare": 0.629,
+   "dust": 0.848,
+   "rain": 0.657,
+   "night": 0.625,
+   "minutes": 0.1
+  },
+  "vit_tiny|full fine-tuning|10": {
+   "all": 0.941,
+   "day": 0.951,
+   "glare": 0.914,
+   "dust": 1.0,
+   "rain": 0.886,
+   "night": 0.875,
+   "minutes": 4.1
+  },
+  "vit_tiny|full fine-tuning|100": {
+   "all": 0.944,
+   "day": 0.962,
+   "glare": 0.943,
+   "dust": 0.939,
+   "rain": 0.857,
+   "night": 0.938,
+   "minutes": 10.0
+  },
+  "vit_tiny|linear probe|10": {
+   "all": 0.674,
+   "day": 0.746,
+   "glare": 0.429,
+   "dust": 0.697,
+   "rain": 0.686,
+   "night": 0.312,
+   "minutes": 0.2
+  }
+ },
+ "full": {
+  "resnet18|full fine-tuning|10": {
+   "all": 0.896,
+   "day": 0.936,
+   "glare": 0.822,
+   "dust": 0.862,
+   "rain": 0.869,
+   "night": 0.808,
+   "minutes": 6.6
+  },
+  "resnet18|full fine-tuning|100": {
+   "all": 0.924,
+   "day": 0.946,
+   "glare": 0.89,
+   "dust": 0.908,
+   "rain": 0.896,
+   "night": 0.885,
+   "minutes": 15.0
+  },
+  "resnet18|linear probe|10": {
+   "all": 0.814,
+   "day": 0.868,
+   "glare": 0.795,
+   "dust": 0.764,
+   "rain": 0.656,
+   "night": 0.75,
+   "minutes": 0.4
+  },
+  "vit_tiny|full fine-tuning|10": {
+   "all": 0.921,
+   "day": 0.94,
+   "glare": 0.913,
+   "dust": 0.902,
+   "rain": 0.88,
+   "night": 0.875,
+   "minutes": 4.1
+  },
+  "vit_tiny|full fine-tuning|100": {
+   "all": 0.935,
+   "day": 0.959,
+   "glare": 0.932,
+   "dust": 0.885,
+   "rain": 0.896,
+   "night": 0.885,
+   "minutes": 10.0
+  },
+  "vit_tiny|linear probe|10": {
+   "all": 0.758,
+   "day": 0.808,
+   "glare": 0.749,
+   "dust": 0.77,
+   "rain": 0.694,
+   "night": 0.442,
+   "minutes": 0.4
+  }
+ }
+}

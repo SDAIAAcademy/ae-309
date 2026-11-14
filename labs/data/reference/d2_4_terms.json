@@ -1,0 +1,34 @@
+{
+ "quick": [
+  {
+   "name": "vit_tiny_patch16_224.augreg_in21k_ft_in1k",
+   "weights_licence": "apache-2.0",
+   "hub_id": "timm/vit_tiny_patch16_224.augreg_in21k_ft_in1k",
+   "licence_kind": "permissive",
+   "training_data": [
+    "ImageNet-21k",
+    "ImageNet-1k"
+   ]
+  },
+  {
+   "name": "convnextv2_tiny.fcmae_ft_in22k_in1k",
+   "weights_licence": "cc-by-nc-4.0",
+   "hub_id": "timm/convnextv2_tiny.fcmae_ft_in22k_in1k",
+   "licence_kind": "non-commercial",
+   "training_data": [
+    "self-supervised pretraining on ImageNet",
+    "ImageNet-22k",
+    "ImageNet-1k"
+   ]
+  },
+  {
+   "name": "vit_small_patch16_dinov3.lvd1689m",
+   "weights_licence": "dinov3-license",
+   "hub_id": "timm/vit_small_patch16_dinov3.lvd1689m",
+   "licence_kind": "custom",
+   "training_data": [
+    "LVD-1689M (web images collected by the publisher)"
+   ]
+  }
+ ]
+}
