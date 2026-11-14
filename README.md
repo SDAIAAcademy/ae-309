@@ -61,6 +61,17 @@ Google Colab with a free GPU runtime, or a laptop with [uv](https://docs.astral.
 Each lab starts from a supplied checkpoint and the supplied split by road segment; no lab needs an earlier one. Day 2
 downloads pretrained backbones from their public hubs. No lab calls a language model. See [labs/README.md](labs/README.md).
 
+## Before Day 1 (guided pre-work)
+
+1. Run `labs/00_setup_check.ipynb`: it checks every library, draws the data pack and loads a supplied checkpoint.
+2. On a good connection, run labs 2.1 and 2.3 once as far as their first check cell, so that the pretrained weights (about 45 MB,
+   25 MB and 600 MB) are cached before Day 2.
+3. Refresh the two prerequisites the course does not re-teach: a hand-written training loop in PyTorch, and precision
+   and recall from a confusion matrix (AE-201, AE-202).
+
+The follow-up task after the course: run your capstone service on one condition you did not test during the week and add
+the row to your model card.
+
 ## How the course is assessed
 
 - Supervised entry and exit checks without AI assistance, on metrics, splits and error types: 20%
