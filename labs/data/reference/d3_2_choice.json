@@ -1,0 +1,6 @@
+{
+ "quick": {
+  "fix": "duplicate",
+  "why": "Fixing every duplicate error is worth up to +0.063 F1, the largest gain: tighten non-maximum suppression from 0.7 to 0.5, which needs no training."
+ }
+}

@@ -1,158 +1,500 @@
+<!-- ======================= OPENING ======================= -->
 <section class="slide title" id="title" data-auto="title">
-  <aside class="notes">REPLACE: welcome; introduce yourself; one question to the room that calibrates the pace; the rhythm of the day</aside>
+  <aside class="notes"><p>Day 3 moves from "what is in this crop" to "where is it, how much of it, and how many went past". Ask the room: who has computed average precision by hand? Almost nobody has, and everybody quotes it. Today they write it. The rhythm is the same as before: about 25 minutes of concepts, a checkpoint, a 25-minute lab. Lab 3.2 is an AI-off lab.</p></aside>
 </section>
 
 <section class="slide" id="agenda" data-auto="agenda"></section>
 
-<!-- Session 1 -->
-
-<section class="slide section" id="s1" data-auto="section" data-session="1"></section>
-
-<section class="slide" id="s1-idea" data-lo="LO3">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
+<section class="slide" id="review-day-2" data-label="Review" data-lo="LO2">
+  <div class="kicker">Review of Day 2</div>
+  <h2>May this model be deployed?</h2>
+  <div class="quiz" data-type="single" data-lo="LO2">
+    <p class="lead">A colleague fine-tuned weights under a non-commercial licence on the department's own crops. It is the best model in the table. A contractor will run the units under a paid contract. What happens next?</p>
+    <div class="opts">
+      <div class="opt" data-why="Assumes that training on your own data makes the result yours: fine-tuned weights are derived from the original ones and carry their terms unless the licence says otherwise">Deploy it: fine-tuning on its own data made the weights the department's</div>
+      <div class="opt" data-ok>Do not deploy it: record that, and compare again from weights the rule allows</div>
+      <div class="opt" data-why="Reads the licence of the code as the licence of the weights: the two are licensed separately, and the unit runs the weights">Deploy it: the library is under Apache-2.0</div>
+      <div class="opt" data-why="Renames the use to fit the licence: a contractor working under a paid contract is commercial use, pilot or not">Deploy it as a pilot: a pilot is not commercial use</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> What runs on the unit is the weights, and their terms forbid this use. Starting weights are chosen before any training: the deployment record comes first.</div>
   </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+  <aside class="notes"><p>Answer: B. This is lab 2.4 in one question. If the room argues that the fine-tuned weights are a new work, say that this is exactly the question for the legal officer, and that an engineer's job is to make sure it is asked before the training budget is spent.</p></aside>
 </section>
 
-<section class="slide" id="s1-steps" data-lo="LO3">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<!-- ======================= SESSION 1 ======================= -->
+<section class="slide section" id="s1" data-auto="section" data-session="1"></section>
+
+<section class="slide" id="what-a-detector-returns" data-lo="LO3">
+  <div class="kicker">Detection</div>
+  <h2>A detector answers three questions for every object at once</h2>
+  <div class="cols cols-3">
+    <div class="card c-teal"><h4>Where</h4><p class="small mb0">A box: two corners in pixels of the frame.</p></div>
+    <div class="card c-cyan"><h4>What</h4><p class="small mb0">A class: for Rasid, pothole or patch.</p></div>
+    <div class="card c-coral"><h4>How sure</h4><p class="small mb0">A score from 0 to 1. Everything downstream depends on where you cut it.</p></div>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <div class="callout note mt"><b>Why patch is a class.</b> A repaired pothole is the thing a pothole detector most often takes for a pothole. Teaching the detector to name it is cheaper than filtering it afterwards.</div>
+  <aside class="notes"><p>The maintenance team wants a list: this pothole, on this segment, here in the frame. A classifier on crops (Days 1 and 2) can only say that a crop holds one. Rasid's detector has two classes. Cracks are thin and long, a box around one is mostly road, so they go to the segmenter in session 3. Manhole covers were never labelled in Al-Manar's pack: keep that in mind for the error analysis.</p></aside>
+</section>
+
+<section class="slide" id="score-maps-to-boxes" data-lo="LO3">
+  <div class="kicker">How it works</div>
+  <h2>Every cell of a grid votes for a class and draws a box</h2>
+  <div class="flow">
+    <div class="step c-navy"><b>1 · Trunk</b>ResNet-18 turns a 192-pixel frame into a 24 by 24 grid of features</div>
+    <div class="arrow">→</div>
+    <div class="step c-teal"><b>2 · Score map</b>per cell and class: is the centre of an object here?</div>
+    <div class="arrow">→</div>
+    <div class="step c-cyan"><b>3 · Box map</b>per cell: distances to the left, top, right and bottom edge</div>
+    <div class="arrow">→</div>
+    <div class="step c-coral"><b>4 · Decode</b>keep cells above a score, turn distances into corners</div>
+  </div>
+  <div class="callout warn mt"><b>Neighbouring cells see the same pothole.</b> Each draws its own box for it. The raw output holds several boxes per object.</div>
+  <aside class="notes"><p>This is the anchor-free design, in the family of FCOS and CenterNet: no preset box shapes, each cell predicts four distances. The course's detector, RoadDet in roadkit, is about 60 lines: the shared trunk, two small heads, a focal loss on the score map (most cells are background, the focal loss keeps them from drowning the few positives) and a box-overlap loss on the cells that sit on an object. Library detectors (torchvision's, Ultralytics) differ in size and tricks, not in this outline. Sources: Tian et al., 2019 (FCOS); Lin et al., 2017 (focal loss).</p></aside>
+</section>
+
+<section class="slide" id="iou-is-the-ruler" data-lo="LO3">
+  <div class="kicker">Overlap</div>
+  <h2>Intersection over union is the ruler for "the same box"</h2>
+  <div class="cols cols-2 mid">
+    <div class="card c-navy tint"><h4>IoU of two boxes</h4>
+      <p class="mb0">IoU = area of overlap / area covered by either</p>
+      <p class="small mb0 mt-s">Identical boxes: 1. Boxes that do not touch: 0.</p>
+    </div>
+    <table class="t small">
+      <tr><th>A 40 by 40 box against the truth</th><th class="num">IoU</th></tr>
+      <tr><td>Shifted by 3 pixels each way</td><td class="num">0.75</td></tr>
+      <tr><td>Shifted by 5 pixels each way</td><td class="num">0.62</td></tr>
+      <tr><td>Shifted by 8 pixels each way</td><td class="num">0.47</td></tr>
+      <tr><td>Same centre, 6 pixels of margin all round</td><td class="num">0.59</td></tr>
+    </table>
+  </div>
+  <div class="callout note mt"><b>Two common thresholds.</b> At 0.5 a box counts when it is roughly on the object. At 0.75 it has to fit.</div>
+  <aside class="notes"><p>Work one row aloud: shifted by 5, the overlap is 35 by 35 = 1,225, the union 1,600 + 1,600 minus 1,225 = 1,975, IoU 0.62. The last row is the annotator who leaves a margin: a box of 52 by 52 around a 40 by 40 object has IoU 1,600 / 2,704 = 0.59. It passes at 0.5 and fails at 0.75 without the detector having done anything wrong. IoU is harsh on small objects: the same 3 pixels on a 12-pixel pothole give 0.39.</p></aside>
+</section>
+
+<section class="slide" id="non-maximum-suppression" data-lo="LO3">
+  <div class="kicker">Suppression</div>
+  <h2>Non-maximum suppression keeps the best box and drops its echoes</h2>
+  <div class="cols cols-2">
+    <figure class="figure">
+      <img src="../assets/nms.jpg" width="760" alt="Four road frames with two repair patches each, shown twice: in the top row every patch carries several overlapping boxes, in the bottom row one box per patch">
+      <figcaption>Top: raw boxes above a score of 0.3. Bottom: after suppression at IoU 0.5.</figcaption>
+    </figure>
+    <ol class="bullets">
+      <li>Sort the boxes of one class by score</li>
+      <li>Keep the best one</li>
+      <li>Drop every other box that overlaps it by more than a threshold</li>
+      <li>Repeat with what is left</li>
+    </ol>
+  </div>
+  <aside class="notes"><p>In lab 3.1 one frame holds 7 raw boxes of one class above 0.3 and 1 after suppression. The threshold is a setting with two failure directions. Too loose (0.7): echoes survive and count as false alarms. Too tight (0.3): two potholes side by side overlap, and the second is deleted as an echo of the first. Participants write the greedy loop and check it against torchvision.ops.nms. The roadside prototype of session 2 ran with 0.7. Do not reveal that yet.</p></aside>
+</section>
+
+<section class="slide" id="precision-recall-per-threshold" data-lo="LO3">
+  <div class="kicker">The metric</div>
+  <h2>Sort the detections by score and walk down the list</h2>
+  <div class="cols cols-2">
+    <table class="t">
+      <tr><th>Score</th><th>Counts as</th><th class="num">Precision</th><th class="num">Recall</th></tr>
+      <tr><td>0.9</td><td>true positive</td><td class="num">1/1</td><td class="num">1/2</td></tr>
+      <tr><td>0.8</td><td>false positive</td><td class="num">1/2</td><td class="num">1/2</td></tr>
+      <tr><td>0.7</td><td>true positive</td><td class="num">2/3</td><td class="num">2/2</td></tr>
+    </table>
+    <ul class="bullets">
+      <li>Two potholes exist. Each row is the result if the score threshold sat <b>just there</b></li>
+      <li>A detection is a true positive when it overlaps a <b>still unclaimed</b> truth box by at least the IoU threshold</li>
+      <li><b>Average precision</b> is the area under precision against recall: here 0.5 &times; 1 + 0.5 &times; 2/3 = 0.83</li>
+    </ul>
+  </div>
+  <aside class="notes"><p>This is the toy example the lab's check uses; the answer is 0.8333. Two details participants miss. First, "still unclaimed": a second detection on the same pothole is a false positive, which is why duplicates cost precision. Second, precision is made non-increasing from the right before the area is taken, so a late lucky hit does not create a dip. Average precision is computed per class and then averaged over classes: mean AP. It summarises every score threshold at once, which is its strength for comparing models and its weakness for operations, where one threshold is used.</p></aside>
+</section>
+
+<section class="slide" id="ap-at-two-thresholds" data-lo="LO3">
+  <div class="kicker">From the lab</div>
+  <h2>A short schedule moved AP at 0.75 far more than AP at 0.5</h2>
+  <table class="t">
+    <tr><th>Mean over pothole and patch</th><th class="num">AP at IoU 0.5</th><th class="num">AP at IoU 0.75</th></tr>
+    <tr><td>Warm checkpoint</td><td class="num">0.871</td><td class="num">0.306</td></tr>
+    <tr class="hl"><td>After two passes over 400 frames</td><td class="num">0.894</td><td class="num">0.483</td></tr>
+    <tr><td>Supplied detector, full schedule</td><td class="num">0.968</td><td class="num">0.785</td></tr>
+  </table>
+  <div class="callout tip mt"><b>Report both.</b> AP at 0.5 says the detector finds the objects. AP at 0.75 says its boxes fit. The gap between them names the next problem.</div>
+  <aside class="notes"><p>First two rows: lab 3.1 in quick mode, 120 validation frames with 124 boxes. Last row: the supplied checkpoint detector on the full validation split, from the author's training run of six passes on a laptop processor. Per class the short schedule tells two stories: patch AP at 0.75 went from 0.275 to 0.619, pothole from 0.337 to 0.346. Patches are rectangles with clear edges; potholes are irregular and one annotator boxes them with a margin (lab 1.2), so the truth disagrees with itself at 0.75. No schedule removes that: a guideline line does. The COCO benchmark averages AP over ten thresholds from 0.5 to 0.95; two thresholds carry most of that message. Sources: the COCO detection evaluation page.</p></aside>
+</section>
+
+<section class="slide" id="checkpoint-1" data-lo="LO3">
+  <div class="kicker">Checkpoint</div>
+  <h2>Which detector for this use?</h2>
+  <div class="quiz" data-type="single" data-lo="LO3">
+    <p class="lead">Detector A scores an AP of 0.90 at IoU 0.5 and 0.70 at IoU 0.75. Detector B scores 0.93 and 0.45. The department will use the boxes to estimate how much asphalt each repair needs. Which do you choose?</p>
+    <div class="opts">
+      <div class="opt" data-why="Stops at finding: for this use a box that is on the pothole and twice its size orders twice the asphalt">B: it finds more potholes, and finding them is what counts</div>
+      <div class="opt" data-why="Treats a reporting convention as the requirement: which threshold matters follows from what the boxes are used for">B: AP at IoU 0.5 is the standard metric for detectors</div>
+      <div class="opt" data-why="Misreads the table: B leads at 0.5, so the choice has to rest on which threshold this use depends on">A: it has the higher score at both thresholds</div>
+      <div class="opt" data-ok>A: its boxes fit the potholes, and area is read from the box</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> Area needs boxes that fit, which is what AP at 0.75 measures. B's lead at 0.5 is three points; A's lead at 0.75 is twenty-five.</div>
+  </div>
+  <aside class="notes"><p>Answer: D. Turn it round: if the boxes only told a crew where to stop the truck, B would be the better choice. The metric follows the use. Then ask for two root causes of a low AP at 0.75: a coarse output grid or a weak box loss on the model side; annotators who disagree about how tight a box is on the label side. Lab 1.2 measured the second: mean IoU 0.71 between two annotators' boxes.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-3-1" data-auto="lab" data-lab="3.1">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI policy: an assistant may explain code and errors. The lab starts from the supplied checkpoint detector_warm, so nothing from Day 2 is needed. Expected in quick mode: 7 raw boxes and 1 after suppression on the example frame; mean AP 0.871 and 0.306 before, 0.894 and 0.483 after two passes over 400 frames; the toy example gives 0.8333. Training takes a few minutes on a laptop processor and under a minute on a Colab GPU. Common slips: suppression that compares with every box, not only the kept ones; forgetting to make precision non-increasing; dividing by the number of detections and not by the number of truth boxes for recall.</p></aside>
 </section>
 
-<!-- Session 2 -->
-
+<!-- ======================= SESSION 2 ======================= -->
 <section class="slide section" id="s2" data-auto="section" data-session="2"></section>
 
-<section class="slide" id="s2-idea" data-lo="LO3">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
+<section class="slide" id="a-number-is-not-a-plan" data-lo="LO3">
+  <div class="kicker">After the metric</div>
+  <h2>An average precision says how good, never what to do next</h2>
+  <div class="cols cols-2 mid">
+    <div class="stat center"><div class="big">41</div><div class="lbl">false alarms beside 148 correct boxes and 10 missed defects, on 180 field frames with the prototype's settings (lab 3.2)</div></div>
     <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
+      <li>Precision 0.78, recall 0.94: the crews drive to one wrong address in five</li>
+      <li>More data? A bigger model? A setting?</li>
+      <li>Each answer costs something different, and only the errors themselves can choose</li>
     </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
   </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+  <aside class="notes"><p>The roadside prototype ran for a week on frames as the field delivers them: every kind of light, one frame in five from a pole camera. Rakan Al-Shammari's question is the one on the slide: what do I fund? The honest answer on Monday morning is "I do not know yet", followed by an afternoon of looking. This session is that afternoon, compressed. Precision and recall here are at the operating point, one score threshold of 0.3, because that is what the crews live with; average precision averages over all thresholds.</p></aside>
 </section>
 
-<section class="slide" id="s2-steps" data-lo="LO3">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="four-error-types" data-lo="LO3">
+  <div class="kicker">Types</div>
+  <h2>Every detector error is one of a few types</h2>
+  <figure class="figure">
+    <img src="../assets/errors.jpg" width="1300" alt="Four field frames. In glare, a detection sits half on a patch. At night, a box fits a patch and carries the wrong class. In rain, several boxes pile on one large patch. In rain, a small defect has no detection near it">
+    <figcaption>Red: the box in question. Teal: ground truth. Yellow: other detections. Left to right: localisation, class, duplicate, missed.</figcaption>
+  </figure>
+  <table class="t small">
+    <tr><th>Localisation</th><th>Class</th><th>Duplicate</th><th>Missed</th></tr>
+    <tr><td>Right class, IoU from 0.1 to 0.5</td><td>IoU at least 0.5, wrong class</td><td>Right and fitting, but a better box holds the object</td><td>A truth box no detection came near</td></tr>
+  </table>
+  <aside class="notes"><p>The taxonomy follows TIDE (Bolya et al., 2020), reduced to the four types the catalog entry names; a fifth, background, is a detection on nothing at all. The definitions are rules with thresholds, so they can be coded, and that is task 2 of the lab. Ask the room to type the four pictures before you read the caption. Sources: Bolya et al., 2020 (TIDE).</p></aside>
+</section>
+
+<section class="slide" id="type-points-to-fix" data-lo="LO3">
+  <div class="kicker">From type to work</div>
+  <h2>Each type points to a different piece of work</h2>
+  <table class="t">
+    <tr><th>Type</th><th>Usual fix</th><th>What it costs</th></tr>
+    <tr><td>Duplicate</td><td>Tighten non-maximum suppression</td><td>A setting, no training</td></tr>
+    <tr><td>Class</td><td>More examples of the confused pair, or a clearer definition</td><td>Labelling</td></tr>
+    <tr><td>Localisation</td><td>A box guideline everyone follows, a finer grid, a box loss</td><td>Relabelling or retraining</td></tr>
+    <tr><td>Missed</td><td>Data of the missed kind: small, dark, in rain. Or a lower score threshold</td><td>Collection and labelling</td></tr>
+  </table>
+  <aside class="notes"><p>The right-hand column is the reason to type errors at all: the four fixes differ by orders of magnitude in cost. A lower score threshold trades missed objects for false alarms; it is a move along the curve, not an improvement. Background false alarms on unlabelled things (the manhole covers) are often label gaps, not model errors: the detector found a real object nobody labelled.</p></aside>
+</section>
+
+<section class="slide" id="fifty-errors-sorted" data-lo="LO3">
+  <div class="kicker">From the lab</div>
+  <h2>Fifty supplied errors, sorted by one rule</h2>
+  <div class="cols cols-2 mid">
+    <div class="bars">
+      <div class="row"><span>Missed</span><div class="bar c-coral" style="--w:90%"></div><span class="val">18</span></div>
+      <div class="row"><span>Localisation</span><div class="bar c-amber" style="--w:70%"></div><span class="val">14</span></div>
+      <div class="row"><span>Duplicate</span><div class="bar c-cyan" style="--w:50%"></div><span class="val">10</span></div>
+      <div class="row"><span>Class</span><div class="bar c-purple" style="--w:40%"></div><span class="val">8</span></div>
+    </div>
+    <pre class="code s" data-file="lab 3.2"><code class="language-python">iou = U.box_iou([e["box"]], gts[:, :4])[0]
+j = int(iou.argmax())
+same = CLASSES[int(gts[j, 4])] == e["cls"]
+if iou[j] &gt;= 0.5 and not same:
+    return "class"
+if iou[j] &gt;= 0.5:
+    return "duplicate"
+if iou[j] &gt;= 0.1 and same:
+    return "localisation"
+return "background"</code></pre>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <div class="callout warn mt"><b>Fifty hand-picked errors say what exists, not what matters.</b> Someone chose them. The bars are that person's sample.</div>
+  <aside class="notes"><p>Participants first sort twelve by eye, then write the rule, then compare: with the solution's rule, eye and rule agree on 12 of 12, and real pairs will disagree on one or two near the 0.5 line. Both are instructive: a rule at 0.5 calls a box at 0.49 a localisation error and one at 0.51 fine. The warning on the slide sets up the next one. Looking at this chart alone, the room will vote to collect more data for the missed objects.</p></aside>
+</section>
+
+<section class="slide" id="oracle-fix" data-lo="LO3">
+  <div class="kicker">What matters</div>
+  <h2>Ask an oracle what each fix could be worth</h2>
+  <table class="t">
+    <tr><th>All errors of one type repaired</th><th class="num">Precision</th><th class="num">Recall</th><th class="num">Gain in F1</th></tr>
+    <tr><td>As configured</td><td class="num">0.783</td><td class="num">0.937</td><td class="num"></td></tr>
+    <tr class="hl"><td>Duplicate</td><td class="num">0.897</td><td class="num">0.937</td><td class="num">+0.063</td></tr>
+    <tr><td>Missed</td><td class="num">0.789</td><td class="num">0.968</td><td class="num">+0.016</td></tr>
+    <tr><td>Class</td><td class="num">0.783</td><td class="num">0.937</td><td class="num">0.000</td></tr>
+    <tr><td>Localisation</td><td class="num">0.783</td><td class="num">0.937</td><td class="num">0.000</td></tr>
+  </table>
+  <div class="callout tip mt"><b>The largest gain is also the cheapest fix:</b> suppression set at 0.7 on the prototype lets echoes through. Set it to 0.5, then measure again.</div>
+  <aside class="notes"><p>Lab 3.2 on 180 field frames in quick mode. The oracle repairs every error of one type perfectly and leaves the rest: an upper bound on what a fix of that type can buy. The sample of fifty showed 18 missed and 10 duplicates; over all detections the order reverses, because the fifty were picked to show every type. Class and localisation errors exist (the fifty contain 22) but are too few on these frames to move the totals. Say the caveat: after the setting is changed, the table must be measured again, because fixing one type moves the others, and tighter suppression can create missed objects where two defects touch.</p></aside>
+</section>
+
+<section class="slide" id="justified-next-step" data-lo="LO3">
+  <div class="kicker">Reporting</div>
+  <h2>A justified next step is one sentence with a number and a cost</h2>
+  <div class="cols cols-2">
+    <div class="card c-coral"><h4>Not this</h4><p class="small mb0">"The detector needs more training data, especially at night."</p></div>
+    <div class="card c-teal"><h4>This</h4><p class="small mb0">"Fixing duplicates is worth up to +0.063 F1, the largest gain in the oracle table, and costs one setting: suppression from 0.7 to 0.5. Missed objects are next, at +0.016, and need labelled night and rain frames."</p></div>
+  </div>
+  <div class="callout note mt"><b>This is the evidence for outcome 3:</b> the metrics, the error breakdown, and a next step someone can approve or refuse.</div>
+  <aside class="notes"><p>The first sentence may even be true. It cannot be checked, costed or refused. The second names the gain, the source of the number and the work. In the capstone the assessor picks one failure case and asks the participant to do exactly this, live: type it, say what would fix it and what the fix costs.</p></aside>
+</section>
+
+<section class="slide" id="checkpoint-2" data-lo="LO3">
+  <div class="kicker">Checkpoint</div>
+  <h2>Which fix do you fund first?</h2>
+  <div class="quiz" data-type="single" data-lo="LO3">
+    <p class="lead">An oracle table for a crack-sealing detector shows: localisation errors repaired +0.09 F1, missed +0.07, class +0.01, duplicate +0.01. The team's boxes come from three annotators with no rule on tightness. What do you propose first?</p>
+    <div class="opts">
+      <div class="opt" data-ok>Write the box-tightness rule, relabel a sample and measure localisation again</div>
+      <div class="opt" data-why="Chooses the cheapest fix regardless of its value: duplicates are worth one hundredth here">Tighten non-maximum suppression, because it needs no training</div>
+      <div class="opt" data-why="Reaches for capacity when the table points at the labels: a larger model learns the same inconsistent boxes">Train a larger detector on the same labels</div>
+      <div class="opt" data-why="Moves along the precision and recall curve without improving it, and does nothing for the largest error type">Lower the score threshold so that fewer objects are missed</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> Localisation is the largest gain, and inconsistent boxes are a known cause that a guideline can remove before any training is paid for.</div>
+  </div>
+  <aside class="notes"><p>Answer: A. The stem differs from Al-Manar's table on purpose: the method transfers, the conclusion does not. If the room picks suppression because it worked on the last slide, that is the point to make.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-3-2" data-auto="lab" data-lab="3.2">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI off in this lab: say it before they start. Reading errors is a judgement skill that the supervised check tests without help. The lab starts from the supplied file of fifty errors and the supplied checkpoint detector. Expected: 14 localisation, 8 class, 10 duplicate, 18 missed; on 180 field frames precision 0.783 and recall 0.937; oracle gains of +0.063 for duplicates and +0.016 for missed. The trainer's key is detector_errors_key.json beside the error file; keep it closed until pairs have sorted the first twelve. Common slip: applying the duplicate test before the class test.</p></aside>
 </section>
 
-<!-- Session 3 -->
-
+<!-- ======================= SESSION 3 ======================= -->
 <section class="slide section" id="s3" data-auto="section" data-session="3"></section>
 
-<section class="slide" id="s3-idea" data-lo="LO3">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
+<section class="slide" id="a-box-cannot-measure-a-crack" data-lo="LO3">
+  <div class="kicker">Segmentation</div>
+  <h2>A box cannot measure a crack; a mask can</h2>
+  <div class="cols cols-3">
+    <div class="card c-teal"><h4>Semantic segmentation</h4><p class="small mb0">One class per pixel: crack or road. Enough for length and area. What Rasid needs.</p></div>
+    <div class="card c-cyan"><h4>Instance segmentation</h4><p class="small mb0">A separate mask per object: this crack and that crack. Needed to count or follow objects.</p></div>
+    <div class="card c-coral"><h4>The cost</h4><p class="small mb0">Masks are the most expensive labels to draw, and thin structures are the hardest to draw consistently.</p></div>
   </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+  <div class="callout note mt"><b>In Al-Manar's frames crack pixels are 1.1% of all pixels.</b> A model that answers "road" everywhere is 98.9% accurate and useless.</div>
+  <aside class="notes"><p>The maintenance team prices crack sealing by the metre, so they need extent, not presence. The 1.1% is from the 80 validation frames of lab 3.3. It kills pixel accuracy as a metric before the session starts, and it explains the loss used to train the segmenter: plain cross-entropy would learn "road" and stop, so the training loop adds a Dice term that only looks at the crack pixels. A third family, panoptic segmentation, combines the two cards; it is not needed here.</p></aside>
 </section>
 
-<section class="slide" id="s3-steps" data-lo="LO3">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
+<section class="slide" id="encoder-decoder" data-lo="LO3">
+  <div class="kicker">How it works</div>
+  <h2>Down to understand, back up to draw</h2>
   <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+    <div class="step c-navy"><b>1 · Encoder</b>the same ResNet-18 trunk shrinks the frame to one eighth</div>
+    <div class="arrow">→</div>
+    <div class="step c-teal"><b>2 · Decoder</b>upsamples step by step back to full size</div>
+    <div class="arrow">→</div>
+    <div class="step c-cyan"><b>3 · Skip connections</b>hand the fine detail of early layers across</div>
+    <div class="arrow">→</div>
+    <div class="step c-coral"><b>4 · One score per pixel</b>cut at 0.5 for the mask</div>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <div class="callout warn mt"><b>A crack two pixels wide does not exist at one-eighth resolution.</b> Without the skip connections the decoder would have to guess where it was.</div>
+  <aside class="notes"><p>This is the U-Net idea (Ronneberger et al., 2015), built for thin structures in microscope images, which is why it suits cracks. RoadSeg in roadkit reuses the detector's trunk and adds a small decoder. Library segmenters (torchvision's DeepLab and FCN heads, Ultralytics segmentation models) follow the same down-and-up outline with different decoders. Sources: Ronneberger et al., 2015 (U-Net).</p></aside>
+</section>
+
+<section class="slide" id="iou-and-dice" data-lo="LO3">
+  <div class="kicker">Overlap metrics</div>
+  <h2>IoU and Dice count the same three things differently</h2>
+  <div class="cols cols-2 mid">
+    <div class="card c-navy tint"><h4>From pixels in both, in the prediction, in the truth</h4>
+      <p class="mb0">IoU = both / (prediction + truth &minus; both)</p>
+      <p class="mb0 mt-s">Dice = 2 &times; both / (prediction + truth)</p>
+      <p class="small mb0 mt-s">Dice = 2 &times; IoU / (1 + IoU), so Dice is always the larger.</p>
+    </div>
+    <ul class="bullets">
+      <li>Both ignore the pixels that are road in both masks, which is nearly all of them</li>
+      <li>An IoU of 0.38 is a Dice of 0.55: <b>say which one you report</b></li>
+      <li>A predicted line one pixel beside a two-pixel crack loses half its overlap</li>
+    </ul>
+  </div>
+  <aside class="notes"><p>The pair 0.38 and 0.55 is the fine-tuned segmenter of lab 3.3. The third bullet is why overlap scores look harsh on thin structures and why a tolerance score exists: count a predicted pixel as right when it lies within two pixels of the truth. With that tolerance the supplied segmenter reaches a precision of 0.98 and a recall of 0.96 on the same frames where its IoU is 0.81; the lab's stretch item computes it. Dice is the same quantity as the F1 score, computed on pixels.</p></aside>
+</section>
+
+<section class="slide" id="dark-is-not-crack" data-lo="LO3">
+  <div class="kicker">The baseline</div>
+  <h2>Four lines of thresholding are the number to beat</h2>
+  <div class="cols cols-2">
+    <pre class="code" data-file="lab 3.3"><code class="language-python">def threshold_baseline(img, k=2.0):
+    grey = img.astype(np.float32).mean(axis=-1)
+    return grey &lt; grey.mean() - k * grey.std()</code></pre>
+    <figure class="figure">
+      <img src="../assets/segment.jpg" width="560" alt="Three road frames in daylight, rain and at night, each with its true crack mask, the thresholding baseline's mask and the segmenter's mask. The baseline marks a dark blotch and little of the crack in daylight and rain and nothing at night; the segmenter follows the crack in all three">
+      <figcaption>Columns: frame, truth, baseline, supplied segmenter. Rows: day, rain, night.</figcaption>
+    </figure>
+  </div>
+  <div class="callout note mt"><b>"Dark" is not "crack".</b> The rule also marks potholes, patch seams and shadows, and it finds nothing when the whole frame is dark.</div>
+  <aside class="notes"><p>Always build the cheap baseline first. It costs minutes, it sets the number a trained model must beat to justify its labels, and its failures show what the task really asks for. The same logic as the zero-shot floor of Day 2. In the picture the baseline's daylight mask is a blotch on a stain; the crack beside the lane marking is mostly lost.</p></aside>
+</section>
+
+<section class="slide" id="segmenter-against-baseline" data-lo="LO3">
+  <div class="kicker">From the lab</div>
+  <h2>The baseline fails where the light changes; the segmenter holds</h2>
+  <table class="t small">
+    <tr><th>IoU on validation frames</th><th class="num">All</th><th class="num">Day</th><th class="num">Glare</th><th class="num">Dust</th><th class="num">Rain</th><th class="num">Night</th></tr>
+    <tr><td>Frames</td><td class="num">80</td><td class="num">37</td><td class="num">13</td><td class="num">13</td><td class="num">11</td><td class="num">6</td></tr>
+    <tr><td>Thresholding baseline</td><td class="num">0.224</td><td class="num">0.266</td><td class="num">0.072</td><td class="num">0.215</td><td class="num">0.258</td><td class="num">0.008</td></tr>
+    <tr><td>Segmenter, three passes over 240 frames</td><td class="num">0.378</td><td class="num">0.408</td><td class="num">0.385</td><td class="num">0.360</td><td class="num">0.368</td><td class="num">0.294</td></tr>
+    <tr class="hl"><td>Supplied segmenter, full schedule</td><td class="num">0.809</td><td class="num">0.861</td><td class="num">0.740</td><td class="num">0.824</td><td class="num">0.842</td><td class="num">0.618</td></tr>
+  </table>
+  <div class="callout warn mt"><b>Six night frames.</b> The night column is the weakest of every row and the least certain. It is the next data request, not a finding.</div>
+  <aside class="notes"><p>Lab 3.3, quick mode. The warm checkpoint the lab starts from scores 0.218, below the baseline: one short pass is not yet better than four lines of code, which is worth saying aloud. The lab's own schedule takes it to 0.378; the supplied checkpoint, five passes over every training frame with cracks, to 0.809. A rule about darkness is a rule about lighting: under glare the baseline drops to 0.07 and at night to 0.01, because the same crack is no longer the darkest thing in the frame. Dice for the three rows: 0.366, 0.549, 0.894.</p></aside>
+</section>
+
+<section class="slide" id="reading-an-overlap-score" data-lo="LO3">
+  <div class="kicker">Reading the number</div>
+  <h2>An overlap score needs its object beside it</h2>
+  <div class="cols cols-2">
+    <div class="card c-coral"><h4>The wrong comparison</h4><p class="small mb0">"The segmenter's IoU is 0.6 and the detector's AP is 0.9, so the segmenter is the weak part." Two metrics on two tasks share no scale.</p></div>
+    <div class="card c-teal"><h4>The right ones</h4><p class="small mb0">Against the baseline on the same frames. Against the same model under another light. With a tolerance of two pixels. And by looking at twenty masks.</p></div>
+  </div>
+  <div class="callout tip mt"><b>For the maintenance team, convert:</b> metres of crack found against metres present is a number they can plan with. IoU is the engineer's number.</div>
+  <aside class="notes"><p>The conversion on the callout is worth a minute: a mask becomes a length by thinning it to a line and counting pixels, times the ground size of a pixel. An IoU of 0.6 on a two-pixel line can mean every crack is found and drawn slightly thick. The model card states the metric, the tolerance and the size of the objects, so that a reader from another project does not compare across tasks.</p></aside>
+</section>
+
+<section class="slide" id="checkpoint-3" data-lo="LO3">
+  <div class="kicker">Checkpoint</div>
+  <h2>Why is the overlap low?</h2>
+  <div class="quiz" data-type="single" data-lo="LO3">
+    <p class="lead">A crack segmenter scores an IoU of 0.52. Its masks, overlaid on the frames, follow every crack and look about one pixel wider than the labels. What do you report?</p>
+    <div class="opts">
+      <div class="opt" data-why="Reads IoU on a scale made for large objects: on lines two pixels wide, one extra pixel of width halves the score">The model is poor and needs a larger backbone</div>
+      <div class="opt" data-why="Switches to a metric that the road pixels dominate: at about 1% cracks, any mask scores in the high nineties">Pixel accuracy, which is 99% and describes the model better</div>
+      <div class="opt" data-ok>The IoU with the object's width, and precision and recall at a two-pixel tolerance</div>
+      <div class="opt" data-why="Changes the number without changing what it measures: Dice is a fixed function of IoU and is larger for every model">Dice, because it is higher for the same masks</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> The masks find the cracks and differ in width. A tolerance score separates "missed the crack" from "drew it a little thick", which IoU on thin lines cannot.</div>
+  </div>
+  <aside class="notes"><p>Answer: C. If someone picks Dice, agree that reporting Dice is fine, and ask whether it would change which of two models looks better. It would not: the two rank models identically.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-3-3" data-auto="lab" data-lab="3.3">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI policy: an assistant may explain code and errors. The lab starts from the supplied checkpoint segmenter_warm. Expected in quick mode: crack pixels 1.1%; baseline IoU 0.224 and Dice 0.366; warm 0.218; fine-tuned 0.378 and 0.549; supplied 0.809 and 0.894. Three passes over 240 frames take a few minutes on a laptop processor. Numbers move in the second decimal between machines. Common slips: computing IoU per frame and averaging, which gives frames without cracks a zero or an undefined score (the lab counts pixels over the whole stack); forgetting the case of an empty union.</p></aside>
 </section>
 
-<!-- Session 4 -->
-
+<!-- ======================= SESSION 4 ======================= -->
 <section class="slide section" id="s4" data-auto="section" data-session="4"></section>
 
-<section class="slide" id="s4-idea" data-lo="LO4">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
-  </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+<section class="slide" id="counting-needs-identity" data-lo="LO4">
+  <div class="kicker">Video</div>
+  <h2>To count vehicles, you have to know which box is the same vehicle</h2>
+  <figure class="figure">
+    <img src="../assets/tracking.jpg" width="1300" alt="One frame from each of four traffic clips seen from above, with detection boxes and a yellow counting line: free-flowing daytime traffic, a slow queue, a dark band across the road where a sign gantry hides the vehicles, and a night clip with two boxes on one vehicle">
+    <figcaption>Al-Manar's four kinds of clip: day, queue, gantry, night. The yellow line is where vehicles are counted.</figcaption>
+  </figure>
+  <aside class="notes"><p>Abeer Al-Juhani's team wants vehicles per hour across a line, per pole camera. A detector gives boxes per frame; a vehicle in view for 30 frames is 30 boxes. Counting boxes counts nothing. The clips are synthetic: twelve clips of 180 frames, three of each kind, with ground-truth tracks and imitated detections that miss, jitter and, at night, fire on headlight reflections. Point at the night frame: the small second box is a reflection sliding down the wet road.</p></aside>
 </section>
 
-<section class="slide" id="s4-steps" data-lo="LO4">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="tracking-by-detection" data-lo="LO4">
+  <div class="kicker">How it works</div>
+  <h2>Tracking by detection: link each new box to the track it overlaps most</h2>
+  <div class="cols cols-2">
+    <pre class="code s" data-file="lab 3.4"><code class="language-python">def associate(track_boxes, det_boxes, iou_thr=0.3):
+    iou = U.box_iou(track_boxes, det_boxes)
+    pairs = []
+    while True:
+        t, d = np.unravel_index(iou.argmax(), iou.shape)
+        if iou[t, d] &lt; iou_thr:
+            return pairs
+        pairs.append((int(t), int(d)))
+        iou[t, :] = -1
+        iou[:, d] = -1</code></pre>
+    <ul class="bullets">
+      <li>Every open track remembers its last box</li>
+      <li>A matched detection <b>continues</b> its track</li>
+      <li>An unmatched detection <b>starts</b> a new track</li>
+      <li>An unmatched track <b>waits</b>, then closes</li>
+    </ul>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <aside class="notes"><p>The same IoU, a third use today: suppression, matching to truth, and now association across time. The greedy loop takes the best pair first; trackers in libraries solve the assignment exactly (the Hungarian method), which matters in dense traffic. The whole tracker in the lab is 25 lines around this function. It has no appearance model: two vehicles that cross paths can swap tracks. That is the price of simplicity and the reason the SORT family adds motion prediction and, later, appearance features. Sources: Bewley et al., 2016 (SORT).</p></aside>
+</section>
+
+<section class="slide" id="identity-switches" data-lo="LO4">
+  <div class="kicker">The failure</div>
+  <h2>One missed detection, and a vehicle becomes two</h2>
+  <div class="cols cols-2 mid">
+    <div class="stat center"><div class="big">49</div><div class="lbl">tracks for 16 vehicles in a daytime clip, with a tracker that has no patience (lab 3.4)</div></div>
+    <ul class="bullets">
+      <li>The detector misses a vehicle for one frame; its track closes</li>
+      <li>The next detection opens a new track with a new identity</li>
+      <li>An <b>identity switch</b>: the track that covers a true vehicle changes from one frame to the next</li>
+    </ul>
+  </div>
+  <div class="callout note mt"><b>Two measures, two questions.</b> Count error asks whether the total is right. Identity switches ask whether each vehicle stayed one vehicle.</div>
+  <aside class="notes"><p>These two are the evidence the catalog entry asks for under outcome 4. Benchmarks combine them, with missed and false boxes, into scores such as MOTA, IDF1 and HOTA; for a counting service the two raw numbers say more. Switches are counted against ground-truth tracks: for each true vehicle, list the reported track that covers it in each frame and count the changes.</p></aside>
+</section>
+
+<section class="slide" id="counting-rule" data-lo="LO4">
+  <div class="kicker">Counting rules</div>
+  <h2>Count a track once, the first time its centre crosses the line</h2>
+  <div class="cols cols-2">
+    <div class="card c-coral"><h4>Every crossing</h4><p class="small">Add one whenever a box centre moves from above the line to below it.</p><div class="stat"><div class="big">14</div><div class="lbl">counted in a queue clip with 13 true crossings</div></div></div>
+    <div class="card c-teal"><h4>Once per track</h4><p class="small">A track counts at its first crossing and never again.</p><div class="stat"><div class="big">13</div><div class="lbl">counted in the same clip</div></div></div>
+  </div>
+  <aside class="notes"><p>Lab 3.4, clip CLIP-02. In a queue a vehicle creeps over the line while its box jitters by a pixel or two, so the centre crosses, falls back and crosses again. The counting rule is part of the system and belongs in the model card, with the place of the line and the direction counted. Other rules exist and have their own failures: a zone in place of a line (counts on entry, tolerant of jitter, blind to direction) and two lines (gives direction and speed, needs identities to hold between them).</p></aside>
+</section>
+
+<section class="slide" id="patience-and-hits" data-lo="LO4">
+  <div class="kicker">From the lab</div>
+  <h2>Two settings removed nearly every count error</h2>
+  <table class="t small">
+    <tr><th rowspan="2">Kind of clip</th><th rowspan="2" class="num">True crossings</th><th colspan="2">Patience 0, minimum hits 1</th><th colspan="2">Patience 5, minimum hits 4</th></tr>
+    <tr><th class="num">Count error</th><th class="num">Switches</th><th class="num">Count error</th><th class="num">Switches</th></tr>
+    <tr><td>Day</td><td class="num">38</td><td class="num">3</td><td class="num">67</td><td class="num">0</td><td class="num">1</td></tr>
+    <tr><td>Queue</td><td class="num">39</td><td class="num">5</td><td class="num">106</td><td class="num">0</td><td class="num">18</td></tr>
+    <tr class="hl"><td>Gantry</td><td class="num">39</td><td class="num">4</td><td class="num">105</td><td class="num">0</td><td class="num">40</td></tr>
+    <tr><td>Night</td><td class="num">35</td><td class="num">14</td><td class="num">172</td><td class="num">1</td><td class="num">6</td></tr>
+  </table>
+  <div class="callout tip mt"><b>Patience</b> lets a track survive missed frames. <b>Minimum hits</b> ignores tracks that live two or three frames: the headlight reflections.</div>
+  <aside class="notes"><p>Lab 3.4: three clips per kind, errors and switches summed per kind. Read the first pair of columns: hundreds of switches, yet the count error is small, because a switch costs a count only when it happens at the line. Read the second: the night error fell from 14 to 1 mostly through minimum hits, a reflection lives two or three frames and a vehicle twenty or more. Then the highlighted row: 40 switches remain under the gantry. A vehicle hidden for several frames comes out tens of pixels further on, where its last box overlaps nothing; patience keeps the track open and still cannot re-attach it. The stretch item adds a constant-velocity prediction, the heart of the SORT family, and asks what happens to that row.</p></aside>
+</section>
+
+<section class="slide" id="right-count-wrong-tracks" data-lo="LO4">
+  <div class="kicker">What the numbers allow</div>
+  <h2>A right count with broken tracks is ready for counting and for nothing else</h2>
+  <div class="cols cols-2">
+    <div class="card c-teal"><h4>Needs the count only</h4><p class="small mb0">Vehicles per hour across one line. The gantry clips count correctly because the line lies beyond the gantry.</p></div>
+    <div class="card c-coral"><h4>Needs identities</h4><p class="small mb0">Speed between two lines, turning movements, time spent waiting. Forty switches make each of these wrong.</p></div>
+  </div>
+  <div class="callout warn mt"><b>Where the line is drawn is a design decision.</b> Put it where the camera sees clearly. Move the gantry over the line and the counts drop.</div>
+  <aside class="notes"><p>This is the sentence for Abeer Al-Juhani: the counter is fit for volume counts on these cameras, and not yet for anything that follows a vehicle. A counting capstone reports both numbers by kind of clip and says where the line is and why. Privacy note for tomorrow: a counting service needs no plates and no faces, and should store none.</p></aside>
+</section>
+
+<section class="slide" id="checkpoint-4" data-lo="LO4">
+  <div class="kicker">Checkpoint</div>
+  <h2>Is this counter ready?</h2>
+  <div class="quiz" data-type="single" data-lo="LO4">
+    <p class="lead">On a new camera the tracker reports 52 crossings against 50 true ones, with 3 identity switches. The clips are at dusk, and short tracks appear beside some vehicles. Which change do you try first?</p>
+    <div class="opts">
+      <div class="opt" data-ok>Require more hits before a track is counted</div>
+      <div class="opt" data-why="Treats an overcount as lost tracks: more patience keeps tracks alive longer and removes no false ones">Raise the patience so that tracks survive longer gaps</div>
+      <div class="opt" data-why="Assumes any count error is a counting-rule error: counting every crossing would add counts, not remove them">Count every crossing of the line, not one per track</div>
+      <div class="opt" data-why="Reaches for retraining before a setting: the short-lived tracks can be filtered without touching the detector">Retrain the detector on dusk frames before changing anything</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> An overcount with few switches and short tracks beside vehicles points at false tracks from reflections. They live a few frames; a minimum number of hits removes them.</div>
+  </div>
+  <aside class="notes"><p>Answer: A. The reasoning chain is the lesson: the sign of the error (over), the switches (few, so tracks hold), the visual clue (short tracks). Retraining on dusk frames may be right later; it is not first.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-3-4" data-auto="lab" data-lab="3.4">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI policy: an assistant may explain code and errors. The lab needs no model and no earlier lab: the clips come with imitated detections, and it runs in seconds on any laptop. Expected: 49 tracks for 16 vehicles in the first clip; the queue clip counts 14 by every crossing and 13 once per track; the baseline and tuned tables as on the slide; chosen settings patience 5 and minimum hits 4. Common slips: counting a crossing when the centre is on the line in two consecutive frames; counting switches across frames where no track covers the vehicle.</p></aside>
 </section>
 
-<section class="slide" id="wrap-up">
-  <div class="kicker">Day 3 · wrap-up</div>
+<!-- ======================= CLOSE ======================= -->
+<section class="slide" id="wrap-up" data-label="Day 3 recap">
+  <div class="kicker">Day 3 recap</div>
   <h2>Three things to keep</h2>
   <div class="cols cols-3">
-    <div class="card c-teal"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
-    <div class="card c-coral"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
-    <div class="card c-purple"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
+    <div class="card c-teal"><h4>Two thresholds, two messages</h4><p class="small mb0">AP at 0.5 says the objects are found, AP at 0.75 says the boxes fit. Rasid's short schedule: 0.89 and 0.48.</p></div>
+    <div class="card c-cyan"><h4>Type the errors, then price the fixes</h4><p class="small mb0">Fifty errors showed mostly misses. The oracle table said duplicates: +0.063 F1 for one setting.</p></div>
+    <div class="card c-coral"><h4>Beat the cheap baseline, name the metric</h4><p class="small mb0">Thresholding 0.22, the segmenter 0.81 IoU. A count can be right with 40 identity switches: say what it is fit for.</p></div>
   </div>
+  <aside class="notes"><p>Ask each table which number surprised them. Then collect what the capstone's second criterion, model quality and error analysis, is built from: average precision at two thresholds or overlap by lighting, an error breakdown by type, an oracle table and one justified next step. For a counting service: count error and identity switches by kind of clip, and the counting rule.</p></aside>
 </section>
 
-<section class="slide dark" id="next" data-label="Next">
-  <div class="kicker">Next</div>
-  <h2>Day 4: Fit the budget and release</h2>
-  <p class="lead">REPLACE: what participants prepare before then; unfinished labs can be finished at home</p>
-  <aside class="notes">REPLACE: accounts, installs or reading participants need before the next unit</aside>
+<section class="slide dark" id="next" data-label="Tomorrow">
+  <div class="kicker">Tomorrow</div>
+  <h1>Day 4 · Fit the budget and release</h1>
+  <p class="lead">The detector leaves the training framework, meets the roadside unit's budget, faces rain, glare, night and a moved camera, and gets a release decision.</p>
+  <ul class="bullets">
+    <li>Day 4 runs on a laptop processor: no GPU runtime is needed</li>
+    <li>Lab 4.2 measures latency: close other programs before you run it</li>
+    <li>Think about your capstone: an inspection service or a counting service</li>
+  </ul>
+  <aside class="notes"><p>Day 4 starts from the supplied checkpoint detector, so nobody needs a finished Day 3 lab. Tell Colab users that latency numbers from a shared machine vary more than a laptop's; the method is the same.</p></aside>
 </section>
