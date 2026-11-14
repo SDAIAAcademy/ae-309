@@ -65,7 +65,7 @@ Ultralytics) follow the same training and evaluation steps.
 | Lab | Download | Size |
 |---|---|---|
 | 2.1, 2.2 | ResNet-18 weights (torchvision) and ViT-Tiny weights (timm) | about 45 MB and 25 MB |
-| 2.3 | An open-vocabulary image-text model, CLIP ViT-B/32 (OpenCLIP) | about 350 MB |
+| 2.3 | An open-vocabulary image-text model, CLIP ViT-B/32 (OpenCLIP) | about 600 MB |
 | 2.4 | Nothing: licence records are read from the installed timm package | |
 
 Days 1, 3 and 4 run offline once the repository and its Python packages are installed.

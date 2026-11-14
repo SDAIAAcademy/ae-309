@@ -7,18 +7,18 @@
       "type": "single",
       "prompt": "Two inspectors label 400 crops for a rare defect. They give the same label to 372 crops, and Cohen's kappa is 0.28. What does the pair of numbers tell you?",
       "options": [
-        "The labels are reliable, because 93% agreement is high",
         "The inspectors mostly agree by both saying \"no\"; on the defect itself they barely agree",
+        "The labels are reliable, because 93% agreement is high",
         "Kappa was computed wrongly, because it cannot be far below raw agreement",
         "One inspector is careless and should be replaced"
       ],
       "correct": [
-        1
+        0
       ],
       "explanation": "With a rare class most agreement comes from both saying \"no\"; kappa removes that chance agreement and shows what is left.",
       "misconceptions": [
-        "Reads raw agreement without asking how much of it chance alone would produce",
         "",
+        "Reads raw agreement without asking how much of it chance alone would produce",
         "Expects kappa to track raw agreement, which fails exactly when one label dominates",
         "Blames a person for a disagreement that the definition produced"
       ],
@@ -38,18 +38,18 @@
       "options": [
         "\"Label rutting when the wheel path looks clearly sunken to a trained eye.\"",
         "\"Label rutting only when you are certain.\"",
-        "\"Label rutting when a 2-metre straightedge across the lane would show a gap of 10 mm or more; if the depth cannot be judged from the frame, flag it.\"",
-        "\"Label rutting as in the three example pictures.\""
+        "\"Label rutting as in the three example pictures.\"",
+        "\"Label rutting when a 2-metre straightedge across the lane would show a gap of 10 mm or more; if the depth cannot be judged from the frame, flag it.\""
       ],
       "correct": [
-        2
+        3
       ],
       "explanation": "A definition that can be measured or counted, with a rule for the undecidable case, is one that two strangers can apply alike.",
       "misconceptions": [
         "Adds emphasis, not a criterion: \"clearly\" is still a judgement of resemblance",
         "Turns uncertainty into silent negatives, which hides the borderline cases from the data",
-        "",
-        "Relies on examples alone, which cannot settle a case that sits between them"
+        "Relies on examples alone, which cannot settle a case that sits between them",
+        ""
       ],
       "lo": [
         "LO1"
@@ -179,18 +179,18 @@
       "options": [
         "B is better at night by five points",
         "A and B are equally good at night",
-        "This test cannot separate the two at night; more night crops or a paired comparison is needed",
-        "The intervals are too wide, so the bootstrap was done incorrectly"
+        "The intervals are too wide, so the bootstrap was done incorrectly",
+        "This test cannot separate the two at night; more night crops or a paired comparison is needed"
       ],
       "correct": [
-        2
+        3
       ],
       "explanation": "Overlapping intervals on a small slice mean the evidence does not distinguish the models; that is a statement about the test, not about the models.",
       "misconceptions": [
         "Reads a point estimate as a finding on forty crops",
         "Mistakes \"not shown to differ\" for \"shown to be equal\"",
-        "",
-        "Expects narrow intervals regardless of sample size"
+        "Expects narrow intervals regardless of sample size",
+        ""
       ],
       "lo": [
         "LO2"
@@ -206,18 +206,18 @@
       "type": "single",
       "prompt": "With 300 labelled crops, a linear probe on a frozen backbone reaches 84% and full fine-tuning reaches 82%. With 3,000 labels full fine-tuning reaches 93%. Labelling 3,000 crops takes two weeks. The pilot needs a model on Monday. What do you ship first?",
       "options": [
-        "The fully fine-tuned model on 300 labels, because full fine-tuning is the stronger method",
         "The linear probe on 300 labels, and start labelling towards 3,000",
+        "The fully fine-tuned model on 300 labels, because full fine-tuning is the stronger method",
         "Nothing until 3,000 labels exist",
         "A model trained from scratch on the 300 labels, to avoid depending on pretrained weights"
       ],
       "correct": [
-        1
+        0
       ],
       "explanation": "At this label budget the probe is at least as good and far cheaper; the table also shows that labels, not more training, buy the next gain.",
       "misconceptions": [
-        "Ranks methods in general instead of reading the numbers at this label budget",
         "",
+        "Ranks methods in general instead of reading the numbers at this label budget",
         "Lets the better future result block a usable present one",
         "Discards pretraining when labels are scarcest, which is when it helps most"
       ],
@@ -409,18 +409,18 @@
       "type": "single",
       "prompt": "An oracle analysis of a detector gives these gains in average precision if each error type were fully fixed: duplicates +0.06, class +0.01, localisation +0.03, missed +0.05. Tightening suppression takes ten minutes; collecting data for missed defects takes three weeks. What do you do first?",
       "options": [
-        "Collect data for the missed defects, because recall matters most",
         "Tighten suppression, measure again, then plan the data collection from the new table",
+        "Collect data for the missed defects, because recall matters most",
         "Relabel all boxes for localisation",
         "Work on class confusion, since it is the hardest"
       ],
       "correct": [
-        1
+        0
       ],
       "explanation": "The largest gain is also the cheapest; and fixing one type moves the others, so the table is measured again before three weeks are spent.",
       "misconceptions": [
-        "Chooses by a general belief rather than by the gains and costs on the table",
         "",
+        "Chooses by a general belief rather than by the gains and costs on the table",
         "Picks a costly fix with half the gain of a free one",
         "Chooses the smallest gain on the table"
       ],
@@ -494,18 +494,18 @@
       "options": [
         "The count cannot be trusted, because the identities are wrong",
         "The tracker is ready for any use",
-        "For counting on this camera the evidence supports it; it is not fit for uses that follow a vehicle, such as travel time",
-        "Identity switches do not matter for any application"
+        "Identity switches do not matter for any application",
+        "For counting on this camera the evidence supports it; it is not fit for uses that follow a vehicle, such as travel time"
       ],
       "correct": [
-        2
+        3
       ],
       "explanation": "A switch costs a count only when it happens at the line; uses that need one identity per vehicle are a different requirement.",
       "misconceptions": [
         "Assumes every identity switch corrupts the count",
         "Generalises from one metric to all uses",
-        "",
-        "Dismisses a metric that other applications depend on"
+        "Dismisses a metric that other applications depend on",
+        ""
       ],
       "lo": [
         "LO4"
@@ -521,18 +521,18 @@
       "type": "single",
       "prompt": "In slow traffic a counter reports 31 vehicles where 22 crossed. Its rule adds one whenever a box centre moves from above the line to below it. What is the most likely cause, and the fix?",
       "options": [
-        "Missed detections; lower the detector's score threshold",
         "Boxes jitter back and forth across the line; count each track at most once",
+        "Missed detections; lower the detector's score threshold",
         "The line is too close to the camera; move it further away",
         "False detections; raise the score threshold"
       ],
       "correct": [
-        1
+        0
       ],
       "explanation": "A slow vehicle's centre crosses the line several times as its box jitters; counting once per track removes the repeats.",
       "misconceptions": [
-        "Missed detections lose counts; they do not add nine",
         "",
+        "Missed detections lose counts; they do not add nine",
         "Moves the line without removing the cause, which is the rule",
         "False alarms rarely travel across a line; the pattern is tied to slow traffic"
       ],
@@ -637,18 +637,18 @@
       "type": "single",
       "prompt": "You quantise a detector to 8-bit integers. The file shrinks to a quarter and latency falls by 40%. What must happen before it replaces the 32-bit model?",
       "options": [
-        "Nothing: quantisation does not change predictions",
         "Its accuracy is measured again on the same validation frames, by condition",
+        "Nothing: quantisation does not change predictions",
         "It is retrained from scratch",
         "Its input resolution is raised to make up for the lost precision"
       ],
       "correct": [
-        1
+        0
       ],
       "explanation": "Every weight and activation changed a little; only a measurement on the same frames tells whether small or low-contrast objects were lost.",
       "misconceptions": [
-        "Assumes rounding to 256 levels is harmless for every model",
         "",
+        "Assumes rounding to 256 levels is harmless for every model",
         "Prescribes a costly remedy before knowing whether there is a loss",
         "Spends the latency gain on a guess"
       ],

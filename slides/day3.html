@@ -353,7 +353,7 @@ return "background"</code></pre>
   <div class="quiz" data-type="single" data-lo="LO3">
     <p class="lead">A crack segmenter scores an IoU of 0.52. Its masks, overlaid on the frames, follow every crack and look about one pixel wider than the labels. What do you report?</p>
     <div class="opts">
-      <div class="opt" data-why="Reads IoU on a scale made for large objects: on lines two pixels wide, one extra pixel of width halves the score">The model is poor and needs a larger backbone</div>
+      <div class="opt" data-why="Reads IoU on a scale made for large objects: on lines two pixels wide, one extra pixel of width alone takes a third off the score">The model is poor and needs a larger backbone</div>
       <div class="opt" data-why="Switches to a metric that the road pixels dominate: at about 1% cracks, any mask scores in the high nineties">Pixel accuracy, which is 99% and describes the model better</div>
       <div class="opt" data-ok>The IoU with the object's width, and precision and recall at a two-pixel tolerance</div>
       <div class="opt" data-why="Changes the number without changing what it measures: Dice is a fixed function of IoU and is larger for every model">Dice, because it is higher for the same masks</div>

@@ -7,7 +7,7 @@
   "lang": "en",
   "title": {
     "en": "Computer Vision Engineering",
-    "ar": "هندسة رؤية الحاسب"
+    "ar": "هندسة الرؤية الحاسوبية"
   },
   "tagline": "Build vision systems that are measured by condition, fitted to a roadside processor and released with evidence",
   "description": "Participants build vision systems for a fictional municipal roads and traffic department that must keep working in glare, dust, rain and at night. On public road-damage images and synthetic traffic-camera clips they audit and extend annotations, fine-tune convolutional and transformer backbones, train a pothole detector and a crack segmenter, track and count vehicles, and fit the chosen model to the latency and memory budget of a processor-only roadside unit. Each lab ends with a test under changed lighting, blur or camera position. Vision-language models and multimodal applications are AE-408.",

@@ -150,7 +150,7 @@ uv run jupyter lab</code></pre>
   <h2>A failure note is three lines: promised, found, asked</h2>
   <table class="t">
     <tr><th>Line</th><th>From lab 1.1</th></tr>
-    <tr><td><b>Promised</b></td><td>96% on survey-style crops: clean daylight, vehicle camera</td></tr>
+    <tr><td><b>Promised</b></td><td>95.5% on survey-style crops: clean daylight, vehicle camera</td></tr>
     <tr><td><b>Found</b></td><td>43% on 200 field crops; worst slice dust, 12% on 40 crops</td></tr>
     <tr class="hl"><td><b>Asked</b></td><td>Do not deploy. Label crops under dust, night, rain and glare and from pole cameras; report every later model by these slices</td></tr>
   </table>
@@ -332,7 +332,7 @@ uv run jupyter lab</code></pre>
       <li>The better a model memorises, the more it gains</li>
     </ul>
   </div>
-  <aside class="notes"><p>With a 70/15/15 split drawn independently per frame, two frames of a pair land in different splits a little under half the time, which is what the lab finds. Leakage is not only pixels: frames of one segment share surface, markings and wear even when they are not near-duplicates. So the unit that must stay together is the site, here the road segment. In medical imaging the unit is the patient; in retail, the store.</p></aside>
+  <aside class="notes"><p>With a 70/15/15 split drawn independently per frame, two frames of a pair land in different splits about half the time (0.465 by the arithmetic: 1 − (0.70² + 0.15² + 0.15²)); the lab finds 150 of 274. Leakage is not only pixels: frames of one segment share surface, markings and wear even when they are not near-duplicates. So the unit that must stay together is the site, here the road segment. In medical imaging the unit is the patient; in retail, the store.</p></aside>
 </section>
 
 <section class="slide" id="difference-hash" data-lo="LO1">
@@ -540,7 +540,7 @@ def apply(transform, img, mask):
   <p class="lead">Two families of pretrained backbone on the same crops, how much of one to train, the zero-shot floor, and which weights the department may deploy.</p>
   <ul class="bullets">
     <li>On Colab, switch the runtime to a GPU before the first lab</li>
-    <li>Lab 2.3 downloads an open-vocabulary model of about 350 MB: start it on a good connection</li>
+    <li>Lab 2.3 downloads an open-vocabulary model of about 600 MB: start it on a good connection</li>
   </ul>
   <aside class="notes"><p>Remind laptop users that quick mode covers Day 2 as well: two backbones fine-tuned on 320 crops for one pass take a few minutes on a processor.</p></aside>
 </section>

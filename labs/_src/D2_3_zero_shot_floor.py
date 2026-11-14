@@ -18,7 +18,7 @@
 # - [ ] ✱ Stretch · Build a five-shot prototype classifier from image embeddings
 #
 # AI policy for this lab: an assistant may explain code and errors; it does not write the scoring.
-# The model (CLIP ViT-B/32, about 350 MB) downloads on the first run.
+# The model (CLIP ViT-B/32, about 600 MB) downloads on the first run.
 
 # %%
 import os, sys, subprocess

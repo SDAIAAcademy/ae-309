@@ -1,7 +1,7 @@
 <!-- academy:title -->
 # Computer Vision Engineering
 
-هندسة رؤية الحاسب
+هندسة الرؤية الحاسوبية
 
 AI Engineering Track · SDAIA Academy · AE-309 · Level 300
 
@@ -51,8 +51,8 @@ appears. Problems are planted for the labs to find: a pilot classifier trained o
 shares road spots, missing segment ids, a class two annotators read differently, transforms that change a label, a gantry
 that breaks tracks, a serving function with the wrong preprocessing, a camera that was knocked and a lens gathering dust.
 
-The catalog describes this course on public road-damage images. This edition runs on the synthetic pack, so that every lab
-runs offline, on a laptop processor in a quick mode, with known planted problems. The capstone may use a public road-damage
+The catalog describes this course on public road-damage images. This edition runs on the synthetic pack, so that no data is
+downloaded and every lab runs on a laptop processor in a quick mode, with known planted problems. The capstone may use a public road-damage
 set (for example RDD2022) under its own licence.
 
 ## How the labs run

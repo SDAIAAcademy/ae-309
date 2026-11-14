@@ -272,7 +272,7 @@ def linear_probe(F_train, y_train, F_test):
     <div class="card c-teal"><h4>What that allows</h4><p class="small mb0">Describe a class in words, and the model can score any picture against the description. No task labels, no training.</p></div>
   </div>
   <div class="callout note mt"><b>Open vocabulary:</b> the classes are not fixed when the model is trained. You name them when you use it.</div>
-  <aside class="notes"><p>The model in the lab is CLIP with a ViT-B/32 image tower, loaded through OpenCLIP: about 350 MB, and it runs on a laptop processor because nothing is trained. Radford et al. report 400 million image-text pairs for its training. This session uses such a model for one purpose: a baseline. Vision-language models as systems (questions about images, grounding, multimodal applications) are the subject of AE-408. Sources: Radford et al., 2021; the OpenCLIP repository.</p></aside>
+  <aside class="notes"><p>The model in the lab is CLIP with a ViT-B/32 image tower, loaded through OpenCLIP: about 600 MB, and it runs on a laptop processor because nothing is trained. Radford et al. report 400 million image-text pairs for its training. This session uses such a model for one purpose: a baseline. Vision-language models as systems (questions about images, grounding, multimodal applications) are the subject of AE-408. Sources: Radford et al., 2021; the OpenCLIP repository.</p></aside>
 </section>
 
 <section class="slide" id="prompts-are-the-classifier" data-lo="LO2">
@@ -358,7 +358,7 @@ def zero_shot(prompts, image_emb):
 </section>
 
 <section class="slide lab" id="lab-2-3" data-auto="lab" data-lab="2.3">
-  <aside class="notes"><p>AI policy: an assistant may explain code and errors. The lab downloads the image-text model, about 350 MB, on first use: start the first cell early on a slow connection. It needs no result of labs 2.1 or 2.2; the fine-tuned runs it compares with are the supplied files. Expected in quick mode with the solution's prompts: 0.280 for bare names, 0.323 for the most common class, 0.510 for described prompts; the supplied runs between 0.937 and 0.943 on the same 300 crops; lowest recall on "clear". Participants' own prompts will land anywhere between 0.3 and 0.6, which is the lesson. Common slip: forgetting to scale the text embeddings to unit length.</p></aside>
+  <aside class="notes"><p>AI policy: an assistant may explain code and errors. The lab downloads the image-text model, about 600 MB, on first use: start the first cell early on a slow connection. It needs no result of labs 2.1 or 2.2; the fine-tuned runs it compares with are the supplied files. Expected in quick mode with the solution's prompts: 0.280 for bare names, 0.323 for the most common class, 0.510 for described prompts; the supplied runs between 0.937 and 0.943 on the same 300 crops; lowest recall on "clear". Participants' own prompts will land anywhere between 0.3 and 0.6, which is the lesson. Common slip: forgetting to scale the text embeddings to unit length.</p></aside>
 </section>
 
 <!-- ======================= SESSION 4 ======================= -->

@@ -48,15 +48,16 @@ dynamic_axes = {
 torch.onnx.export(model.eval(), example, path,
                   input_names=["image"],
                   output_names=["cls", "box"],
-                  dynamic_axes=dynamic_axes)</code></pre>
+                  dynamic_axes=dynamic_axes,
+                  opset_version=17, dynamo=False)</code></pre>
     <ul class="bullets">
       <li>The exporter follows one example input through the network</li>
       <li>By default <b>every size of that example is frozen</b> into the graph</li>
       <li>Name the axes that must stay free: here batch, height and width</li>
-      <li><code>model.eval()</code> first, or training behaviour is exported</li>
+      <li><code>model.eval()</code> first: the outputs you compare against must be inference outputs too</li>
     </ul>
   </div>
-  <aside class="notes"><p>The resolution the unit will use is not chosen yet; session 2 chooses it. So height and width stay free. A model exported at 192 with frozen sizes simply refuses a 160-pixel frame, which is the kind failure. The unkind one is a model exported in training mode: batch normalisation then uses the statistics of each incoming batch, and outputs drift without any error. What ends up inside the file: every operation from the normalisation of the input to the two output maps. What stays outside: decoding the maps into boxes and suppression, which roadkit does in NumPy on both sides. The lab's file is 3.5 MB.</p></aside>
+  <aside class="notes"><p>The resolution the unit will use is not chosen yet; session 2 chooses it. So height and width stay free. A model exported at 192 with frozen sizes simply refuses a 160-pixel frame, which is the kind failure. The unkind one is a reference computed with the model left in training mode: batch normalisation then uses the statistics of each batch, and the comparison fails or, worse, passes on the wrong outputs. The exporter writes inference behaviour by default; calling eval() states it for both sides. dynamo=False selects the exporter that takes dynamic_axes; recent PyTorch versions default to a newer exporter that names free sizes differently, and print a deprecation notice for the older path. What ends up inside the file: every operation from the normalisation of the input to the two output maps. What stays outside: decoding the maps into boxes and suppression, which roadkit does in NumPy on both sides. The lab's file is 3.5 MB.</p></aside>
 </section>
 
 <section class="slide" id="parity-within-tolerance" data-lo="LO5">
