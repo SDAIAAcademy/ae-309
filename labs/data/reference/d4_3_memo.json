@@ -1,0 +1,28 @@
+{
+ "quick": {
+  "clean_ap50": 1.0,
+  "frames": 90,
+  "conditions": {
+   "rain": {
+    "drop": 0.013,
+    "upper": 0.035,
+    "decision": "pass"
+   },
+   "glare": {
+    "drop": 0.0,
+    "upper": 0.0,
+    "decision": "pass"
+   },
+   "night": {
+    "drop": 0.076,
+    "upper": 0.159,
+    "decision": "human check"
+   },
+   "pole": {
+    "drop": 0.013,
+    "upper": 0.042,
+    "decision": "pass"
+   }
+  }
+ }
+}

@@ -1,0 +1,13 @@
+{
+ "quick": {
+  "task": "inspection",
+  "accuracy_budget": "average precision at IoU 0.5 of at least 0.80 on clean frames and no condition more than 0.15 below it",
+  "latency_budget_ms": 60,
+  "field_conditions": [
+   "rain",
+   "glare",
+   "night",
+   "moved camera"
+  ]
+ }
+}

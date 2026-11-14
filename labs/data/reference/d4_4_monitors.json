@@ -1,0 +1,18 @@
+{
+ "quick": {
+  "moved camera": {
+   "field": "offset_px",
+   "low": -5,
+   "high": 5,
+   "run": 2,
+   "relative": false
+  },
+  "dirty lens": {
+   "field": "sharpness",
+   "low": 0.85,
+   "high": 1.5,
+   "run": 3,
+   "relative": true
+  }
+ }
+}

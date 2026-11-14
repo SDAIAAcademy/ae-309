@@ -1,158 +1,508 @@
+<!-- ======================= OPENING ======================= -->
 <section class="slide title" id="title" data-auto="title">
-  <aside class="notes">REPLACE: welcome; introduce yourself; one question to the room that calibrates the pace; the rhythm of the day</aside>
+  <aside class="notes"><p>The last teaching day. Until now the detector lived in a notebook. Today it has to run on a two-core roadside unit, hold in rain and at night, store no readable face, and get a signature from Rakan Al-Shammari. Ask the room: who has shipped a model to a device with no graphics processor? Their stories are the best opening for session 1. Every lab today runs on a laptop processor and starts from the supplied checkpoint detector.</p></aside>
 </section>
 
 <section class="slide" id="agenda" data-auto="agenda"></section>
 
-<!-- Session 1 -->
-
-<section class="slide section" id="s1" data-auto="section" data-session="1"></section>
-
-<section class="slide" id="s1-idea" data-lo="LO5">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
+<section class="slide" id="review-day-3" data-label="Review" data-lo="LO3">
+  <div class="kicker">Review of Day 3</div>
+  <h2>What do you do with this error?</h2>
+  <div class="quiz" data-type="single" data-lo="LO3">
+    <p class="lead">On a rain frame the detector puts two pothole boxes on one pothole: one with a score of 0.84 and an IoU of 0.81 with the truth, one with 0.61 and 0.66. How is the second box counted, and what removes it?</p>
+    <div class="opts">
+      <div class="opt" data-why="Reads a fitting box as correct without asking whether the object is already claimed: each truth box can be matched once">A true positive; nothing needs removing</div>
+      <div class="opt" data-why="Confuses a second box on the same object with a box that fits badly: 0.66 is above the 0.5 line">A localisation error; a box guideline removes it</div>
+      <div class="opt" data-ok>A duplicate, counted as a false positive; tighter suppression removes it</div>
+      <div class="opt" data-why="Blames the weather for an error that the suppression setting produces in any light">A background error; more rain frames remove it</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> The better box claims the pothole. The second fits and has the right class, so it is a duplicate; tighter suppression deletes it without any training.</div>
   </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+  <aside class="notes"><p>Answer: C. The two boxes overlap each other by less than the prototype's loose threshold of 0.7, which is how the echo survived. This is yesterday's oracle table in one frame.</p></aside>
 </section>
 
-<section class="slide" id="s1-steps" data-lo="LO5">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<!-- ======================= SESSION 1 ======================= -->
+<section class="slide section" id="s1" data-auto="section" data-session="1"></section>
+
+<section class="slide" id="leave-the-framework" data-lo="LO5">
+  <div class="kicker">Deployment</div>
+  <h2>The model leaves the framework it was trained in</h2>
+  <div class="cols cols-2">
+    <div class="card c-navy"><h4>Where it was trained</h4><p class="small mb0">Python, a training framework, a notebook with gigabytes of libraries, a graphics processor when one is free.</p></div>
+    <div class="card c-coral"><h4>Where it will run</h4><p class="small mb0">Al-Manar's roadside unit: two processor cores, no accelerator, a metered link, a small disk, one frame at a time.</p></div>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <div class="callout note mt"><b>An interchange format carries the model across:</b> the network as a graph of standard operations plus its weights, in one file that an inference runtime can execute.</div>
+  <aside class="notes"><p>Yousef Al-Maliki, the field systems engineer, owns the unit. He will not install a training framework on it, and he should not have to. The format used in the labs is ONNX, run with ONNX Runtime. Other pairs fill the same slot and are named in the course as interchangeable examples: OpenVINO's own format and runtime for Intel processors, LiteRT for phones and small boards. The choice follows the target hardware. Sources: the PyTorch documentation on ONNX export; the OpenVINO and LiteRT documentation.</p></aside>
+</section>
+
+<section class="slide" id="what-export-records" data-lo="LO5">
+  <div class="kicker">Export</div>
+  <h2>Export runs the model once and writes down what happened</h2>
+  <div class="cols cols-2">
+    <pre class="code s" data-file="lab 4.1"><code class="language-python">example = torch.rand(1, 3, 192, 192)
+dynamic_axes = {
+    "image": {0: "batch", 2: "height", 3: "width"},
+    "cls": {0: "batch", 2: "h", 3: "w"},
+    "box": {0: "batch", 2: "h", 3: "w"},
+}
+torch.onnx.export(model.eval(), example, path,
+                  input_names=["image"],
+                  output_names=["cls", "box"],
+                  dynamic_axes=dynamic_axes)</code></pre>
+    <ul class="bullets">
+      <li>The exporter follows one example input through the network</li>
+      <li>By default <b>every size of that example is frozen</b> into the graph</li>
+      <li>Name the axes that must stay free: here batch, height and width</li>
+      <li><code>model.eval()</code> first, or training behaviour is exported</li>
+    </ul>
+  </div>
+  <aside class="notes"><p>The resolution the unit will use is not chosen yet; session 2 chooses it. So height and width stay free. A model exported at 192 with frozen sizes simply refuses a 160-pixel frame, which is the kind failure. The unkind one is a model exported in training mode: batch normalisation then uses the statistics of each incoming batch, and outputs drift without any error. What ends up inside the file: every operation from the normalisation of the input to the two output maps. What stays outside: decoding the maps into boxes and suppression, which roadkit does in NumPy on both sides. The lab's file is 3.5 MB.</p></aside>
+</section>
+
+<section class="slide" id="parity-within-tolerance" data-lo="LO5">
+  <div class="kicker">Parity</div>
+  <h2>A copy is proven, not assumed: compare outputs within a stated tolerance</h2>
+  <div class="cols cols-2 mid">
+    <div class="stat center"><div class="big">0.00002</div><div class="lbl">largest difference between the original's and the runtime's raw outputs on eight frames, against a tolerance of 0.001 (lab 4.1)</div></div>
+    <ul class="bullets">
+      <li>The outputs are <b>never bit-identical</b>: the runtime fuses and reorders operations, and float arithmetic depends on the order</li>
+      <li>State the tolerance before you look</li>
+      <li>Orders of magnitude above rounding means something was exported differently</li>
+    </ul>
+  </div>
+  <aside class="notes"><p>The exact figure in the lab is 2.24e-05 on torch 2.15, onnx 1.23 and onnxruntime 1.32; it moves a little between versions and processors and stays far below the tolerance. Print the library versions beside the result, as the lab does: a parity claim belongs to a pair of versions. What would make you refuse: a difference near 0.01 or more, which points at a layer left in training mode, an operation the exporter replaced with an approximation, or a different interpolation rule in a resize.</p></aside>
+</section>
+
+<section class="slide" id="compare-the-product" data-lo="LO5">
+  <div class="kicker">Parity, second level</div>
+  <h2>Then compare what the user receives: the boxes</h2>
+  <div class="flow">
+    <div class="step c-teal"><b>1 · Raw outputs</b>score and box maps agree within the tolerance</div>
+    <div class="arrow">→</div>
+    <div class="step c-cyan"><b>2 · Final boxes</b>same count, same class, IoU of at least 0.99 with a partner</div>
+    <div class="arrow">→</div>
+    <div class="step c-coral"><b>3 · Kept as a test</b>ten frames and their boxes, run on every export</div>
+  </div>
+  <div class="callout tip mt"><b>From the lab:</b> 30 boxes from the original, 30 from the export, parity 1.000. A tiny difference in a score can move a box across a threshold, so the raw outputs alone do not close the question.</div>
+  <aside class="notes"><p>Lab 4.1 on 32 validation frames. The third step is the one teams skip. Exports are repeated: a new checkpoint, a new library version, the quantised copy of session 2. Each is a new chance for a silent difference, and the test costs seconds. It goes into the capstone repository under reproducibility.</p></aside>
+</section>
+
+<section class="slide" id="preprocessing-mismatch" data-lo="LO5">
+  <div class="kicker">The planted fault</div>
+  <h2>The file was right and the prototype still saw potholes everywhere</h2>
+  <div class="cols cols-2">
+    <pre class="code s" data-file="the roadside prototype"><code class="language-python">def serve_prototype(sess, frame_bgr):
+    x = frame_bgr.astype(np.float32)[None]
+    x = x.transpose(0, 3, 1, 2)
+    cls, box = sess.run(None, {"image": x})
+    return U.decode(cls, box, score_thr=0.3)[0]</code></pre>
+    <div>
+      <div class="stat"><div class="big">816</div><div class="lbl">boxes from the prototype on 32 frames where the original reports 30; parity 0.000</div></div>
+      <ul class="bullets">
+        <li>The camera library delivers <b>BGR</b>; the model was trained on RGB</li>
+        <li>Values arrive as <b>0 to 255</b>; the model expects 0 to 1</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout warn mt"><b>No exception, no warning.</b> A plausible list of boxes, only a wrong one. Most deployment bugs in vision live in the lines before the model.</div>
+  <aside class="notes"><p>Two faults are stacked, and fixing one alone still fails, which is why participants need the parity test and not their eyes. After the fix the lab reports 30 boxes and parity 1.000. Other members of the same family: a different resize rule between training and serving, a letterboxed frame against a stretched one, the mean and standard deviation applied twice or not at all. Ask who has met one of these in production. Usually half the room.</p></aside>
+</section>
+
+<section class="slide" id="inside-and-outside-the-graph" data-lo="LO5">
+  <div class="kicker">The contract</div>
+  <h2>Write down what the graph does and what the caller must do</h2>
+  <table class="t">
+    <tr><th>Step</th><th>Rasid</th><th>Who can get it wrong</th></tr>
+    <tr><td>Channel order</td><td>RGB, outside the graph</td><td>The serving code</td></tr>
+    <tr><td>Value range</td><td>0 to 1, outside the graph</td><td>The serving code</td></tr>
+    <tr><td>Resize</td><td>Outside the graph, bilinear</td><td>The serving code</td></tr>
+    <tr class="hl"><td>Mean and standard deviation</td><td>Inside the graph</td><td>Nobody</td></tr>
+    <tr><td>Decoding and suppression</td><td>Outside the graph, shared code</td><td>Whoever copies the settings</td></tr>
+  </table>
+  <aside class="notes"><p>Putting the normalisation inside the model was a design decision of the course's models (the Norm layer in roadkit), and the highlighted row is what it buys. The more of the pipeline is inside the exported graph, the less a serving team can change by accident; the price is a less flexible file. The last row is yesterday's story: the prototype ran suppression at 0.7 because someone typed a setting. This table belongs in the model card under "how to run".</p></aside>
+</section>
+
+<section class="slide" id="checkpoint-1" data-lo="LO5">
+  <div class="kicker">Checkpoint</div>
+  <h2>The parity test fails the day before release</h2>
+  <div class="quiz" data-type="single" data-lo="LO5">
+    <p class="lead">After a runtime upgrade the stored parity test reports a largest difference of 0.004 against a tolerance of 0.001, and 2 of 30 boxes have no partner. The model file did not change. What do you do?</p>
+    <div class="opts">
+      <div class="opt" data-why="Moves the limit after seeing the result: a tolerance that follows the measurement tests nothing">Raise the tolerance to 0.01, since 28 of 30 boxes still agree</div>
+      <div class="opt" data-ok>Release with the proven versions, and find what changed before upgrading</div>
+      <div class="opt" data-why="Calls it rounding although it is two hundred times the difference measured before, and final boxes changed">Release with the upgrade: differences this small are float rounding</div>
+      <div class="opt" data-why="Treats a difference between two runtimes as a training problem: the weights are identical on both sides">Retrain the detector with the upgraded library installed</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> Parity belongs to a pair of versions. The test caught a silent change: the proven pair is released, and the upgrade waits for an explanation.</div>
+  </div>
+  <aside class="notes"><p>Answer: B. This is why the lab prints the library versions beside the result and why the test stays in the repository. Follow up with the device case: an exported model that is proven in the notebook and wrong on the device has its fault in the lines before the model, as the prototype showed.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-4-1" data-auto="lab" data-lab="4.1">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI policy: an assistant may explain code and errors. The lab starts from the supplied checkpoint detector and runs on a laptop processor in under a minute. Expected: a file of 3.5 MB with the input shape batch, 3, height, width; largest difference about 2e-05; 30 and 30 boxes with parity 1.000; the prototype 816 boxes and parity 0.000; fixed, 30 boxes and parity 1.000. The exporter prints a deprecation notice about its older code path: it is harmless here. Common slips: freeing only the batch axis; fixing the channel order and forgetting the division by 255.</p></aside>
 </section>
 
-<!-- Session 2 -->
-
+<!-- ======================= SESSION 2 ======================= -->
 <section class="slide section" id="s2" data-auto="section" data-session="2"></section>
 
-<section class="slide" id="s2-idea" data-lo="LO5">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
+<section class="slide" id="the-units-budget" data-lo="LO5">
+  <div class="kicker">The budget</div>
+  <h2>The roadside unit states its budget before any model exists</h2>
+  <div class="cols cols-3">
+    <div class="card c-coral"><div class="stat"><div class="big">60 ms</div><div class="lbl">per frame at the 95th percentile, on the unit</div></div></div>
+    <div class="card c-cyan"><div class="stat"><div class="big">2 MB</div><div class="lbl">of model file, sent over a metered link</div></div></div>
+    <div class="card c-navy"><div class="stat"><div class="big">2</div><div class="lbl">processor threads, no accelerator</div></div></div>
   </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+  <div class="callout note mt"><b>The case's assumption:</b> the unit takes three times as long per frame as the reference laptop. Your table says which settings are worth carrying to the unit, where the real measurement is made.</div>
+  <aside class="notes"><p>Yousef Al-Maliki wrote the budget before anyone trained a model, which is the right order. The factor of three is an assumption of the case study and is labelled as one everywhere it appears: a release measures on the unit itself, at its working temperature, with the camera pipeline running. A budget has other lines in real projects: memory while running, power, start-up time. The lab measures two of them and names the rest.</p></aside>
 </section>
 
-<section class="slide" id="s2-steps" data-lo="LO5">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="measure-the-tail" data-lo="LO5">
+  <div class="kicker">Measuring</div>
+  <h2>Measure the median and the 95th percentile, after a warm-up</h2>
+  <div class="cols cols-2">
+    <pre class="code" data-file="lab 4.2"><code class="language-python">def summarise(ms):
+    return (float(np.median(ms)),
+            float(np.percentile(ms, 95)))
+
+x = U.to_input(Xv[:1], size)   # one frame
+ms = U.latency_ms(
+    lambda: sess.run(None, {"image": x}), n=100)</code></pre>
+    <ul class="bullets">
+      <li>One frame at a time, as the camera delivers them</li>
+      <li>The first runs are slow: discard them</li>
+      <li>A unit that is fast on average and slow on one frame in twenty <b>drops that frame</b></li>
+      <li>Name the machine and the number of threads beside every latency</li>
+    </ul>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <aside class="notes"><p>The mean is the wrong summary for latency: a few slow runs pull it up and it describes no frame. The median says what a typical frame costs, the 95th percentile what the budget must cover. Close other programs before the lab: a video call in the background moves the tail more than any model setting. On a shared Colab machine the tail is noisier still. Batch size is the third lever besides resolution and precision, and it is the wrong one here: batching raises frames per second and makes the first frame wait for the last.</p></aside>
+</section>
+
+<section class="slide" id="three-levers" data-lo="LO5">
+  <div class="kicker">The levers</div>
+  <h2>Three levers trade accuracy for latency and memory</h2>
+  <table class="t">
+    <tr><th>Lever</th><th>What it buys</th><th>What it can cost</th></tr>
+    <tr><td><b>Input resolution</b></td><td>Work falls with the number of pixels</td><td>Small objects shrink below what the grid can see</td></tr>
+    <tr><td><b>Numeric precision</b></td><td>8-bit integers: a quarter of the file, faster integer arithmetic</td><td>Every number moves a little; some models lose accuracy</td></tr>
+    <tr><td><b>Batch size</b></td><td>More frames per second in total</td><td>Latency per frame: the first frame waits for the last</td></tr>
+  </table>
+  <div class="callout warn mt"><b>Re-measure accuracy after every change.</b> No rule of thumb says which model loses how much. Only the same validation frames, run again, do.</div>
+  <aside class="notes"><p>From 192 to 128 pixels a frame has 2.25 times fewer pixels, and a convolutional network does work in proportion to pixels. In the lab's run the median latency of the float model fell by a factor of 2.5, and that of the 8-bit model by only 1.3: once the arithmetic is cheap, the cost per frame that does not shrink with the picture dominates. A smaller or distilled model is a fourth lever, and pruning a fifth; both mean training again, which is why the three on the slide come first. On accelerators the picture changes: half precision is the usual first step there, and batching pays more.</p></aside>
+</section>
+
+<section class="slide" id="quantisation-needs-calibration" data-lo="LO5">
+  <div class="kicker">Quantisation</div>
+  <h2>Quantisation maps floats to 8-bit integers, and has to see real frames to do it</h2>
+  <div class="flow">
+    <div class="step c-navy"><b>1 · Float model</b>weights and activations as 32-bit floats: 3.53 MB</div>
+    <div class="arrow">→</div>
+    <div class="step c-teal"><b>2 · Calibrate</b>run 32 training frames and record the range of every activation</div>
+    <div class="arrow">→</div>
+    <div class="step c-cyan"><b>3 · Quantise</b>store and compute in 8-bit integers: 0.93 MB</div>
+    <div class="arrow">→</div>
+    <div class="step c-coral"><b>4 · Re-measure</b>parity is gone by design: measure accuracy again</div>
+  </div>
+  <div class="callout note mt"><b>Calibration frames come from the training split and look like the field.</b> Calibrate on daylight only, and the ranges are wrong at night.</div>
+  <aside class="notes"><p>This is static quantisation after training, done in the lab with ONNX Runtime's quantisation tool: per-channel weights, the quantise and dequantise form of the graph. The tool prints a suggestion to run a pre-processing pass first; it is advice, not an error. The float file fails the 2 MB limit before latency is even considered, so for Rasid quantisation is not optional. Alternatives when accuracy falls too far: leave the most sensitive layers in float, or train with quantisation simulated. Sources: the ONNX Runtime documentation on quantisation.</p></aside>
+</section>
+
+<section class="slide" id="benchmark-table" data-lo="LO5">
+  <div class="kicker">From the lab</div>
+  <h2>The benchmark table: one row per operating point</h2>
+  <table class="t small">
+    <tr><th>Precision</th><th>Input</th><th class="num">Median ms</th><th class="num">p95 ms</th><th class="num">On the unit, p95 ms</th><th class="num">File MB</th><th class="num">AP at 0.5</th></tr>
+    <tr><td>Float, 32-bit</td><td>192 by 192</td><td class="num">25.3</td><td class="num">35.0</td><td class="num">105.1</td><td class="num">3.53</td><td class="num">0.973</td></tr>
+    <tr><td>Float, 32-bit</td><td>160 by 160</td><td class="num">18.0</td><td class="num">28.5</td><td class="num">85.6</td><td class="num">3.53</td><td class="num">0.973</td></tr>
+    <tr><td>Float, 32-bit</td><td>128 by 128</td><td class="num">10.1</td><td class="num">15.7</td><td class="num">47.2</td><td class="num">3.53</td><td class="num">0.921</td></tr>
+    <tr><td>Integer, 8-bit</td><td>192 by 192</td><td class="num">8.7</td><td class="num">41.7</td><td class="num">125.0</td><td class="num">0.93</td><td class="num">0.973</td></tr>
+    <tr class="hl"><td>Integer, 8-bit</td><td>160 by 160</td><td class="num">8.3</td><td class="num">10.2</td><td class="num">30.5</td><td class="num">0.93</td><td class="num">0.973</td></tr>
+    <tr><td>Integer, 8-bit</td><td>128 by 128</td><td class="num">6.9</td><td class="num">10.3</td><td class="num">31.0</td><td class="num">0.93</td><td class="num">0.919</td></tr>
+  </table>
+  <p class="small muted mt-s">Lab 4.2, quick mode: 120 validation frames, two threads, one laptop processor. Unit latency is the laptop's times three, the case's assumption.</p>
+  <aside class="notes"><p>Read the table in three passes. Size: the three float rows are 3.53 MB and fail the 2 MB limit whatever their latency; the 8-bit file is 0.93 MB. Accuracy: 192 and 160 pixels score the same 0.973, 128 pixels loses five points, and eight bits cost at most 0.002 at any size on this model. Latency: the highlighted row, 8-bit at 160 pixels, comes to about 31 ms on the unit, half the budget. Then the odd row: 8-bit at 192 pixels has a median of 8.7 ms and a 95th percentile of 41.7 ms. The laptop was busy with other work during that run, and a few slow frames were enough. That is not a property of the model, and it is exactly what the tail measures: say so, and measure that row again on a quiet machine before believing either number. Participants' tables will differ from this one in every latency column.</p></aside>
+</section>
+
+<section class="slide" id="choose-the-operating-point" data-lo="LO5">
+  <div class="kicker">Deciding</div>
+  <h2>The operating point is the most accurate row that meets every limit</h2>
+  <div class="cols cols-2">
+    <pre class="code" data-file="lab 4.2"><code class="language-python">def choose(table):
+    ok = [r for r in table
+          if r["unit_p95_ms"] &lt;= BUDGET_MS
+          and r["file_mb"] &lt;= BUDGET_MB]
+    return max(ok, key=lambda r: r["ap50"]) \
+        if ok else None</code></pre>
+    <ul class="bullets">
+      <li>Limits first, accuracy second: a row over the limit is not a candidate</li>
+      <li>From this run: <b>8-bit at 160 by 160</b>, AP 0.973, about 31 ms on the unit, 0.93 MB</li>
+      <li><b>No row qualifies</b> is a result too: report it with the nearest row and what would close the gap</li>
+    </ul>
+  </div>
+  <div class="callout tip mt"><b>This table and the chosen row are the evidence for outcome 5.</b> The capstone asks for the same against the budget you state, with the machine named.</div>
+  <aside class="notes"><p>The function is four lines because the thinking happened earlier: the limits were stated before the measurement, so choosing is a filter and a maximum. In this run two rows tie on accuracy, 8-bit at 192 and at 160; the first is over the latency limit because of its tail, so 160 is chosen. On a quiet machine 192 may qualify as well, and then the tie is broken by latency or by margin, which the function as written does not do: a good question for the room. Remind them of the number nobody measured: the factor of three between laptop and unit is the case's assumption.</p></aside>
+</section>
+
+<section class="slide" id="checkpoint-2" data-lo="LO5">
+  <div class="kicker">Checkpoint</div>
+  <h2>Does it fit?</h2>
+  <div class="quiz" data-type="single" data-lo="LO5">
+    <p class="lead">The budget is 50 ms per frame at the 95th percentile. On the unit, model A has a median of 31 ms and a 95th percentile of 64 ms; model B 38 ms and 46 ms. Model A is one point more accurate. Which do you deploy?</p>
+    <div class="opts">
+      <div class="opt" data-why="Judges by the typical frame: the budget is written on the tail, and one frame in twenty of model A arrives late">Model A: its median is lower and it is more accurate</div>
+      <div class="opt" data-why="Averages two summaries into a number that describes no frame and is not what the budget limits">Model A: the mean of its two numbers is under 50 ms</div>
+      <div class="opt" data-why="Refuses a decision the measurements already support: model B is inside the stated budget">Neither, until both are measured again with batch size 8</div>
+      <div class="opt" data-ok>Model B: it is the only one inside the budget</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> The limit is on the 95th percentile. Model A breaks it, so its extra point of accuracy is not on offer.</div>
+  </div>
+  <aside class="notes"><p>Answer: D. If the room argues for A, ask what happens to the late frames: they are dropped or they queue, and a queue on a device with one camera only grows.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-4-2" data-auto="lab" data-lab="4.2">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI policy: an assistant may explain code and errors. The lab starts from the supplied checkpoint detector. Latency belongs to the machine: every participant gets different numbers, and the chosen operating point may differ from the slide's or be "no row qualifies". That is expected; ask three participants to read out their chosen row and their processor. What must agree across the room: the file sizes and, closely, the average precision per row. Ask everyone to close other programs first. The quantisation tool prints two lines that suggest a pre-processing pass: harmless.</p></aside>
 </section>
 
-<!-- Session 3 -->
-
+<!-- ======================= SESSION 3 ======================= -->
 <section class="slide section" id="s3" data-auto="section" data-session="3"></section>
 
-<section class="slide" id="s3-idea" data-lo="LO6">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
+<section class="slide" id="back-to-day-1" data-lo="LO6">
+  <div class="kicker">The question from Day 1</div>
+  <h2>The pilot fell from 95% to 43% in the field. Will this model?</h2>
   <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
+    <div class="card c-coral"><h4>What the pilot did</h4><p class="small mb0">Trained on clean daylight, tested on clean daylight, and met dust, rain and night for the first time on the roadside.</p></div>
+    <div class="card c-teal"><h4>What changes today</h4><p class="small mb0">The field conditions are met in a test, on purpose, before the release. The test decides, and its rule is written first.</p></div>
   </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+  <div class="callout note mt"><b>Three kinds of shift, from Day 1:</b> corruption (rain, glare, night), viewpoint (a moved camera), population (another district). The first two can be imitated on frames you hold.</div>
+  <aside class="notes"><p>The detector of Day 3 was trained on frames from every kind of light, with a split by road segment, so the expectation is better than the pilot's. An expectation is not a release. The catalog entry names the four test sets: rain, glare, night and a moved camera. Dust is left for the capstone's held-back condition on purpose. Sources: Hendrycks and Dietterich, 2019.</p></aside>
 </section>
 
-<section class="slide" id="s3-steps" data-lo="LO6">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="paired-test-sets" data-lo="LO6">
+  <div class="kicker">The test sets</div>
+  <h2>Paired sets: the same road spots under each condition</h2>
+  <div class="cols cols-2">
+    <figure class="figure">
+      <img src="../assets/field.jpg" width="420" alt="A grid of road frames with detection boxes. Each column is one road spot with a pothole; the rows show it in clean daylight, in rain, under glare, at night and from a pole camera. The pothole is boxed in every row except in one night frame">
+      <figcaption>Rows: clean, rain, glare, night, moved camera.</figcaption>
+    </figure>
+    <ul class="bullets">
+      <li>Each column is one test frame, drawn again: frame 17 of the rain set is frame 17 of the clean set, in the rain</li>
+      <li>Each spot is <b>its own control</b>: what differs is the condition, not which potholes were drawn</li>
+      <li>Only <b>test-split</b> segments, at a stated severity</li>
+      <li>Find the frame where the box is gone</li>
+    </ul>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <aside class="notes"><p>With real cameras, paired sets come from applying a corruption to clean test frames, as the common-corruption benchmarks do, or from fixed cameras that see the same scene in different weather. The course generator can redraw a spot under any condition, which is the luxury of synthetic data; say so. In the last column of the night row the detector reports nothing. The severity is high (0.9 on the generator's scale of 0 to 1) because the question is about the bad days.</p></aside>
+</section>
+
+<section class="slide" id="paired-drop-with-interval" data-lo="LO6">
+  <div class="kicker">The statistic</div>
+  <h2>Report the drop per condition, with an interval on the drop</h2>
+  <div class="cols cols-2">
+    <pre class="code s" data-file="lab 4.3"><code class="language-python">r = np.random.default_rng(seed)
+vals = []
+for _ in range(n_boot):
+    idx = r.integers(0, n, n)   # frame numbers
+    vals.append(
+        U.mean_ap([pc[i] for i in idx],
+                  [gc[i] for i in idx], 0.5)
+        - U.mean_ap([pf[i] for i in idx],
+                    [gf[i] for i in idx], 0.5))
+low, high = np.percentile(vals, [2.5, 97.5])</code></pre>
+    <ul class="bullets">
+      <li>Resample the <b>frames</b>, and use the same drawn frames for the clean and the field score</li>
+      <li>Keep the difference each time</li>
+      <li>The spread of the differences is the interval of the drop</li>
+      <li>Pairing makes it narrower than two separate intervals would be</li>
+    </ul>
+  </div>
+  <aside class="notes"><p>The bootstrap of Day 2, applied to a difference of two average precisions. Average precision is not a mean over frames, so there is no formula for its interval; resampling frames works for any metric. The unit that is resampled is the frame, not the box: boxes in one frame are not independent. In a real project resample the road segment, for the same reason as the split.</p></aside>
+</section>
+
+<section class="slide" id="drops-by-condition" data-lo="LO6">
+  <div class="kicker">From the lab</div>
+  <h2>Night costs the most, and its interval is the widest</h2>
+  <table class="t">
+    <tr><th>Condition</th><th class="num">AP at 0.5</th><th class="num">Drop</th><th class="num">95% interval of the drop</th></tr>
+    <tr><td>Clean</td><td class="num">1.000</td><td class="num"></td><td class="num"></td></tr>
+    <tr><td>Glare</td><td class="num">1.000</td><td class="num">0.000</td><td class="num">0.000 to 0.000</td></tr>
+    <tr><td>Rain</td><td class="num">0.987</td><td class="num">0.013</td><td class="num">0.001 to 0.035</td></tr>
+    <tr><td>Moved camera</td><td class="num">0.987</td><td class="num">0.013</td><td class="num">0.000 to 0.042</td></tr>
+    <tr class="hl"><td>Night</td><td class="num">0.924</td><td class="num">0.076</td><td class="num">0.022 to 0.159</td></tr>
+  </table>
+  <p class="small muted mt-s">Lab 4.3, quick mode: the supplied detector on 90 paired test frames, 120 resamples.</p>
+  <aside class="notes"><p>Compare with Day 1: the pilot lost more than fifty points; this detector loses at most eight. The difference is not the architecture. It is training data that covers the conditions and a split that kept the test honest. Now the caution: a clean score of 1.000 and a glare interval of zero width on 90 frames mean the test has run out of resolution, not that the model is perfect. The full mode uses 240 frames, and the stretch item raises the severity until something breaks. A zero-width interval is a reason to make the test harder.</p></aside>
+</section>
+
+<section class="slide" id="rule-before-result" data-lo="LO6">
+  <div class="kicker">The decision</div>
+  <h2>The release rule is written before the test is run</h2>
+  <table class="t">
+    <tr><th>Upper end of the drop interval</th><th>Decision</th><th>From the lab</th></tr>
+    <tr><td>At most 0.10</td><td><b>Pass</b></td><td>Glare, rain, moved camera</td></tr>
+    <tr class="hl"><td>At most 0.30</td><td><b>Release with a human check:</b> an inspector confirms each detection before a crew is sent</td><td>Night (upper end 0.159)</td></tr>
+    <tr><td>Above 0.30</td><td><b>Hold:</b> the detector does not run under this condition</td><td>None</td></tr>
+  </table>
+  <div class="callout tip mt"><b>The rule uses the upper end, not the estimate.</b> A condition tested on few frames has a wide interval and fails until someone collects more. That is the rule working.</div>
+  <aside class="notes"><p>Rakan Al-Shammari's rule in the case study. The estimate for night, 0.076, would pass; the upper end, 0.159, does not. That gap is the whole argument for intervals in one row. A rule written after the results always passes. The thresholds are the department's choice and belong to its risk appetite: a wrong repair trip is cheap, a missed pothole on a fast road is not, and another department would set them differently.</p></aside>
+</section>
+
+<section class="slide" id="release-is-a-list" data-lo="LO6">
+  <div class="kicker">The memo</div>
+  <h2>"Release" is rarely one word: it is a list of conditions</h2>
+  <div class="cols cols-2">
+    <div class="card c-teal"><h4>The release memo, one page</h4><p class="small mb0">The model and its version. The test: 90 paired frames, clean AP 1.000. One row per condition: drop, interval, decision. What happens under each decision, and who does it.</p></div>
+    <div class="card c-coral"><h4>What the test did not cover</h4><p class="small mb0">Dust. Motion blur. Districts one by one. Conditions together, such as rain at night. Real cameras. Say so in the memo.</p></div>
+  </div>
+  <div class="callout note mt"><b>Add districts as rows.</b> Results by lighting, weather and district, so that no part of the city is served worse unnoticed.</div>
+  <aside class="notes"><p>The district rows come from the catalog entry's responsible-use statement, which also asks the model card to name the conditions in which a person checks a detection before a repair crew is sent: here, night. Al-Sinaiya is dustier and Al-Corniche wetter by construction of the data, so a model weak in dust is a model that serves Al-Sinaiya worse. A memo that lists its own gaps is trusted more, not less. In the capstone defence the assessor names a held-back condition and the participant re-runs the evaluation on it live.</p></aside>
+</section>
+
+<section class="slide" id="checkpoint-3" data-lo="LO6">
+  <div class="kicker">Checkpoint</div>
+  <h2>Release, check or hold?</h2>
+  <div class="quiz" data-type="single" data-lo="LO6">
+    <p class="lead">The rule: pass when the upper end of the drop interval is at most 0.10, human check up to 0.30, otherwise hold. In fog the detector's drop is 0.08 with an interval from 0.01 to 0.33, measured on 25 frames. What is the decision?</p>
+    <div class="opts">
+      <div class="opt" data-ok>Hold in fog, and collect more fog frames to narrow the interval</div>
+      <div class="opt" data-why="Applies the rule to the estimate: 0.08 looks like a pass, but the rule is written on the upper end of the interval">Pass: the drop of 0.08 is below 0.10</div>
+      <div class="opt" data-why="Splits the difference between estimate and upper end: 0.33 is above the limit for a human check">Release with a human check: the truth is probably in between</div>
+      <div class="opt" data-why="Changes the rule after seeing the result, which is the one thing the rule exists to prevent">Pass: with only 25 frames the interval is too wide to count</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> The upper end is 0.33, above 0.30. The interval is wide because the test is small, and the remedy is more frames, not a kinder reading.</div>
+  </div>
+  <aside class="notes"><p>Answer: A. This is the night row of the lab pushed one step further. Ask what "hold in fog" means in operation: someone or something has to know that it is foggy. That is a monitor, and the next session.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-4-3" data-auto="lab" data-lab="4.3">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI policy: an assistant may explain code and errors. The lab starts from the supplied checkpoint detector and draws its own paired sets, so nothing from an earlier lab is needed. Expected in quick mode on 90 frames: clean 1.000; rain 0.987, glare 1.000, night 0.924, moved camera 0.987; decisions pass, pass, human check, pass. The bootstrap is the slow step, a minute or two on a laptop. Common slips: drawing separate frame numbers for the clean and the field score, which unpairs the test; applying the rule to the estimate.</p></aside>
 </section>
 
-<!-- Session 4 -->
-
+<!-- ======================= SESSION 4 ======================= -->
 <section class="slide section" id="s4" data-auto="section" data-session="4"></section>
 
-<section class="slide" id="s4-idea" data-lo="LO6">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
+<section class="slide" id="faces-and-plates" data-lo="LO6">
+  <div class="kicker">Privacy</div>
+  <h2>Street frames hold faces and number plates: blur them before anything is stored</h2>
   <div class="cols cols-2">
+    <figure class="figure">
+      <img src="../assets/street.jpg" width="640" alt="Two drawn street scenes with simple figures and cars carrying plates, shown as the camera delivers them and, below, as they are stored: every face and every plate is a smooth blur">
+      <figcaption>Top: as the camera delivers them. Bottom: as stored. Drawn frames; no real person or vehicle.</figcaption>
+    </figure>
     <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
+      <li>A road-damage system has <b>no use</b> for a face or a plate</li>
+      <li>They are personal data, so the pipeline blurs them <b>before storage</b></li>
+      <li>"Before" is an order of steps: no log, cache, queue or backup sees the raw frame</li>
     </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
   </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+  <aside class="notes"><p>Wejdan Al-Rashidi, the data protection officer, sets this rule for Rasid. It is the course's responsible-use commitment, and the applicable national references are the Personal Data Protection Law with its implementing regulations and the National Data Management Office's Data Classification Policy: point participants to the official texts listed in the course sources, and to their own data protection officer for how they apply to a project. Collecting less is the stronger control: a counting service can run on the unit and send counts only, never frames. The frames in the lab are drawings on purpose.</p></aside>
 </section>
 
-<section class="slide" id="s4-steps" data-lo="LO6">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="measure-the-blur" data-lo="LO6">
+  <div class="kicker">From the lab</div>
+  <h2>"We blur faces" is a claim until the leak is measured</h2>
+  <table class="t">
+    <tr><th>Blur detections with a score of at least</th><th>Padding</th><th class="num">Faces and plates still readable</th><th class="num">Pixels blurred</th></tr>
+    <tr><td>0.5</td><td>none</td><td class="num">29.9%</td><td class="num">1.2%</td></tr>
+    <tr><td>0.5</td><td>3 pixels</td><td class="num">17.4%</td><td class="num">2.6%</td></tr>
+    <tr><td>0.2</td><td>none</td><td class="num">16.0%</td><td class="num">1.5%</td></tr>
+    <tr class="hl"><td>0.2</td><td>3 pixels</td><td class="num">0.7%</td><td class="num">3.2%</td></tr>
+  </table>
+  <div class="callout warn mt"><b>Two separate causes.</b> Boxes that ran tight, repaired by padding. Detections the detector was unsure of, caught by a lower threshold. Either fix alone leaves one in six.</div>
+  <aside class="notes"><p>Lab 4.4: 40 street frames with 144 true faces and plates. A region counts as leaked when more than 40% of its fine detail survives in the stored frame. The first row is the configuration a team ships when it reuses the pothole detector's habits: a balanced threshold and exact boxes. Three faces or plates in ten stay readable. The last row is still not zero: one region in 144. The model card states that number, and the retention and access rules cover the rest.</p></aside>
+</section>
+
+<section class="slide" id="recall-is-the-operating-point" data-lo="LO6">
+  <div class="kicker">The operating point</div>
+  <h2>For privacy the operating point is recall, bought with false alarms</h2>
+  <div class="cols cols-2">
+    <div class="card c-navy"><h4>The pothole detector</h4><p class="small mb0">A false alarm sends a crew for nothing; a miss leaves a hole. The two costs are balanced, and the threshold sits in the middle.</p></div>
+    <div class="card c-teal"><h4>The face and plate blur</h4><p class="small mb0">A false alarm blurs a patch of wall, which costs the road engineers nothing. A miss stores a readable plate. The threshold goes low.</p></div>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <div class="callout tip mt"><b>The price in the lab:</b> blurred pixels rise from 1.2% to 3.2% of the frame. For a road department that price is nothing.</div>
+  <aside class="notes"><p>The same detector technology, the opposite operating point, because the costs of the two errors are unequal. Connect to Day 3: average precision hides this choice, the precision and recall at one threshold show it. The blur must also be strong enough not to be undone: a heavy Gaussian blur or a solid block, never a light smoothing. And the measurement needs ground truth, which a deployed system never has: measure on a labelled sample, on a schedule.</p></aside>
+</section>
+
+<section class="slide" id="a-monitor-that-cries-rain" data-lo="LO6">
+  <div class="kicker">Monitoring</div>
+  <h2>A monitor that pages for weather is switched off within a week</h2>
+  <div class="cols cols-2 mid">
+    <div class="stat center"><div class="big">12 of 12</div><div class="lbl">cameras raise an alert when the monitor is "brightness left its first-week range" (lab 4.4, 30 days)</div></div>
+    <ul class="bullets">
+      <li>It rained on three days and every camera went dark together</li>
+      <li>Nothing was wrong with any camera</li>
+      <li>A useful monitor fires on <b>what a technician can fix</b>, and stays quiet otherwise</li>
+    </ul>
+  </div>
+  <aside class="notes"><p>The 30-day stream holds four daily statistics per pole camera: brightness, sharpness, the offset of the lane markings from where they were at installation, and detections per frame. Two things are planted in it: camera CAM-07 is knocked on day 19, and the lens of CAM-03 gathers dust from day 9. And it rains on three days. Monitoring watches the inputs because the labels are not there: nobody tells a roadside unit that it just missed a pothole.</p></aside>
+</section>
+
+<section class="slide" id="two-drift-monitors" data-lo="LO6">
+  <div class="kicker">From the lab</div>
+  <h2>Two monitors, each with a signal, a band and a run length</h2>
+  <table class="t small">
+    <tr><th>Monitor</th><th>Signal</th><th>Band</th><th>Run</th><th>Caught</th></tr>
+    <tr><td><b>Moved camera</b></td><td>Offset of the lane markings, in pixels</td><td>Within 5 pixels of the installed position</td><td>2 days</td><td>CAM-07 on day 20, one day after the knock</td></tr>
+    <tr><td><b>Dirty lens</b></td><td>Sharpness against the camera's own first week</td><td>At least 85% of its first-week median</td><td>3 days</td><td>CAM-03 on day 14, five days after the dust began</td></tr>
+  </table>
+  <div class="callout note mt"><b>Both stay silent on the three rainy days.</b> Rain darkens a frame; it does not move the lane markings, and it does not last three days.</div>
+  <aside class="notes"><p>The solution's settings; participants choose their own, and the check accepts any that catch exactly these two cameras. The offset band is absolute because a marking that moved by thirteen pixels has moved on any camera. The sharpness band is relative because cameras differ in lens and scene. The run length trades delay for false alarms: shorter runs alert sooner and start paging for single bad days. Ask what each camera counted wrongly between the fault and the alert; that is the cost of the delay. A third monitor on detections per frame, divided by the median over all cameras on the same day, is the stretch item.</p></aside>
+</section>
+
+<section class="slide" id="model-card-sections" data-lo="LO6">
+  <div class="kicker">Documentation</div>
+  <h2>The model card is where the week's evidence is kept</h2>
+  <div class="cols cols-3 gap-s">
+    <div class="card c-teal flat"><h4>What it is for</h4><p class="small mb0">The task, the cameras, the classes. What it must not be used for.</p></div>
+    <div class="card c-cyan flat"><h4>Data</h4><p class="small mb0">The guideline and its agreement score, the split report, the licence record of the weights.</p></div>
+    <div class="card c-coral flat"><h4>Results</h4><p class="small mb0">By lighting, weather and district, with intervals. The error breakdown.</p></div>
+    <div class="card c-purple flat"><h4>How to run</h4><p class="small mb0">The operating point, the benchmark table, the preprocessing contract.</p></div>
+    <div class="card c-amber flat"><h4>Limits and people</h4><p class="small mb0">The conditions in which a person checks a detection before a crew is sent.</p></div>
+    <div class="card c-navy flat"><h4>Privacy and monitoring</h4><p class="small mb0">The blur and its measured leak rate, the monitors and who is paged.</p></div>
+  </div>
+  <aside class="notes"><p>Every card on the slide was produced in a lab: 1.2 and 1.3 for data, 2.4 for the licence record, 3.1 to 3.4 for results and errors, 4.1 and 4.2 for how to run, 4.3 for the limits, 4.4 for privacy and monitoring. The model card proposal is Mitchell et al., 2018; the SDAIA AI Ethics Principles and the National AI Risk Management Framework are the national references the course lists for documentation and accountability, cited by name. A model card for a vision system differs from a general one in two sections: results by imaging condition, and privacy controls for what the camera sees besides its target. Sources: Mitchell et al., 2018.</p></aside>
+</section>
+
+<section class="slide" id="checkpoint-4" data-lo="LO6">
+  <div class="kicker">Checkpoint</div>
+  <h2>Which monitor do you add?</h2>
+  <div class="quiz" data-type="single" data-lo="LO6">
+    <p class="lead">A counting camera's daily vehicle count falls by a third and stays there. The counts of the neighbouring cameras are unchanged, and it has not rained. Which monitor would have told the field team why?</p>
+    <div class="opts">
+      <div class="opt" data-why="Watches a signal that weather moves on every camera at once, and that a moved camera hardly changes">The brightness of the frames against the first week</div>
+      <div class="opt" data-why="Detects that something is wrong, which the count already showed, and does not say what a technician should fix">The count itself against last month's average</div>
+      <div class="opt" data-ok>The offset of the lane markings from their installed position</div>
+      <div class="opt" data-why="Measures the detector's confidence, which a shifted view can leave untouched while the counting line sits on the wrong lane">The mean score of the detections per day</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> One camera, a lasting step, no weather: the camera was moved, and the counting line no longer lies where it was drawn. The offset monitor names a fault a technician can fix.</div>
+  </div>
+  <aside class="notes"><p>Answer: C. The count monitor is not useless: comparing a camera with its neighbours is how the fault was noticed at all. The point is the difference between a monitor that says "something" and one that says "this".</p></aside>
 </section>
 
 <section class="slide lab" id="lab-4-4" data-auto="lab" data-lab="4.4">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI policy: an assistant may explain code and errors. The lab needs no model and no earlier lab and runs in under a minute. Expected: 144 faces and plates in 40 frames; leak rates of 29.9%, 17.4%, 16.0% and 0.7%; the brightness monitor alerts on 12 of 12 cameras; with the solution's monitors CAM-07 alerts on day 20 and CAM-03 on day 14. The last task is the bridge to the capstone: everyone leaves with a task, an accuracy floor, a latency budget and at least three field conditions written down. Walk the room during that task and push back on budgets that cannot be measured.</p></aside>
 </section>
 
-<section class="slide" id="wrap-up">
-  <div class="kicker">Day 4 · wrap-up</div>
+<!-- ======================= CLOSE ======================= -->
+<section class="slide" id="wrap-up" data-label="Day 4 recap">
+  <div class="kicker">Day 4 recap</div>
   <h2>Three things to keep</h2>
   <div class="cols cols-3">
-    <div class="card c-teal"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
-    <div class="card c-coral"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
-    <div class="card c-purple"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
+    <div class="card c-teal"><h4>Prove the copy</h4><p class="small mb0">Raw outputs within tolerance, the same boxes, and the test kept. The prototype's 816 boxes came from the lines before the model.</p></div>
+    <div class="card c-cyan"><h4>Budget on the tail</h4><p class="small mb0">Median and 95th percentile per operating point, accuracy measured again after every change, the machine named.</p></div>
+    <div class="card c-coral"><h4>Rule first, then the test</h4><p class="small mb0">Drops per condition with intervals, a decision per condition, a blur whose leak is measured, monitors that stay silent on rain.</p></div>
   </div>
+  <aside class="notes"><p>Collect the pieces for the capstone's third and fourth criteria: the benchmark table and the operating point (latency budget); the drops per condition, the release memo, the leak rate and the monitors (field-condition tests and privacy). Then one sentence for the week: data and labels first, a split that tells the truth, a result by condition with an interval, and a decision someone can sign.</p></aside>
 </section>
 
-<section class="slide dark" id="next" data-label="Next">
+<section class="slide dark" id="next" data-label="Capstone">
   <div class="kicker">Next</div>
-  <h2>Capstone: Capstone project presentations</h2>
-  <p class="lead">REPLACE: what participants prepare before then; unfinished labs can be finished at home</p>
-  <aside class="notes">REPLACE: accounts, installs or reading participants need before the next unit</aside>
+  <h1>Capstone · A service that meets its budget</h1>
+  <p class="lead">An inspection or counting service for Al-Manar in a public repository, with a field-conditions test set, a model card and a release memo, defended on a failure case the assessor picks.</p>
+  <ul class="bullets">
+    <li>Bring the task and the budget you wrote in lab 4.4</li>
+    <li>Make the repository public, with one command that re-runs the evaluation</li>
+    <li>Expect a held-back condition: your evaluation is re-run on it live</li>
+  </ul>
+  <aside class="notes"><p>The capstone is individual and AI assistants are unrestricted in it; the defence shows who understands the result. Remind participants that no readable face or plate may appear anywhere in a public repository, and that checkpoints and training logs are part of the submission.</p></aside>
 </section>
