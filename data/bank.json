@@ -1,0 +1,1498 @@
+{
+  "format": "academy-bank",
+  "version": 1,
+  "course": {
+    "id": "ae-309",
+    "code": "AE-309",
+    "title": "Computer Vision Engineering",
+    "lang": "en",
+    "version": "2027.1.0"
+  },
+  "questions": [
+    {
+      "id": "checkpoint-1-q1",
+      "type": "single",
+      "prompt": "A crack classifier scores 94% on its validation set. On 300 crops from roadside cameras it scores 61%. What do you do first?",
+      "options": [
+        "Train a larger backbone on the same training crops",
+        "Report the average of the two numbers as the expected accuracy",
+        "Break the 300 crops down by lighting, blur and viewpoint, with counts",
+        "Add every augmentation available and retrain"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The gap says the field differs from the validation set. Slices say how, and each cause has a different fix.",
+      "misconceptions": [
+        "Assumes the gap is a capacity problem: a larger model trained on the same daylight crops meets the same unseen conditions",
+        "Treats the field set as noise: averaging the two numbers hides the gap that needs explaining",
+        "",
+        "Fixes before diagnosing: without slices you do not know which augmentation, if any, addresses the failure"
+      ],
+      "lo": [
+        "LO6"
+      ],
+      "day": 1,
+      "session": 1,
+      "slide": "checkpoint-1",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "checkpoint-2-q1",
+      "type": "single",
+      "prompt": "Two inspectors label 200 crops for \"edge break\". Raw agreement is 88%, Cohen's kappa is 0.31. What is the next step?",
+      "options": [
+        "Read the crops they disagree on and rewrite the definition",
+        "Accept the labels, since they agree on 88% of crops",
+        "Add a third inspector and take the majority vote",
+        "Ask both to label the 200 crops again, more carefully"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "A kappa of 0.31 says agreement is barely above chance. The disagreements show what the guideline failed to decide.",
+      "misconceptions": [
+        "",
+        "Trusts raw agreement on a rare class: most of the 88% is both saying no",
+        "Settles these 200 labels and leaves the rule that produced the disagreement in place for the next 2,000",
+        "Treats a definition problem as an effort problem: the same guideline produces the same split again"
+      ],
+      "lo": [
+        "LO1"
+      ],
+      "day": 1,
+      "session": 2,
+      "slide": "checkpoint-2",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "checkpoint-3-q1",
+      "type": "single",
+      "prompt": "A crack classifier scores 96% with a random split of frames and 81% when whole road segments are held out. Nothing else changed. Which number do you report to the department?",
+      "options": [
+        "96%: a random split is the standard way to evaluate",
+        "The mean of the two, about 88%",
+        "Neither: the model got worse and must be retrained",
+        "81%: it is the score on roads the model has not seen"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "The department will run the model on new roads. Only the split by segment tests that; the other 15 points were memory of near-duplicate frames.",
+      "misconceptions": [
+        "Believes the random split is the standard and the grouped one a harsher variant: the random one tested on near-copies of training frames",
+        "Averages a leaking estimate with an honest one, which is still a leaking estimate",
+        "Reads the lower score as a worse model: the model is the same, only the question changed",
+        ""
+      ],
+      "lo": [
+        "LO1"
+      ],
+      "day": 1,
+      "session": 3,
+      "slide": "checkpoint-3",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "checkpoint-4-q1",
+      "type": "single",
+      "prompt": "A new class, \"faded lane marking\", is defined as paint that has lost most of its brightness against the road. Which augmentation is unsafe for it?",
+      "options": [
+        "A left-right mirror",
+        "Strong random brightness and contrast changes",
+        "A shift of a few pixels in any direction",
+        "A rotation by a few degrees"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "The class is defined by contrast. A transform that changes contrast at random can make a fresh marking look faded and a faded one look fresh.",
+      "misconceptions": [
+        "Assumes any geometric change is risky: a mirrored marking is still as faded as before",
+        "",
+        "Confuses a small shift in position with a change in the property that defines the class",
+        "Believes the class depends on direction as the crack classes do: fading does not turn with the picture"
+      ],
+      "lo": [
+        "LO1"
+      ],
+      "day": 1,
+      "session": 4,
+      "slide": "checkpoint-4",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "review-day-1-q1",
+      "type": "single",
+      "prompt": "A field batch is sliced by lighting and viewpoint. The cell \"night, pole camera\" holds 6 crops and scores 17%; \"dust, survey vehicle\" holds 38 and scores 21%. What does the failure note say?",
+      "options": [
+        "Night from a pole camera is the worst slice, at 17%",
+        "The two worst slices average 19%",
+        "Dust from the vehicle is the worst slice with enough crops; the night cell needs more",
+        "Slices this small say nothing: report the overall score only"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "A slice is named the worst only when it holds enough crops to believe; lab 1.1 asked for 20. The small cell is a request to collect.",
+      "misconceptions": [
+        "Reads the lowest percentage without its count: on 6 crops one crop moves the score by 17 points",
+        "Averages two cells into a number that describes neither and hides which condition to collect",
+        "",
+        "Drops the cross-table because one cell is small, and loses the dust finding that 38 crops support"
+      ],
+      "lo": [
+        "LO6"
+      ],
+      "day": 2,
+      "slide": "review-day-1",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "checkpoint-1-q1",
+      "type": "single",
+      "prompt": "Two backbones are scored on the same 320 test crops. A reaches 88% with an interval from 84% to 91%, B 90% with an interval from 87% to 93%. The department must choose one this week. What is the next step?",
+      "options": [
+        "Bootstrap the difference between the two per crop and read its interval",
+        "Choose B: it is two points better",
+        "Declare a tie and choose the smaller model",
+        "Train both for longer until the intervals separate"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Both models saw the same crops, so the per-crop difference can be resampled directly. Its interval is narrower than the two separate ones and answers the question that was asked.",
+      "misconceptions": [
+        "",
+        "Reads a two-point gap between point estimates as settled, although each interval contains the other's score",
+        "Takes overlapping intervals as proof of equality: two separate intervals are a cautious test and can overlap when one model is reliably better",
+        "Changes the models to rescue the test: longer training alters both candidates and answers a different question"
+      ],
+      "lo": [
+        "LO2"
+      ],
+      "day": 2,
+      "session": 1,
+      "slide": "checkpoint-1",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "checkpoint-2-q1",
+      "type": "single",
+      "prompt": "On 150 labelled crops a linear probe scores 79%. Full fine-tuning of the same backbone on the same crops, for 30 passes at a from-scratch learning rate, scores 71%. What is the likely explanation?",
+      "options": [
+        "The backbone is unsuited to road images",
+        "The fine-tuning code has a bug: it can never score below a probe",
+        "There are too few labels: 2,000 more crops must come first",
+        "The fine-tuning damaged the pretrained features: too high a rate, too many passes"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "The probe shows what the pretrained features can do. A fine-tuning that ends below it has damaged them; the rate and the passes are the first suspects.",
+      "misconceptions": [
+        "Blames the backbone for a result the frozen backbone contradicts: its features already support 79%",
+        "Assumes more trained weights can only help: with 150 labels, millions of free weights are a risk, not a gain",
+        "Asks for labels before fixing a schedule that is wasting the labels already there",
+        ""
+      ],
+      "lo": [
+        "LO2"
+      ],
+      "day": 2,
+      "session": 2,
+      "slide": "checkpoint-2",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "checkpoint-3-q1",
+      "type": "single",
+      "prompt": "An image-text model scores 28% on five defect classes with the class names as prompts. Always answering the most common class scores 32%. A colleague reports: \"the floor is 28%\". What do you correct?",
+      "options": [
+        "Nothing: 28% is above the 20% of chance",
+        "The floor is the best answer without labels: 32% so far, and better prompts come first",
+        "The floor is dropped from the report: the model is unsuited",
+        "The model is fine-tuned on the defect crops, and that score is the floor"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "A floor is the best result for no labels and no training. One careless prompt set does not establish it, and a constant answer already beats 28%.",
+      "misconceptions": [
+        "Compares with a coin although a constant answer already beats it: chance is the weakest baseline, not the floor",
+        "",
+        "Discards the baseline because it disappointed, and with it the yardstick for what the labels are worth",
+        "Spends training effort on the baseline: once it is fine-tuned on task labels it is no longer a floor"
+      ],
+      "lo": [
+        "LO2"
+      ],
+      "day": 2,
+      "session": 3,
+      "slide": "checkpoint-3",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "checkpoint-4-q1",
+      "type": "single",
+      "prompt": "A backbone's record gives the weights licence as \"mit\". Its model page says the training dataset was released \"for research purposes only\". The rule lets permissive weights be deployed. What do you write?",
+      "options": [
+        "Deploy; the licence is permissive, and nothing else is recorded",
+        "Do not deploy; a dataset's terms always override the weights licence",
+        "The rule's decision, the dataset with its stated terms, and a flag for the legal officer",
+        "Deploy; the remark is left out, since the record field is what counts"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The rule decides on the weights licence and wants the training data named. The engineer records both; the legal officer decides whether the data's terms change anything.",
+      "misconceptions": [
+        "Stops at the weights licence: the rule also asks for the training data to be named so that its terms can be read",
+        "Decides a legal question alone and in the strictest way: whether data terms reach the weights is for the legal officer",
+        "",
+        "Removes the one fact from the record that a reviewer would need in order to disagree"
+      ],
+      "lo": [
+        "LO2"
+      ],
+      "day": 2,
+      "session": 4,
+      "slide": "checkpoint-4",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "review-day-2-q1",
+      "type": "single",
+      "prompt": "A colleague fine-tuned weights under a non-commercial licence on the department's own crops. It is the best model in the table. A contractor will run the units under a paid contract. What happens next?",
+      "options": [
+        "Deploy it: fine-tuning on its own data made the weights the department's",
+        "Do not deploy it: record that, and compare again from weights the rule allows",
+        "Deploy it: the library is under Apache-2.0",
+        "Deploy it as a pilot: a pilot is not commercial use"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "What runs on the unit is the weights, and their terms forbid this use. Starting weights are chosen before any training: the deployment record comes first.",
+      "misconceptions": [
+        "Assumes that training on your own data makes the result yours: fine-tuned weights are derived from the original ones and carry their terms unless the licence says otherwise",
+        "",
+        "Reads the licence of the code as the licence of the weights: the two are licensed separately, and the unit runs the weights",
+        "Renames the use to fit the licence: a contractor working under a paid contract is commercial use, pilot or not"
+      ],
+      "lo": [
+        "LO2"
+      ],
+      "day": 3,
+      "slide": "review-day-2",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "checkpoint-1-q1",
+      "type": "single",
+      "prompt": "Detector A scores an AP of 0.90 at IoU 0.5 and 0.70 at IoU 0.75. Detector B scores 0.93 and 0.45. The department will use the boxes to estimate how much asphalt each repair needs. Which do you choose?",
+      "options": [
+        "B: it finds more potholes, and finding them is what counts",
+        "B: AP at IoU 0.5 is the standard metric for detectors",
+        "A: it has the higher score at both thresholds",
+        "A: its boxes fit the potholes, and area is read from the box"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Area needs boxes that fit, which is what AP at 0.75 measures. B's lead at 0.5 is three points; A's lead at 0.75 is twenty-five.",
+      "misconceptions": [
+        "Stops at finding: for this use a box that is on the pothole and twice its size orders twice the asphalt",
+        "Treats a reporting convention as the requirement: which threshold matters follows from what the boxes are used for",
+        "Misreads the table: B leads at 0.5, so the choice has to rest on which threshold this use depends on",
+        ""
+      ],
+      "lo": [
+        "LO3"
+      ],
+      "day": 3,
+      "session": 1,
+      "slide": "checkpoint-1",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "checkpoint-2-q1",
+      "type": "single",
+      "prompt": "An oracle table for a crack-sealing detector shows: localisation errors repaired +0.09 F1, missed +0.07, class +0.01, duplicate +0.01. The team's boxes come from three annotators with no rule on tightness. What do you propose first?",
+      "options": [
+        "Write the box-tightness rule, relabel a sample and measure localisation again",
+        "Tighten non-maximum suppression, because it needs no training",
+        "Train a larger detector on the same labels",
+        "Lower the score threshold so that fewer objects are missed"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Localisation is the largest gain, and inconsistent boxes are a known cause that a guideline can remove before any training is paid for.",
+      "misconceptions": [
+        "",
+        "Chooses the cheapest fix regardless of its value: duplicates are worth one hundredth here",
+        "Reaches for capacity when the table points at the labels: a larger model learns the same inconsistent boxes",
+        "Moves along the precision and recall curve without improving it, and does nothing for the largest error type"
+      ],
+      "lo": [
+        "LO3"
+      ],
+      "day": 3,
+      "session": 2,
+      "slide": "checkpoint-2",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "checkpoint-3-q1",
+      "type": "single",
+      "prompt": "A crack segmenter scores an IoU of 0.52. Its masks, overlaid on the frames, follow every crack and look about one pixel wider than the labels. What do you report?",
+      "options": [
+        "The model is poor and needs a larger backbone",
+        "Pixel accuracy, which is 99% and describes the model better",
+        "The IoU with the object's width, and precision and recall at a two-pixel tolerance",
+        "Dice, because it is higher for the same masks"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The masks find the cracks and differ in width. A tolerance score separates \"missed the crack\" from \"drew it a little thick\", which IoU on thin lines cannot.",
+      "misconceptions": [
+        "Reads IoU on a scale made for large objects: on lines two pixels wide, one extra pixel of width alone takes a third off the score",
+        "Switches to a metric that the road pixels dominate: at about 1% cracks, any mask scores in the high nineties",
+        "",
+        "Changes the number without changing what it measures: Dice is a fixed function of IoU and is larger for every model"
+      ],
+      "lo": [
+        "LO3"
+      ],
+      "day": 3,
+      "session": 3,
+      "slide": "checkpoint-3",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "checkpoint-4-q1",
+      "type": "single",
+      "prompt": "On a new camera the tracker reports 52 crossings against 50 true ones, with 3 identity switches. The clips are at dusk, and short tracks appear beside some vehicles. Which change do you try first?",
+      "options": [
+        "Require more hits before a track is counted",
+        "Raise the patience so that tracks survive longer gaps",
+        "Count every crossing of the line, not one per track",
+        "Retrain the detector on dusk frames before changing anything"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "An overcount with few switches and short tracks beside vehicles points at false tracks from reflections. They live a few frames; a minimum number of hits removes them.",
+      "misconceptions": [
+        "",
+        "Treats an overcount as lost tracks: more patience keeps tracks alive longer and removes no false ones",
+        "Assumes any count error is a counting-rule error: counting every crossing would add counts, not remove them",
+        "Reaches for retraining before a setting: the short-lived tracks can be filtered without touching the detector"
+      ],
+      "lo": [
+        "LO4"
+      ],
+      "day": 3,
+      "session": 4,
+      "slide": "checkpoint-4",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "review-day-3-q1",
+      "type": "single",
+      "prompt": "On a rain frame the detector puts two pothole boxes on one pothole: one with a score of 0.84 and an IoU of 0.81 with the truth, one with 0.61 and 0.66. How is the second box counted, and what removes it?",
+      "options": [
+        "A true positive; nothing needs removing",
+        "A localisation error; a box guideline removes it",
+        "A duplicate, counted as a false positive; tighter suppression removes it",
+        "A background error; more rain frames remove it"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The better box claims the pothole. The second fits and has the right class, so it is a duplicate; tighter suppression deletes it without any training.",
+      "misconceptions": [
+        "Reads a fitting box as correct without asking whether the object is already claimed: each truth box can be matched once",
+        "Confuses a second box on the same object with a box that fits badly: 0.66 is above the 0.5 line",
+        "",
+        "Blames the weather for an error that the suppression setting produces in any light"
+      ],
+      "lo": [
+        "LO3"
+      ],
+      "day": 4,
+      "slide": "review-day-3",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "checkpoint-1-q1",
+      "type": "single",
+      "prompt": "After a runtime upgrade the stored parity test reports a largest difference of 0.004 against a tolerance of 0.001, and 2 of 30 boxes have no partner. The model file did not change. What do you do?",
+      "options": [
+        "Raise the tolerance to 0.01, since 28 of 30 boxes still agree",
+        "Release with the proven versions, and find what changed before upgrading",
+        "Release with the upgrade: differences this small are float rounding",
+        "Retrain the detector with the upgraded library installed"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Parity belongs to a pair of versions. The test caught a silent change: the proven pair is released, and the upgrade waits for an explanation.",
+      "misconceptions": [
+        "Moves the limit after seeing the result: a tolerance that follows the measurement tests nothing",
+        "",
+        "Calls it rounding although it is two hundred times the difference measured before, and final boxes changed",
+        "Treats a difference between two runtimes as a training problem: the weights are identical on both sides"
+      ],
+      "lo": [
+        "LO5"
+      ],
+      "day": 4,
+      "session": 1,
+      "slide": "checkpoint-1",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "checkpoint-2-q1",
+      "type": "single",
+      "prompt": "The budget is 50 ms per frame at the 95th percentile. On the unit, model A has a median of 31 ms and a 95th percentile of 64 ms; model B 38 ms and 46 ms. Model A is one point more accurate. Which do you deploy?",
+      "options": [
+        "Model A: its median is lower and it is more accurate",
+        "Model A: the mean of its two numbers is under 50 ms",
+        "Neither, until both are measured again with batch size 8",
+        "Model B: it is the only one inside the budget"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "The limit is on the 95th percentile. Model A breaks it, so its extra point of accuracy is not on offer.",
+      "misconceptions": [
+        "Judges by the typical frame: the budget is written on the tail, and one frame in twenty of model A arrives late",
+        "Averages two summaries into a number that describes no frame and is not what the budget limits",
+        "Refuses a decision the measurements already support: model B is inside the stated budget",
+        ""
+      ],
+      "lo": [
+        "LO5"
+      ],
+      "day": 4,
+      "session": 2,
+      "slide": "checkpoint-2",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "checkpoint-3-q1",
+      "type": "single",
+      "prompt": "The rule: pass when the upper end of the drop interval is at most 0.10, human check up to 0.30, otherwise hold. In fog the detector's drop is 0.08 with an interval from 0.01 to 0.33, measured on 25 frames. What is the decision?",
+      "options": [
+        "Hold in fog, and collect more fog frames to narrow the interval",
+        "Pass: the drop of 0.08 is below 0.10",
+        "Release with a human check: the truth is probably in between",
+        "Pass: with only 25 frames the interval is too wide to count"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "The upper end is 0.33, above 0.30. The interval is wide because the test is small, and the remedy is more frames, not a kinder reading.",
+      "misconceptions": [
+        "",
+        "Applies the rule to the estimate: 0.08 looks like a pass, but the rule is written on the upper end of the interval",
+        "Splits the difference between estimate and upper end: 0.33 is above the limit for a human check",
+        "Changes the rule after seeing the result, which is the one thing the rule exists to prevent"
+      ],
+      "lo": [
+        "LO6"
+      ],
+      "day": 4,
+      "session": 3,
+      "slide": "checkpoint-3",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "checkpoint-4-q1",
+      "type": "single",
+      "prompt": "A counting camera's daily vehicle count falls by a third and stays there. The counts of the neighbouring cameras are unchanged, and it has not rained. Which monitor would have told the field team why?",
+      "options": [
+        "The brightness of the frames against the first week",
+        "The count itself against last month's average",
+        "The offset of the lane markings from their installed position",
+        "The mean score of the detections per day"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "One camera, a lasting step, no weather: the camera was moved, and the counting line no longer lies where it was drawn. The offset monitor names a fault a technician can fix.",
+      "misconceptions": [
+        "Watches a signal that weather moves on every camera at once, and that a moved camera hardly changes",
+        "Detects that something is wrong, which the count already showed, and does not say what a technician should fix",
+        "",
+        "Measures the detector's confidence, which a shifted view can leave untouched while the counting line sits on the wrong lane"
+      ],
+      "lo": [
+        "LO6"
+      ],
+      "day": 4,
+      "session": 4,
+      "slide": "checkpoint-4",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo1-kappa-rare",
+      "type": "single",
+      "prompt": "Two inspectors label 400 crops for a rare defect. They give the same label to 372 crops, and Cohen's kappa is 0.28. What does the pair of numbers tell you?",
+      "options": [
+        "The inspectors mostly agree by both saying \"no\"; on the defect itself they barely agree",
+        "The labels are reliable, because 93% agreement is high",
+        "Kappa was computed wrongly, because it cannot be far below raw agreement",
+        "One inspector is careless and should be replaced"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "With a rare class most agreement comes from both saying \"no\"; kappa removes that chance agreement and shows what is left.",
+      "misconceptions": [
+        "",
+        "Reads raw agreement without asking how much of it chance alone would produce",
+        "Expects kappa to track raw agreement, which fails exactly when one label dominates",
+        "Blames a person for a disagreement that the definition produced"
+      ],
+      "lo": [
+        "LO1"
+      ],
+      "day": 1,
+      "session": 2,
+      "level": "analyze",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo1-guideline-fix",
+      "type": "single",
+      "prompt": "A guideline says: \"Label rutting when the wheel path looks sunken.\" Agreement between annotators is poor. Which rewrite is most likely to raise it?",
+      "options": [
+        "\"Label rutting when the wheel path looks clearly sunken to a trained eye.\"",
+        "\"Label rutting only when you are certain.\"",
+        "\"Label rutting as in the three example pictures.\"",
+        "\"Label rutting when a 2-metre straightedge across the lane would show a gap of 10 mm or more; if the depth cannot be judged from the frame, flag it.\""
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "A definition that can be measured or counted, with a rule for the undecidable case, is one that two strangers can apply alike.",
+      "misconceptions": [
+        "Adds emphasis, not a criterion: \"clearly\" is still a judgement of resemblance",
+        "Turns uncertainty into silent negatives, which hides the borderline cases from the data",
+        "Relies on examples alone, which cannot settle a case that sits between them",
+        ""
+      ],
+      "lo": [
+        "LO1"
+      ],
+      "day": 1,
+      "session": 2,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo1-split-unit",
+      "type": "single",
+      "prompt": "A dataset holds 9,000 frames from 300 road segments; each segment was filmed on several passes. You need a test set that predicts performance on roads never surveyed. How do you draw it?",
+      "options": [
+        "Draw 15% of the frames at random",
+        "Draw 15% of the frames at random, then delete exact duplicate files",
+        "Draw 15% of the passes at random",
+        "Draw 15% of the segments and take all their frames"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "The model must generalise over roads, so the road segment is the unit that stays whole; frames and passes of one segment share surface, markings and defects.",
+      "misconceptions": [
+        "Treats frames as independent although frames of one spot are near-copies",
+        "Believes leakage is only byte-identical files; near-duplicates and same-site frames remain",
+        "Keeps passes together but still places the same segment on both sides",
+        ""
+      ],
+      "lo": [
+        "LO1"
+      ],
+      "day": 1,
+      "session": 3,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo1-unknown-group",
+      "type": "single",
+      "prompt": "After re-splitting by road segment, 120 frames have no segment id and no near-duplicate that has one. What do you do with them?",
+      "options": [
+        "Put them in the training set, where a few extra frames can only help",
+        "Leave them out of training, validation and test",
+        "Put them in the test set, to make it larger",
+        "Assign each to a random segment so that no frame is wasted"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "A frame of unknown origin may share its road with the other side of the split wherever it is placed, so it is safe on neither side.",
+      "misconceptions": [
+        "Assumes leakage only matters in the test set: a training frame from a test segment leaks just the same",
+        "",
+        "Trades the honesty of the test for its size",
+        "Invents the group key, which makes the split report false"
+      ],
+      "lo": [
+        "LO1"
+      ],
+      "day": 1,
+      "session": 3,
+      "level": "analyze",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo1-augment-claim",
+      "type": "single",
+      "prompt": "A class \"arrow marking: turn left\" is added to a road-marking classifier. Which augmentation must be removed from the pipeline for this class?",
+      "options": [
+        "Random brightness changes",
+        "A small random scale change",
+        "A left-right mirror",
+        "Gaussian blur"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "A mirrored left-turn arrow is a right-turn arrow: the transform changes the property the label is defined by.",
+      "misconceptions": [
+        "Assumes photometric changes threaten a label that is defined by shape and direction",
+        "Confuses a change of size with a change of meaning",
+        "",
+        "Treats a softer picture as a different class, though the arrow still points left"
+      ],
+      "lo": [
+        "LO1"
+      ],
+      "day": 1,
+      "session": 4,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo1-tf-hash",
+      "type": "tf",
+      "prompt": "True or false: if a perceptual hash finds no near-duplicate pairs across the training and test sets, the split is free of leakage.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "A hash finds frames that look almost identical; frames of the same site under another light, or of a neighbouring spot, share information without matching.",
+      "misconceptions": [
+        "Equates leakage with near-identical pixels, although shared sites leak without them",
+        ""
+      ],
+      "lo": [
+        "LO1"
+      ],
+      "day": 1,
+      "session": 3,
+      "level": "understand",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo2-interval-overlap",
+      "type": "single",
+      "prompt": "On 40 night crops, backbone A scores 80% with a 95% interval of 68% to 92%, and backbone B scores 85% with 73% to 95%. What may you conclude about night?",
+      "options": [
+        "B is better at night by five points",
+        "A and B are equally good at night",
+        "The intervals are too wide, so the bootstrap was done incorrectly",
+        "This test cannot separate the two at night; more night crops or a paired comparison is needed"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Overlapping intervals on a small slice mean the evidence does not distinguish the models; that is a statement about the test, not about the models.",
+      "misconceptions": [
+        "Reads a point estimate as a finding on forty crops",
+        "Mistakes \"not shown to differ\" for \"shown to be equal\"",
+        "Expects narrow intervals regardless of sample size",
+        ""
+      ],
+      "lo": [
+        "LO2"
+      ],
+      "day": 2,
+      "session": 1,
+      "level": "analyze",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo2-probe-choice",
+      "type": "single",
+      "prompt": "With 300 labelled crops, a linear probe on a frozen backbone reaches 84% and full fine-tuning reaches 82%. With 3,000 labels full fine-tuning reaches 93%. Labelling 3,000 crops takes two weeks. The pilot needs a model on Monday. What do you ship first?",
+      "options": [
+        "The linear probe on 300 labels, and start labelling towards 3,000",
+        "The fully fine-tuned model on 300 labels, because full fine-tuning is the stronger method",
+        "Nothing until 3,000 labels exist",
+        "A model trained from scratch on the 300 labels, to avoid depending on pretrained weights"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "At this label budget the probe is at least as good and far cheaper; the table also shows that labels, not more training, buy the next gain.",
+      "misconceptions": [
+        "",
+        "Ranks methods in general instead of reading the numbers at this label budget",
+        "Lets the better future result block a usable present one",
+        "Discards pretraining when labels are scarcest, which is when it helps most"
+      ],
+      "lo": [
+        "LO2"
+      ],
+      "day": 2,
+      "session": 2,
+      "level": "evaluate",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo2-floor",
+      "type": "single",
+      "prompt": "A zero-shot image-text model scores 71% on five defect classes with well-written prompts. Your fine-tuned classifier, built on 2,000 labelled crops, scores 74%. How do you report this?",
+      "options": [
+        "As a success: the fine-tuned model has the higher score",
+        "As a failure of the zero-shot model, which did not reach 74%",
+        "As 74%, without mentioning the zero-shot result, since it used no training",
+        "As a three-point gain over a floor that cost no labels, which questions the value of the labelling so far"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "The floor is what the department gets for free; the worth of 2,000 labels is the distance above it, and three points is little.",
+      "misconceptions": [
+        "Compares against nothing, so any trained model looks like progress",
+        "Judges the baseline by the wrong standard: a floor is there to be beaten, and it nearly was not",
+        "Omits the comparison that tells the reader what the labels bought",
+        ""
+      ],
+      "lo": [
+        "LO2"
+      ],
+      "day": 2,
+      "session": 3,
+      "level": "analyze",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo2-fair-compare",
+      "type": "single",
+      "prompt": "You compare a convolutional backbone and a vision transformer on defect crops. Which setup makes the comparison fair?",
+      "options": [
+        "The same training crops, test crops, input size and number of passes, each with a learning rate tuned for it on validation data",
+        "The same learning rate for both, whatever it does to each",
+        "Each on the input size from its own paper, tested on its own split",
+        "The transformer on more passes, because transformers need more data"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Hold the data, the budget and the test fixed; tune what is specific to each model on validation data, never on the test set.",
+      "misconceptions": [
+        "",
+        "Confuses identical hyperparameters with a fair comparison: one learning rate can cripple one model",
+        "Changes the test along with the model, so the scores are not comparable",
+        "Gives one model a larger budget and then compares the results"
+      ],
+      "lo": [
+        "LO2"
+      ],
+      "day": 2,
+      "session": 1,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo2-licence",
+      "type": "single",
+      "prompt": "A backbone's code is under Apache-2.0 and its pretrained weights are under CC-BY-NC-4.0. A contractor will run it on roadside units for a city under a paid contract. May these weights be deployed?",
+      "options": [
+        "Yes: the code licence is permissive and covers the whole model",
+        "Yes: a city is a public body, so its use is non-commercial",
+        "Not under these terms: the weights carry a non-commercial licence and this is paid operation",
+        "Yes, after fine-tuning: fine-tuned weights are a new work free of the original terms"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "What runs on the unit is the weights, and their licence governs; a paid contract is commercial use, so other weights or another licence are needed.",
+      "misconceptions": [
+        "Assumes the code licence extends to the weights, which are licensed separately",
+        "Decides commercial use by who the client is, not by the nature of the operation",
+        "",
+        "Assumes fine-tuning removes the terms of the weights it started from"
+      ],
+      "lo": [
+        "LO2"
+      ],
+      "day": 2,
+      "session": 4,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo3-ap-gap",
+      "type": "single",
+      "prompt": "A pothole detector has an average precision of 0.91 at IoU 0.5 and 0.48 at IoU 0.75. What does the gap point to?",
+      "options": [
+        "Many potholes are missed entirely",
+        "Boxes sit on the potholes but do not fit them tightly, or the labelled boxes are inconsistent in tightness",
+        "The detector confuses potholes with patches",
+        "The score threshold is set too high"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "A box that is roughly right passes at 0.5 and fails at 0.75; that is a localisation problem in the model or in the labels.",
+      "misconceptions": [
+        "A missed object lowers the score at both thresholds alike",
+        "",
+        "A class confusion is an error at every overlap threshold",
+        "Average precision sweeps over all score thresholds, so no single threshold explains it"
+      ],
+      "lo": [
+        "LO3"
+      ],
+      "day": 3,
+      "session": 1,
+      "level": "analyze",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo3-nms",
+      "type": "single",
+      "prompt": "After a software update the detector reports three overlapping boxes on most potholes, and average precision at IoU 0.5 falls sharply although nothing was retrained. What is the first thing to check?",
+      "options": [
+        "The non-maximum suppression threshold, which may have been loosened or switched off",
+        "The learning rate of the last training run",
+        "Whether the test labels were changed",
+        "The class weights of the loss"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Several boxes per object after an unchanged model is the signature of missing or loose suppression; each extra box counts as a false positive.",
+      "misconceptions": [
+        "",
+        "Looks into training although the model did not change",
+        "Suspects the labels, which would not multiply the boxes per object",
+        "Looks into training although the model did not change"
+      ],
+      "lo": [
+        "LO3"
+      ],
+      "day": 3,
+      "session": 1,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo3-error-type",
+      "type": "single",
+      "prompt": "A detection is labelled \"patch\" and overlaps a ground-truth pothole with IoU 0.82. No other detection touches that pothole. Which error type is it?",
+      "options": [
+        "Localisation",
+        "Duplicate",
+        "Missed",
+        "Class"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "The box fits; only the class is wrong. A fix lies in more examples of the confused pair or a clearer class definition.",
+      "misconceptions": [
+        "The overlap of 0.82 is well above the threshold, so the box is not the problem",
+        "A duplicate needs a better-scoring detection already on the same object",
+        "The pothole was found, with the wrong name",
+        ""
+      ],
+      "lo": [
+        "LO3"
+      ],
+      "day": 3,
+      "session": 2,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo3-next-step",
+      "type": "single",
+      "prompt": "An oracle analysis of a detector gives these gains in average precision if each error type were fully fixed: duplicates +0.06, class +0.01, localisation +0.03, missed +0.05. Tightening suppression takes ten minutes; collecting data for missed defects takes three weeks. What do you do first?",
+      "options": [
+        "Tighten suppression, measure again, then plan the data collection from the new table",
+        "Collect data for the missed defects, because recall matters most",
+        "Relabel all boxes for localisation",
+        "Work on class confusion, since it is the hardest"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "The largest gain is also the cheapest; and fixing one type moves the others, so the table is measured again before three weeks are spent.",
+      "misconceptions": [
+        "",
+        "Chooses by a general belief rather than by the gains and costs on the table",
+        "Picks a costly fix with half the gain of a free one",
+        "Chooses the smallest gain on the table"
+      ],
+      "lo": [
+        "LO3"
+      ],
+      "day": 3,
+      "session": 2,
+      "level": "evaluate",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo3-iou-thin",
+      "type": "single",
+      "prompt": "A crack segmenter scores IoU 0.55. Its masks follow every crack, shifted by about one pixel. The cracks are two to three pixels wide. How should the result be reported?",
+      "options": [
+        "As poor: an IoU of 0.55 means nearly half of the cracks are missed",
+        "As IoU 0.55 together with a score that allows a small tolerance, and example masks",
+        "As pixel accuracy, which is above 97%",
+        "As Dice only, because it is the higher number"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "On thin structures a one-pixel shift costs a large share of the overlap; a tolerance score and pictures show what the plain IoU hides.",
+      "misconceptions": [
+        "Reads IoU as the fraction of objects found, which it is not",
+        "",
+        "Uses a score that an empty mask would also reach when cracks are a few percent of pixels",
+        "Chooses the metric by how flattering it is"
+      ],
+      "lo": [
+        "LO3"
+      ],
+      "day": 3,
+      "session": 3,
+      "level": "analyze",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo3-baseline",
+      "type": "tf",
+      "prompt": "True or false: a thresholding baseline that marks dark pixels as cracks is not worth scoring once a neural segmenter is available.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "The baseline costs minutes, gives the number to beat, and its failures by lighting show what the learned model must add.",
+      "misconceptions": [
+        "Assumes a learned model is better by default, without a number to show by how much or where",
+        ""
+      ],
+      "lo": [
+        "LO3"
+      ],
+      "day": 3,
+      "session": 3,
+      "level": "understand",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo4-count-vs-id",
+      "type": "single",
+      "prompt": "On a clip with 20 vehicles crossing the line, a tracker reports a count of 20 and 15 identity switches. The traffic team will use it only for counts on this camera. What do you tell them?",
+      "options": [
+        "The count cannot be trusted, because the identities are wrong",
+        "The tracker is ready for any use",
+        "Identity switches do not matter for any application",
+        "For counting on this camera the evidence supports it; it is not fit for uses that follow a vehicle, such as travel time"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "A switch costs a count only when it happens at the line; uses that need one identity per vehicle are a different requirement.",
+      "misconceptions": [
+        "Assumes every identity switch corrupts the count",
+        "Generalises from one metric to all uses",
+        "Dismisses a metric that other applications depend on",
+        ""
+      ],
+      "lo": [
+        "LO4"
+      ],
+      "day": 3,
+      "session": 4,
+      "level": "analyze",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo4-rule",
+      "type": "single",
+      "prompt": "In slow traffic a counter reports 31 vehicles where 22 crossed. Its rule adds one whenever a box centre moves from above the line to below it. What is the most likely cause, and the fix?",
+      "options": [
+        "Boxes jitter back and forth across the line; count each track at most once",
+        "Missed detections; lower the detector's score threshold",
+        "The line is too close to the camera; move it further away",
+        "False detections; raise the score threshold"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "A slow vehicle's centre crosses the line several times as its box jitters; counting once per track removes the repeats.",
+      "misconceptions": [
+        "",
+        "Missed detections lose counts; they do not add nine",
+        "Moves the line without removing the cause, which is the rule",
+        "False alarms rarely travel across a line; the pattern is tied to slow traffic"
+      ],
+      "lo": [
+        "LO4"
+      ],
+      "day": 3,
+      "session": 4,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo4-patience",
+      "type": "single",
+      "prompt": "At night the detector misses a vehicle in about one frame in eight. The tracker closes a track as soon as one frame has no matching detection. What happens to the count, and which setting addresses it?",
+      "options": [
+        "Counts rise; require more hits before a track is reported",
+        "Counts are unaffected; nothing needs to change",
+        "Tracks break at misses, and a break at the line loses a count; let a track survive a few frames without a detection",
+        "Counts fall; lower the overlap threshold for matching to zero"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "A track that ends just before the line and restarts just after it never crosses; a little patience bridges single missed frames.",
+      "misconceptions": [
+        "Mixes up the remedy for short-lived false tracks with the remedy for broken true ones",
+        "Overlooks that a break exactly at the line removes a crossing",
+        "",
+        "Matches anything to anything, which trades broken tracks for swapped ones"
+      ],
+      "lo": [
+        "LO4"
+      ],
+      "day": 3,
+      "session": 4,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo4-metric",
+      "type": "single",
+      "prompt": "Which pair of numbers is the evidence that a counting service works on a set of clips with ground truth?",
+      "options": [
+        "Detector average precision and frames per second",
+        "Count error per clip and the number of identity switches",
+        "The total count over all clips and the average track length",
+        "Training loss and validation loss of the detector"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Count error per clip shows whether the product is right, clip by clip; identity switches show how fragile the tracks behind it are.",
+      "misconceptions": [
+        "Measures a component, not the count the service delivers",
+        "",
+        "A total hides overcounts in one clip cancelling undercounts in another",
+        "Describes training, not the behaviour of the service"
+      ],
+      "lo": [
+        "LO4"
+      ],
+      "day": 3,
+      "session": 4,
+      "level": "understand",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo5-p95",
+      "type": "single",
+      "prompt": "A roadside unit must process each frame within 60 ms. Measured on the unit: median 41 ms, 95th percentile 74 ms. Does the model meet the budget?",
+      "options": [
+        "Yes: the median is well inside the budget",
+        "Yes: the average of the two numbers is under 60 ms",
+        "No: one frame in twenty takes longer than the budget allows",
+        "It cannot be said without the maximum"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "A per-frame budget is about the slow frames; at the 95th percentile the model is over, so frames are late or dropped.",
+      "misconceptions": [
+        "Judges a tail requirement by the typical case",
+        "Averages two percentiles, which describes no frame at all",
+        "",
+        "Waits for a noisier statistic when the percentile already answers"
+      ],
+      "lo": [
+        "LO5"
+      ],
+      "day": 4,
+      "session": 2,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo5-quantise",
+      "type": "single",
+      "prompt": "You quantise a detector to 8-bit integers. The file shrinks to a quarter and latency falls by 40%. What must happen before it replaces the 32-bit model?",
+      "options": [
+        "Its accuracy is measured again on the same validation frames, by condition",
+        "Nothing: quantisation does not change predictions",
+        "It is retrained from scratch",
+        "Its input resolution is raised to make up for the lost precision"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Every weight and activation changed a little; only a measurement on the same frames tells whether small or low-contrast objects were lost.",
+      "misconceptions": [
+        "",
+        "Assumes rounding to 256 levels is harmless for every model",
+        "Prescribes a costly remedy before knowing whether there is a loss",
+        "Spends the latency gain on a guess"
+      ],
+      "lo": [
+        "LO5"
+      ],
+      "day": 4,
+      "session": 2,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo5-parity",
+      "type": "single",
+      "prompt": "An exported model gives outputs within 0.00001 of the original in your test. On the device, the same file detects almost nothing. Where do you look first?",
+      "options": [
+        "In the exported graph, for an operation that was converted wrongly",
+        "In the training data, for label noise",
+        "In the device's preprocessing: channel order, value range and resizing",
+        "In the model's architecture, which may be too large for the device"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The file is proven by the parity test; what differs on the device is what is fed to it, and preprocessing mismatches fail silently.",
+      "misconceptions": [
+        "Re-examines the part the parity test has just cleared",
+        "Looks at training although the original model works",
+        "",
+        "A model that is too large runs slowly or not at all; it does not run and see nothing"
+      ],
+      "lo": [
+        "LO5"
+      ],
+      "day": 4,
+      "session": 1,
+      "level": "analyze",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo5-resolution",
+      "type": "single",
+      "prompt": "Benchmark rows that meet the size limit: 192 pixels, 71 ms, AP 0.88; 160 pixels, 52 ms, AP 0.84; 128 pixels, 36 ms, AP 0.66. The budget is 60 ms at the 95th percentile, which these latencies are. Which operating point do you choose?",
+      "options": [
+        "192 pixels: accuracy comes first",
+        "128 pixels: the fastest is the safest",
+        "160 pixels: the most accurate row inside the budget",
+        "None: the budget should be renegotiated to 71 ms"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The budget is a constraint and accuracy the objective: take the best accuracy among the rows that fit.",
+      "misconceptions": [
+        "Treats the budget as a preference: a model that misses it does not run on the unit",
+        "Gives up 18 points of accuracy for speed nobody asked for",
+        "",
+        "Reopens the requirement although a row meets it"
+      ],
+      "lo": [
+        "LO5"
+      ],
+      "day": 4,
+      "session": 2,
+      "level": "evaluate",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo6-paired",
+      "type": "single",
+      "prompt": "To measure the effect of rain on a detector you can (a) compare a clean test set with a different set of rainy frames, or (b) apply rain to the same test frames. Why does (b) give a tighter estimate of the drop?",
+      "options": [
+        "It uses more frames",
+        "Each frame is its own control, so differences between scenes cancel",
+        "Synthetic rain is easier for a detector than real rain",
+        "It avoids the need for ground truth"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "With paired frames the only thing that differs is the condition; with two sets, the difficulty of the scenes differs as well.",
+      "misconceptions": [
+        "The number of frames can be the same in both designs",
+        "",
+        "Makes a claim about difficulty that the design does not rest on, and that may be false",
+        "Both designs need ground truth to compute a score"
+      ],
+      "lo": [
+        "LO6"
+      ],
+      "day": 4,
+      "session": 3,
+      "level": "analyze",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo6-release-rule",
+      "type": "single",
+      "prompt": "The release rule says: a condition passes when the upper end of the 95% interval of its accuracy drop is at most 0.10. For glare the drop is 0.06 with an interval of 0.01 to 0.14, on 60 frames. What is the decision?",
+      "options": [
+        "Pass: the drop of 0.06 is below 0.10",
+        "Fail for now: the upper end is 0.14; test more glare frames or apply the fallback for failed conditions",
+        "Pass: most of the interval lies below 0.10",
+        "Fail permanently: the detector cannot handle glare"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "The rule is written on the upper end so that a small test cannot pass by luck; more frames narrow the interval and may change the outcome.",
+      "misconceptions": [
+        "Applies the rule to the estimate instead of the bound it names",
+        "",
+        "Replaces the stated rule by an impression of the interval",
+        "Reads an inconclusive test as a proven failure"
+      ],
+      "lo": [
+        "LO6"
+      ],
+      "day": 4,
+      "session": 3,
+      "level": "evaluate",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo6-moved-camera",
+      "type": "single",
+      "prompt": "A pole camera was knocked and now looks at the road from a different angle. Its brightness and sharpness are unchanged, and its counts fall slowly. Which monitor would have caught it on the first days?",
+      "options": [
+        "Mean brightness against the first week",
+        "Sharpness against the first week",
+        "The position of fixed scene features, such as lane markings, against their position at installation",
+        "The model's average confidence"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "A moved camera changes where fixed things appear, not how bright or sharp the picture is; a monitor on their position sees it at once.",
+      "misconceptions": [
+        "Watches a statistic the fault does not move",
+        "Watches a statistic the fault does not move",
+        "",
+        "Average confidence drifts for many reasons and may not move at all when objects are merely smaller"
+      ],
+      "lo": [
+        "LO6"
+      ],
+      "day": 4,
+      "session": 4,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo6-blur-recall",
+      "type": "single",
+      "prompt": "Faces and plates are blurred before frames are stored. At the detector's default threshold 84% of them are blurred and 1% of the image area is affected; at a low threshold 99% are blurred and 3% of the area. Which setting fits a rule that nothing readable is stored?",
+      "options": [
+        "The default threshold: fewer false alarms means a cleaner archive",
+        "The default threshold: 84% is a high recall",
+        "No blurring: the frames are only used internally",
+        "The low threshold: a blurred patch of wall costs little, a stored readable plate breaks the rule"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "The two errors have unequal costs, so the operating point is chosen for recall, and the remaining 1% is stated in the model card.",
+      "misconceptions": [
+        "Optimises the error that costs nothing here",
+        "Accepts one readable face or plate in six",
+        "Mistakes internal use for an exemption: stored personal data is stored personal data",
+        ""
+      ],
+      "lo": [
+        "LO6"
+      ],
+      "day": 4,
+      "session": 4,
+      "level": "evaluate",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo6-model-card",
+      "type": "single",
+      "prompt": "Which statement belongs in the results section of a model card for a roadside pothole detector?",
+      "options": [
+        "\"The model achieves state-of-the-art accuracy.\"",
+        "\"AP at IoU 0.5 is 0.89 on clean frames; under heavy rain it falls by 0.12 (0.07 to 0.18); night detections go to an inspector before a crew is sent.\"",
+        "\"The model was trained for 30 passes with AdamW.\"",
+        "\"The model should be used responsibly.\""
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "A result names the metric, the condition, the size of the effect with its interval, and what happens under that condition.",
+      "misconceptions": [
+        "Makes a claim with no metric, data or condition behind it",
+        "",
+        "Describes training, which belongs in another section",
+        "States an intention that no reader can check or act on"
+      ],
+      "lo": [
+        "LO6"
+      ],
+      "day": 4,
+      "session": 4,
+      "level": "understand",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo6-tf-district",
+      "type": "tf",
+      "prompt": "True or false: if a detector meets its accuracy target on the whole test set, it meets it in every district of the city.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "An average can hide a district with older roads or more dust where the model is much worse; reporting by district is how that is noticed.",
+      "misconceptions": [
+        "Assumes an overall average holds for every subgroup",
+        ""
+      ],
+      "lo": [
+        "LO6"
+      ],
+      "day": 4,
+      "session": 3,
+      "level": "understand",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    }
+  ]
+}

@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-ax="page" data-track="ai-engineering">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Computer Vision Engineering · SDAIA Academy</title>
+<meta name="generator" content="SDAIA Academy engine 1.0.0">
+<meta name="description" content="Build vision systems that are measured by condition, fitted to a roadside processor and released with evidence">
+<link rel="icon" href="_engine/icon.svg">
+<link rel="alternate" type="text/markdown" href="index.md">
+<link rel="describedby" href="llms.txt">
+<link rel="stylesheet" href="_engine/academy.css">
+</head>
+<body>
+<header>
+<div class="wrap">
+<div class="top"><div class="logo" id="logo"></div><nav><a href="slides/day1.html">Slides</a><a href="practice.html">Practice</a><a href="index.md" type="text/markdown">Markdown</a></nav></div>
+<div class="kicker">AI Engineering Track · SDAIA Academy · AE-309</div>
+<h1>Computer Vision Engineering<span class="sub ar" lang="ar" dir="rtl">هندسة الرؤية الحاسوبية</span></h1>
+<p>Build vision systems that are measured by condition, fitted to a roadside processor and released with evidence</p>
+<div class="meta"><span class="track">AI Engineering Track</span><span>4 teaching days + capstone day</span><span>26 hours</span><span>Level 300</span><span>AI Engineering · Associate badge</span></div>
+</div>
+</header>
+<main class="wrap">
+<h2>About the course</h2>
+<p>Participants build vision systems for a fictional municipal roads and traffic department that must keep working in glare, dust, rain and at night. On public road-damage images and synthetic traffic-camera clips they audit and extend annotations, fine-tune convolutional and transformer backbones, train a pothole detector and a crack segmenter, track and count vehicles, and fit the chosen model to the latency and memory budget of a processor-only roadside unit. Each lab ends with a test under changed lighting, blur or camera position. Vision-language models and multimodal applications are AE-408.</p>
+<p><b>Who it is for:</b> Practitioners. Engineers who have completed the level 200 set or can show equivalent work: a deployed model or language model application they built and can explain.</p>
+<p><b>Format:</b> Intensive: 4 teaching days of four sessions and a capstone day, with guided pre-work and a tracked follow-up task</p>
+<h2>The case study</h2>
+<div class="note info"><b>Al-Manar Municipality Roads and Traffic Department.</b> A fictional city department that inspects road damage from survey-vehicle cameras and counts vehicles from pole cameras, on a processor-only roadside unit that must keep working in glare, dust, rain and at night. Participants build Rasid, its inspection and counting system: they audit and extend the annotations, split by road segment, fine-tune two backbones, train a pothole detector and a crack segmenter, track and count vehicles, fit the detector to the unit's latency and size budget and test it under field conditions before a release decision. All data is synthetic and drawn with a fixed seed: 6,000 road frames in 300 segments over five districts, crack masks, traffic clips with ground-truth counts, street frames with invented faces and plates, and a 30-day stream of camera statistics.</div>
+<h2>The course</h2>
+<div class="day">
+<div class="day-head c-teal"><div><div class="t">Day 1 · 4 sessions · 4 labs</div><h3>Visual data first</h3></div><a class="btn" href="slides/day1.html">Open the slides</a></div>
+<div class="scroll"><table>
+<tr><th>Session</th><th>Topic</th><th>Lab</th></tr>
+<tr><td>1</td><td><b>How vision systems fail in the field</b><br>A pilot classifier that scores well in daylight fails on the road: accuracy by lighting, blur and viewpoint<ul><li>Name the conditions a roadside camera meets that a survey set does not</li><li>Break one accuracy number into slices by lighting, blur and viewpoint</li><li>Write a failure note that names the worst slice and its size</li></ul></td><td><a href="labs/D1_1_errors_by_condition.ipynb">Lab 1.1 · Errors by condition</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D1_1_errors_by_condition.ipynb">Open in Colab</a></td></tr>
+<tr><td>2</td><td><b>Annotation guidelines and agreement</b><br>Boxes, masks and their formats; a guideline that two people can follow; agreement as a number<ul><li>Read boxes and masks in a common annotation format</li><li>Compute raw agreement and Cohen's kappa between two annotators</li><li>Revise a guideline from the disagreements and measure again</li></ul></td><td><a href="labs/D1_2_annotation_agreement.ipynb">Lab 1.2 · Agree on a new class</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D1_2_annotation_agreement.ipynb">Open in Colab</a></td></tr>
+<tr><td>3</td><td><b>Leakage by site and near-duplicates</b><br>Frames of one road spot look alike: a random split puts them on both sides and inflates the test score<ul><li>Find near-duplicate frames with a difference hash</li><li>Split by road segment so that no segment is shared</li><li>Report how much a leaking split inflates a score</li></ul></td><td><a href="labs/D1_3_split_by_segment.ipynb">Lab 1.3 · Split by road segment</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D1_3_split_by_segment.ipynb">Open in Colab</a></td></tr>
+<tr><td>4</td><td><b>Augmentation and what it assumes</b><br>Every augmentation claims that a change does not matter: some claims are false for a road defect<ul><li>Apply one transform to an image, its boxes and its mask together</li><li>Measure how often a transform changes what the label means</li><li>Choose augmentations from the conditions the field will bring</li></ul></td><td><a href="labs/D1_4_augmentation.ipynb">Lab 1.4 · Augment without changing labels</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D1_4_augmentation.ipynb">Open in Colab</a></td></tr>
+</table></div>
+</div>
+<div class="day">
+<div class="day-head c-cyan"><div><div class="t">Day 2 · 4 sessions · 4 labs</div><h3>Backbones and transfer</h3></div><a class="btn" href="slides/day2.html">Open the slides</a></div>
+<div class="scroll"><table>
+<tr><th>Session</th><th>Topic</th><th>Lab</th></tr>
+<tr><td>1</td><td><b>Convolutional networks and vision transformers</b><br>What a convolutional network and a vision transformer assume about an image, and how to compare them fairly<ul><li>Contrast the assumptions of convolutional networks and vision transformers</li><li>Fine-tune two pretrained backbones on the same crops</li><li>Compare two models by condition slice with bootstrap intervals</li></ul></td><td><a href="labs/D2_1_two_backbones.ipynb">Lab 2.1 · Two backbones by slice</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D2_1_two_backbones.ipynb">Open in Colab</a></td></tr>
+<tr><td>2</td><td><b>How much to fine-tune</b><br>Linear probe, partial and full fine-tuning: what each costs in labels, time and risk<ul><li>Train a linear probe on frozen features</li><li>Compare a probe with full fine-tuning at two label budgets</li><li>Decide whether more labels or more training is the next step</li></ul></td><td><a href="labs/D2_2_probe_or_finetune.ipynb">Lab 2.2 · Probe or fine-tune</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D2_2_probe_or_finetune.ipynb">Open in Colab</a></td></tr>
+<tr><td>3</td><td><b>Zero-shot baselines</b><br>An open-vocabulary model classifies from text prompts with no training: the floor every trained model must beat<ul><li>Explain how an image-text model classifies without task labels</li><li>Score a zero-shot baseline on the defect classes</li><li>Use the floor to judge whether training was worth its labels</li></ul></td><td><a href="labs/D2_3_zero_shot_floor.ipynb">Lab 2.3 · The zero-shot floor</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D2_3_zero_shot_floor.ipynb">Open in Colab</a></td></tr>
+<tr><td>4</td><td><b>Licences of open-weight backbones</b><br>Code, weights and training data each carry terms: which backbones a municipality may deploy<ul><li>Separate the licence of the code, of the weights and of the training data</li><li>Read licence metadata from a model hub</li><li>Record a deployment decision with its conditions</li></ul></td><td><a href="labs/D2_4_backbone_licences.ipynb">Lab 2.4 · Which backbone may ship</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D2_4_backbone_licences.ipynb">Open in Colab</a></td></tr>
+</table></div>
+</div>
+<div class="day">
+<div class="day-head c-coral"><div><div class="t">Day 3 · 4 sessions · 4 labs</div><h3>Detect, segment and track</h3></div><a class="btn" href="slides/day3.html">Open the slides</a></div>
+<div class="scroll"><table>
+<tr><th>Session</th><th>Topic</th><th>Lab</th></tr>
+<tr><td>1</td><td><b>Detection and its metrics</b><br>Boxes, overlap, non-maximum suppression and average precision at more than one threshold<ul><li>Explain how a detector turns score maps into boxes</li><li>Apply non-maximum suppression and say what it removes</li><li>Compute average precision at two overlap thresholds</li></ul></td><td><a href="labs/D3_1_detector_ap.ipynb">Lab 3.1 · Train and score a detector</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D3_1_detector_ap.ipynb">Open in Colab</a></td></tr>
+<tr><td>2</td><td><b>Detector error analysis</b><br>A detector is wrong in four ways, and each way has a different fix<ul><li>Sort detector errors into localisation, class, duplicate and missed</li><li>Estimate what fixing each error type would be worth</li><li>Justify the next improvement from the error breakdown</li></ul></td><td><a href="labs/D3_2_error_analysis.ipynb">Lab 3.2 · Sort fifty errors</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D3_2_error_analysis.ipynb">Open in Colab</a></td></tr>
+<tr><td>3</td><td><b>Segmenting cracks</b><br>Masks, overlap metrics and why thin structures are hard; a baseline that needs no training<ul><li>Compute intersection over union and Dice for masks</li><li>Fine-tune a segmenter on a short schedule</li><li>Compare a segmenter with a thresholding baseline by condition</li></ul></td><td><a href="labs/D3_3_segment_cracks.ipynb">Lab 3.3 · Segment cracks</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D3_3_segment_cracks.ipynb">Open in Colab</a></td></tr>
+<tr><td>4</td><td><b>Tracking and counting</b><br>Tracking by detection: association, identity switches and a counting rule that counts once<ul><li>Associate detections to tracks by overlap</li><li>Count line crossings once per track</li><li>Measure count error and identity switches against ground truth</li></ul></td><td><a href="labs/D3_4_track_count.ipynb">Lab 3.4 · Track and count</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D3_4_track_count.ipynb">Open in Colab</a></td></tr>
+</table></div>
+</div>
+<div class="day">
+<div class="day-head c-purple"><div><div class="t">Day 4 · 4 sessions · 4 labs</div><h3>Fit the budget and release</h3></div><a class="btn" href="slides/day4.html">Open the slides</a></div>
+<div class="scroll"><table>
+<tr><th>Session</th><th>Topic</th><th>Lab</th></tr>
+<tr><td>1</td><td><b>Export to an interchange format</b><br>A model leaves the training framework as a graph: export it, then prove the copy behaves like the original<ul><li>Export a model to an interchange format with a dynamic input size</li><li>Check that the runtime's outputs match the original within a tolerance</li><li>Find a preprocessing mismatch between training and serving</li></ul></td><td><a href="labs/D4_1_export_parity.ipynb">Lab 4.1 · Export and check parity</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D4_1_export_parity.ipynb">Open in Colab</a></td></tr>
+<tr><td>2</td><td><b>Resolution and precision against latency</b><br>Resolution, batch size and numeric precision trade accuracy for latency and memory: measure, then choose<ul><li>Measure per-frame latency as a median and a 95th percentile</li><li>Quantise a model to 8-bit integers and re-measure its accuracy</li><li>Choose an operating point that meets a stated budget</li></ul></td><td><a href="labs/D4_2_latency_budget.ipynb">Lab 4.2 · Fit the latency budget</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D4_2_latency_budget.ipynb">Open in Colab</a></td></tr>
+<tr><td>3</td><td><b>Corruption and shift tests</b><br>The test that decides a release: the same frames under rain, glare, night and from a moved camera<ul><li>Build paired test sets for corruption and camera shift</li><li>Report the drop per condition with an interval</li><li>Decide to release, release with conditions or hold</li></ul></td><td><a href="labs/D4_3_field_tests.ipynb">Lab 4.3 · Field-condition tests</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D4_3_field_tests.ipynb">Open in Colab</a></td></tr>
+<tr><td>4</td><td><b>Privacy and monitoring in the field</b><br>Faces and plates are personal data: blur before storage, watch the cameras for drift, document the model<ul><li>Blur faces and plates before a frame is stored and measure what still leaks</li><li>Define monitors that separate a moved or dirty camera from weather</li><li>Write the sections of a model card for a vision system</li></ul></td><td><a href="labs/D4_4_privacy_monitoring.ipynb">Lab 4.4 · Blur, monitor, choose</a> <span class="muted">(25 min)</span><br><a href="https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D4_4_privacy_monitoring.ipynb">Open in Colab</a></td></tr>
+</table></div>
+</div>
+<div class="day">
+<div class="day-head c-amber"><div><div class="t">Capstone</div><h3>Capstone: a service that meets its budget, defended on a failure</h3></div><a class="btn" href="slides/capstone.html">Open the slides</a></div>
+<div class="scroll"><table><tr><td>An inspection or counting service for Al-Manar with its field-conditions test set, model card and release memo</td></tr></table></div>
+</div>
+<h2>Capstone</h2>
+<div class="two">
+<div><p>An inspection or counting service that meets a stated latency and accuracy budget, submitted as a public repository with a field-conditions test set, model card and release memo, defended on a failure case the assessor picks</p><p><b>What you submit:</b> A public GitHub repository link: the service, a field-conditions test set, a benchmark table against the stated latency and accuracy budget, a model card with results per condition and district and the privacy controls, a release memo, and the training logs, checkpoints and commit history. Then a live defence: an eight-minute talk and four minutes on a failure case the assessor picks, with the evaluation re-run on a held-back condition.</p><p><b>Format:</b> 8 min talk and demo · 4 min Q&amp;A</p></div>
+<div><h3>Rubric</h3><div class="bar c-teal"><span>Data and splits<i style="--w:80%"></i></span><b>20%</b></div><div class="bar c-cyan"><span>Model quality and error analysis<i style="--w:100%"></i></span><b>25%</b></div><div class="bar c-coral"><span>Latency budget<i style="--w:80%"></i></span><b>20%</b></div><div class="bar c-purple"><span>Field-condition tests and privacy<i style="--w:100%"></i></span><b>25%</b></div><div class="bar c-amber"><span>Reproducibility<i style="--w:40%"></i></span><b>10%</b></div></div>
+</div>
+<h2>Outcomes</h2>
+<p>By the end of the course, participants can:</p>
+<div class="day"><div class="scroll"><table>
+<tr><th></th><th>Outcomes</th><th>Level</th><th>Evidence</th></tr>
+<tr><td><b>LO1</b></td><td>Prepare an image dataset with annotation guidelines, an agreement check, splits that keep each road segment in one split, and augmentations that preserve label meaning, given road images with partial labels and near-duplicate frames</td><td>Applied</td><td>a dataset card, an agreement score and a split report with no road segment shared across splits</td></tr>
+<tr><td><b>LO2</b></td><td>Implement transfer learning with two pretrained backbones and compare them by condition slice with intervals, given defect crops and a free notebook GPU</td><td>Applied</td><td>a comparison table by lighting and weather slice with bootstrap intervals</td></tr>
+<tr><td><b>LO3</b></td><td>Build a detector and a segmenter and diagnose their errors by type to choose the next improvement, given pothole boxes and crack masks</td><td>Performance</td><td>average precision and overlap metrics, an error breakdown and a justified next step</td></tr>
+<tr><td><b>LO4</b></td><td>Measure tracking and counting accuracy for vehicles crossing a line in video, given synthetic camera clips with ground-truth counts</td><td>Applied</td><td>count error per clip and the number of identity switches</td></tr>
+<tr><td><b>LO5</b></td><td>Optimise a model to a per-frame latency and memory budget on a processor through export, input resolution and quantisation, re-measuring accuracy at each step, given the roadside unit's stated budget</td><td>Performance</td><td>a benchmark table and the chosen operating point</td></tr>
+<tr><td><b>LO6</b></td><td>Evaluate the model under corruption and camera shift and decide whether to release it, given rain, glare, night and moved-camera test sets</td><td>Performance</td><td>a model card with results per condition, privacy controls and a release decision defended live</td></tr>
+</table></div></div>
+<h2>Tools</h2>
+<div class="grid">
+<div class="card c-teal"><h3>Deep learning framework and pretrained vision models</h3><p>PyTorch with torchvision · timm</p></div>
+<div class="card c-cyan"><h3>Detection and segmentation library</h3><p>torchvision detection and segmentation models · Ultralytics</p></div>
+<div class="card c-coral"><h3>Annotation tool</h3><p>CVAT · Label Studio</p></div>
+<div class="card c-purple"><h3>Dataset inspection</h3><p>FiftyOne · cleanlab</p></div>
+<div class="card c-green"><h3>Image and video processing</h3><p>OpenCV · Pillow</p></div>
+<div class="card c-teal"><h3>Interchange format and inference runtime</h3><p>ONNX Runtime · OpenVINO · LiteRT</p></div>
+<div class="card c-cyan"><h3>Compute</h3><p>a free notebook GPU · Academy GPU hours</p></div>
+</div>
+<h2>Before you start</h2>
+<h3>Prerequisites</h3>
+<ul><li>AE-201 Machine Learning Foundations and Model Evaluation</li><li>AE-202 Deep Learning and Generative AI Fundamentals</li><li>Trains a neural network with a hand-written training loop</li><li>Computes precision and recall from a confusion matrix</li><li>Setup: Google Colab with a free GPU runtime, or a laptop with uv (every lab has a quick mode for a laptop processor). Day 2 downloads pretrained backbones from their public hubs. Run 00_setup_check before Day 1; see labs/README.md.</li></ul>
+<div class="note tip">The labs are notebooks. Open each one in Google Colab from the table above, or clone the repository and run them locally.</div>
+<h2>Sources</h2>
+<h3>Frameworks and model libraries</h3>
+<ul><li><a href="https://docs.pytorch.org/vision/stable/models.html">torchvision: models and pretrained weights</a></li><li><a href="https://docs.pytorch.org/vision/stable/transforms.html">torchvision: transforms v2</a></li><li><a href="https://huggingface.co/docs/timm/index">timm (PyTorch Image Models) documentation</a></li><li><a href="https://github.com/mlfoundations/open_clip">OpenCLIP: an open source implementation of CLIP</a></li><li><a href="https://www.ultralytics.com/license">Ultralytics: licensing</a></li></ul>
+<h3>Export and inference runtimes</h3>
+<ul><li><a href="https://docs.pytorch.org/docs/stable/onnx.html">PyTorch: torch.onnx</a></li><li><a href="https://onnxruntime.ai/docs/performance/model-optimizations/quantization.html">ONNX Runtime: quantize ONNX models</a></li><li><a href="https://docs.openvino.ai/">OpenVINO documentation</a></li><li><a href="https://ai.google.dev/edge/litert">LiteRT overview</a></li></ul>
+<h3>Papers</h3>
+<ul><li><a href="https://arxiv.org/abs/1512.03385">He et al., Deep Residual Learning for Image Recognition (2015)</a></li><li><a href="https://arxiv.org/abs/2010.11929">Dosovitskiy et al., An Image is Worth 16x16 Words (2020)</a></li><li><a href="https://arxiv.org/abs/2103.00020">Radford et al., Learning Transferable Visual Models From Natural Language Supervision (2021)</a></li><li><a href="https://arxiv.org/abs/1904.01355">Tian et al., FCOS: Fully Convolutional One-Stage Object Detection (2019)</a></li><li><a href="https://arxiv.org/abs/1708.02002">Lin et al., Focal Loss for Dense Object Detection (2017)</a></li><li><a href="https://arxiv.org/abs/2008.08115">Bolya et al., TIDE: A General Toolbox for Identifying Object Detection Errors (2020)</a></li><li><a href="https://arxiv.org/abs/1505.04597">Ronneberger et al., U-Net: Convolutional Networks for Biomedical Image Segmentation (2015)</a></li><li><a href="https://arxiv.org/abs/1602.00763">Bewley et al., Simple Online and Realtime Tracking (2016)</a></li><li><a href="https://arxiv.org/abs/1903.12261">Hendrycks and Dietterich, Benchmarking Neural Network Robustness to Common Corruptions and Perturbations (2019)</a></li><li><a href="https://arxiv.org/abs/1810.03993">Mitchell et al., Model Cards for Model Reporting (2018)</a></li><li><a href="https://arxiv.org/abs/2209.08538">Arya et al., RDD2022: A multi-national image dataset for automatic Road Damage Detection (2022)</a></li></ul>
+<h3>Annotation and dataset tools</h3>
+<ul><li><a href="https://docs.cvat.ai/">CVAT documentation</a></li><li><a href="https://labelstud.io/guide/">Label Studio documentation</a></li><li><a href="https://docs.voxel51.com/">FiftyOne documentation</a></li><li><a href="https://docs.cleanlab.ai/">cleanlab documentation</a></li><li><a href="https://cocodataset.org/#format-data">COCO: data format</a></li><li><a href="https://cocodataset.org/#detection-eval">COCO: detection evaluation</a></li></ul>
+<h3>National references</h3>
+<ul><li><a href="https://sdaia.gov.sa/en/SDAIA/about/Documents/PersonalDataProtectionLaw.pdf">Personal Data Protection Law</a></li><li><a href="https://sdaia.gov.sa/en/SDAIA/about/Documents/ImplementingRegulationPersonalDataProtectionLaw.pdf">Implementing Regulation of the Personal Data Protection Law</a></li><li><a href="https://sdaia.gov.sa/en/SDAIA/about/Documents/DataClassificationPolicy.pdf">Data Classification Policy (National Data Management Office)</a></li><li><a href="https://sdaia.gov.sa/en/SDAIA/about/Documents/ai-principles.pdf">Principles of AI Ethics</a></li></ul>
+<h2>Files and links</h2>
+<div class="files">
+<a href="practice.html"><b>practice.html</b><span>Practice questions with feedback</span></a>
+<a href="index.md"><b>index.md</b><span>This page as Markdown, for an AI assistant</span></a>
+<a href="llms.txt"><b>llms.txt</b><span>The course for AI assistants (llms.txt)</span></a>
+<a href="https://github.com/SDAIAAcademy/ae-309"><b>SDAIAAcademy/ae-309</b><span>The course repository</span></a>
+</div>
+</main>
+<footer><div class="wrap">SDAIA Academy · AI Engineering Track · Computer Vision Engineering<br><span class="muted">Course version 2027.1.0 · engine 1.0.0 · built 2026-11-15 · commit d41c694</span></div></footer>
+<script type="application/json" id="academy-data">{"v":1,"engine":"1.0.0","build":{"at":"2026-11-15T03:19:11Z","version":"2027.1.0","commit":"d41c694"},"course":{"id":"ae-309","code":"AE-309","title":"Computer Vision Engineering","track":"ai-engineering","lang":"en","dir":"ltr","url":"https://sdaiaacademy.github.io/ae-309/","repo":"SDAIAAcademy/ae-309","home":"index.html"},"ai":{"context":{"course":"context/course.md","courseJs":"context/course.js","day":null,"llms":"llms.txt"},"tasks":[],"tools":[]},"features":{},"strings":{}}</script>
+<script src="_engine/academy.js"></script>
+</body>
+</html>

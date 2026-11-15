@@ -1,0 +1,10 @@
+{
+ "quick": {
+  "mirror left-right": 0.0,
+  "mirror up-down": 0.0,
+  "quarter turn": 0.425,
+  "brightness and contrast": 0.0,
+  "tight random crop": 0.425,
+  "gaussian blur": 0.0
+ }
+}

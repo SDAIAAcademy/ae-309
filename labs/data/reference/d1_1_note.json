@@ -1,0 +1,7 @@
+{
+ "quick": {
+  "promised": "96% accuracy on survey-style crops (clean daylight, vehicle camera).",
+  "field": "43% on 200 field crops; worst slice lighting=dust: 12% on 40 crops.",
+  "ask": "Do not deploy. Collect and label crops under dust, night, rain and glare and from pole cameras, and report every later model by these slices."
+ }
+}

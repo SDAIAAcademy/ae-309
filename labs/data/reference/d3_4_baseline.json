@@ -1,0 +1,24 @@
+{
+ "quick": {
+  "day": {
+   "abs_count_error": 3,
+   "identity_switches": 67,
+   "truth": 38
+  },
+  "queue": {
+   "abs_count_error": 5,
+   "identity_switches": 106,
+   "truth": 39
+  },
+  "gantry": {
+   "abs_count_error": 4,
+   "identity_switches": 105,
+   "truth": 39
+  },
+  "night": {
+   "abs_count_error": 14,
+   "identity_switches": 172,
+   "truth": 35
+  }
+ }
+}

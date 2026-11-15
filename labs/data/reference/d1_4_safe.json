@@ -1,0 +1,8 @@
+{
+ "quick": [
+  "mirror left-right",
+  "mirror up-down",
+  "brightness and contrast",
+  "gaussian blur"
+ ]
+}

@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-ax="deck" data-track="ai-engineering">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Capstone · Capstone: a service that meets its budget, defended on a failure · Computer Vision Engineering</title>
+<meta name="generator" content="SDAIA Academy engine 1.0.0">
+<link rel="icon" href="../_engine/icon.svg">
+<link rel="alternate" type="text/markdown" href="capstone.md">
+<link rel="describedby" href="../llms.txt">
+<link rel="stylesheet" href="../_engine/academy.css">
+</head>
+<body>
+<div class="deck" data-course="Computer Vision Engineering" data-track="ai-engineering" data-day="Capstone">
+<section class="slide title" id="title" data-auto="title" data-label="Welcome" data-n="1">
+  <div class="kicker">SDAIA Academy · Computer Vision Engineering</div>
+  <h1>Capstone: a service that meets its budget, defended on a failure</h1>
+  <p class="lead mt">Capstone: An inspection or counting service for Al-Manar with its field-conditions test set, model card and release memo</p>
+  <div class="meta"><span class="track">AI Engineering Track</span><span>4 teaching days + capstone day</span><span>8 min talk and demo · 4 min Q&amp;A</span><span>AE-309</span></div>
+  <aside class="notes"><p>Today is theirs: keep your own talking to the opening and the closing. Confirm the running order and the demonstration setup first: screen sharing, the repository open, the evaluation notebook ready to re-run. Have the held-back condition ready for each project: a condition the participant has not reported (for an inspection service, for example dust or motion blur; for a counting service, a queue under a gantry).</p></aside>
+</section>
+
+<section class="slide" id="agenda" data-label="Agenda" data-n="2">
+  <div class="kicker">Capstone</div>
+  <h2>How the day runs</h2>
+  <div class="agenda">
+    <div class="item now"><div><b>The brief, the rubric and final prep</b><small>what is submitted, how it is scored, a last rehearsal</small></div></div>
+    <div class="item"><div><b>Defences</b><small>eight minutes of talk, then four minutes on a failure case the assessor picks</small></div></div>
+    <div class="item"><div><b>Review and closing</b><small>peer feedback, the trainer's review, what next</small></div></div>
+  </div>
+  <aside class="notes"><p>The capstone is individual. Repositories were submitted before today; the assessor has read each one and has chosen its failure case. Breaks are not slides: press B when the room needs one.</p></aside>
+</section>
+
+<section class="slide" id="the-brief" data-label="The brief" data-lo="LO1 LO3 LO4 LO5 LO6" data-n="3">
+  <div class="kicker">The brief</div>
+  <h2>A service for Al-Manar that meets a budget you stated</h2>
+  <div class="cols cols-2">
+    <div class="card c-teal"><h4>Inspection</h4><p class="small mb0">Find potholes and patches, or segment cracks, in road frames. Accuracy is average precision or mask overlap, by lighting and district.</p></div>
+    <div class="card c-cyan"><h4>Counting</h4><p class="small mb0">Count vehicles across a line in traffic clips. Accuracy is count error per clip, with identity switches reported beside it.</p></div>
+  </div>
+  <div class="callout tip mt"><b>You wrote the budget in lab 4.4:</b> a per-frame latency at the 95th percentile on the roadside unit, an accuracy floor, and at least three field conditions.</div>
+  <aside class="notes"><p>Either task may start from the course starter (the supplied checkpoints and roadkit) or from the participant's own model, and may use the course's synthetic pack or a public road-damage set under its own licence. What is assessed is the evidence, not the size of the model. AI assistants are unrestricted in the capstone; the defence shows who understands the result.</p></aside>
+</section>
+
+<section class="slide" id="what-is-submitted" data-label="The repository" data-lo="LO1 LO5 LO6" data-n="4">
+  <div class="kicker">The repository</div>
+  <h2>Six things the assessor looks for in the public repository</h2>
+  <div class="cols cols-3 gap-s">
+    <div class="card c-teal flat"><h4>Data card and split report</h4><p class="small mb0">What the data is, the guideline, the agreement score, no site shared across splits.</p></div>
+    <div class="card c-cyan flat"><h4>Field-conditions test set</h4><p class="small mb0">Paired with the clean test set, and how it was made.</p></div>
+    <div class="card c-coral flat"><h4>Benchmark table</h4><p class="small mb0">Latency, size and accuracy per operating point, the machine named, the chosen row marked.</p></div>
+    <div class="card c-purple flat"><h4>Model card</h4><p class="small mb0">Results per condition and district with intervals, the privacy controls and their measured recall, the monitors.</p></div>
+    <div class="card c-amber flat"><h4>Release memo</h4><p class="small mb0">One page: release, release with a human check, or hold, per condition, against a rule stated in advance.</p></div>
+    <div class="card c-navy flat"><h4>The trail</h4><p class="small mb0">Training logs, checkpoints, commit history, and one command that re-runs the evaluation.</p></div>
+  </div>
+  <aside class="notes"><p>The trail is the authenticity evidence: logs, checkpoints and a commit history that shows the work growing. In the defence the participant re-runs the evaluation on a held-back condition and explains the result, so the one command must work on the day. Faces and plates must not appear readable anywhere in a repository; the synthetic street frames are drawings.</p></aside>
+</section>
+
+<section class="slide" id="rubric" data-label="The rubric" data-n="5">
+  <div class="kicker">How the repository is scored</div>
+  <h2>The rubric</h2>
+  <div class="bars">
+    <div class="row"><span>Data and splits</span><div class="bar c-teal" style="--w:80%"></div><span class="val">20%</span></div>
+    <div class="row"><span>Model quality and error analysis</span><div class="bar c-cyan" style="--w:100%"></div><span class="val">25%</span></div>
+    <div class="row"><span>Latency budget</span><div class="bar c-coral" style="--w:80%"></div><span class="val">20%</span></div>
+    <div class="row"><span>Field-condition tests and privacy</span><div class="bar c-purple" style="--w:100%"></div><span class="val">25%</span></div>
+    <div class="row"><span>Reproducibility</span><div class="bar c-amber" style="--w:40%"></div><span class="val">10%</span></div>
+  </div>
+  <div class="callout tip mt"><b>A claim without a number is a plan, not a result.</b> And a number without its condition, its count and its interval is half a result.</div>
+  <aside class="notes"><p>Walk through each criterion with what full marks look like. Data and splits: a split report with no shared site and an agreement score for any label the participant added. Model quality and error analysis: the metric, an error breakdown by type and a justified next step. Latency budget: a table measured at more than one operating point, accuracy re-measured after each change. Field-condition tests and privacy: drops per condition with intervals, a blur recall, a decision. Reproducibility: the evaluation re-runs from a clean clone. Overall weighting of the course: the repository 60%, the live defence 20%, the supervised entry and exit checks 20%; passing is 70% overall and at least 60% on this rubric.</p></aside>
+</section>
+
+<section class="slide" id="format" data-label="Format" data-n="6">
+  <div class="kicker">Format</div>
+  <h2>Eight minutes of talk, then four minutes on a failure the assessor picks</h2>
+  <div class="cols cols-3">
+    <div class="card c-teal"><h4>1 · The budget and the result</h4><p class="small mb0">The task, the budget you stated, the operating point you chose. Two minutes.</p></div>
+    <div class="card c-cyan"><h4>2 · The evidence</h4><p class="small mb0">The table by condition with intervals, the error breakdown, the release decision. Four minutes.</p></div>
+    <div class="card c-coral"><h4>3 · What you would not release</h4><p class="small mb0">The weakest condition, what happens under it, the next step. Two minutes.</p></div>
+  </div>
+  <div class="callout note mt"><b>Then the failure case.</b> The assessor shows one frame or clip your service gets wrong, and names a held-back condition. You re-run the evaluation on it and explain what you see.</div>
+  <aside class="notes"><p>The catalog entry asks for a defence on a failure case the assessor picks and states no lengths: eight and four minutes are this edition's choice. Pick the failure case from the participant's own error analysis or from a condition they did not test. Good questions: which error type is this, what would fix it and what would the fix cost, would your monitors have noticed, does your release memo cover it. After each defence everyone writes one strength, one question and one suggestion.</p></aside>
+</section>
+
+<section class="slide order" id="running-order" data-label="Running order" data-n="7">
+  <div class="kicker">Running order</div>
+  <h2>Who presents when</h2>
+  <table class="t small">
+    <tr><th>#</th><th>Presenter</th><th>Service</th></tr>
+    <tr><td>1</td><td><input placeholder="name"></td><td><input placeholder="inspection or counting"></td></tr>
+    <tr><td>2</td><td><input placeholder="name"></td><td><input placeholder="inspection or counting"></td></tr>
+    <tr><td>3</td><td><input placeholder="name"></td><td><input placeholder="inspection or counting"></td></tr>
+    <tr><td>4</td><td><input placeholder="name"></td><td><input placeholder="inspection or counting"></td></tr>
+    <tr><td>5</td><td><input placeholder="name"></td><td><input placeholder="inspection or counting"></td></tr>
+    <tr><td>6</td><td><input placeholder="name"></td><td><input placeholder="inspection or counting"></td></tr>
+    <tr><td>7</td><td><input placeholder="name"></td><td><input placeholder="inspection or counting"></td></tr>
+    <tr><td>8</td><td><input placeholder="name"></td><td><input placeholder="inspection or counting"></td></tr>
+  </table>
+  <aside class="notes"><p>Type the names in at the start; the fields can be edited live and are not saved, so keep the list in your notes too.</p></aside>
+</section>
+
+<section class="slide dark" id="final-prep" data-label="Before the first defence" data-n="8">
+  <div class="kicker">Before the first defence</div>
+  <h1>Final prep · 20 minutes</h1>
+  <div class="timer" data-minutes="20"></div>
+  <p class="lead">Clone your repository into a new folder and run the evaluation command once.</p>
+  <aside class="notes"><p>Press T to start the timer. A clean clone is the rehearsal that matters: it catches the file that was never committed. Breaks are not slides: press B when the room needs one.</p></aside>
+</section>
+
+<section class="slide dark presenting" id="now-presenting" data-label="Now presenting" data-n="9">
+  <div class="kicker center">Now presenting</div>
+  <div class="center"><input placeholder="Presenter · service"></div>
+  <div class="timers mt">
+    <div><h3>Talk</h3><div class="timer" data-minutes="8"></div></div>
+    <div><h3>Failure case</h3><div class="timer" data-minutes="4"></div></div>
+  </div>
+  <aside class="notes"><p>Type the presenter's name and press T to start the timers. Reuse this slide for every presenter. Stop the talk at eight minutes; the four minutes on the failure case are the assessor's.</p></aside>
+</section>
+
+<section class="slide" id="review" data-label="Trainer review" data-n="10">
+  <div class="kicker">Trainer review</div>
+  <h2>What the defences showed</h2>
+  <div class="cols cols-3">
+    <div class="card c-teal"><h4>Strongest evidence</h4><p class="small mb0">Tables and decisions that several projects got right.</p></div>
+    <div class="card c-coral"><h4>Common gaps</h4><p class="small mb0">What most repositories would fix next.</p></div>
+    <div class="card c-purple"><h4>One surprise</h4><p class="small mb0">A failure nobody expected, and what it taught.</p></div>
+  </div>
+  <aside class="notes"><p>Fill these in from your scoring notes during the last break. Name projects for strengths; keep gaps anonymous. Usual gaps: a result without an interval, a field test on frames the model was trained on, a latency measured once, a blur whose recall was never measured.</p></aside>
+</section>
+
+<section class="slide" id="what-next" data-label="After the course" data-n="11">
+  <div class="kicker">After the course</div>
+  <h2>Keep going</h2>
+  <ul class="bullets">
+    <li><b>The follow-up task:</b> run your service on one condition you did not test this week, and add the row to your model card</li>
+    <li><b>Your repository stays yours:</b> keep the evaluation command working as the model changes</li>
+    <li><b>Next Academy course:</b> AE-408 Multimodal and Speech Systems Engineering, for vision-language models and multimodal applications</li>
+  </ul>
+  <aside class="notes"><p>The format includes a tracked follow-up task: the extra condition is this edition's choice for it. Point to the AE Associate badge this course helps prepare for, without describing its exam.</p></aside>
+</section>
+
+<section class="slide dark" id="thanks" data-label="Thank you" data-n="12">
+  <div class="kicker">SDAIA Academy</div>
+  <h1>Thank you</h1>
+  <p class="lead">Computer Vision Engineering</p>
+</section>
+</div>
+<script type="application/json" id="academy-data">{"v":1,"engine":"1.0.0","build":{"at":"2026-11-15T03:19:11Z","version":"2027.1.0","commit":"d41c694"},"course":{"id":"ae-309","code":"AE-309","title":"Computer Vision Engineering","track":"ai-engineering","lang":"en","dir":"ltr","url":"https://sdaiaacademy.github.io/ae-309/","repo":"SDAIAAcademy/ae-309","home":"../index.html"},"deck":{"id":"capstone","kind":"capstone","day":5,"label":"Capstone","title":"Capstone: a service that meets its budget, defended on a failure","prev":"day4.html","next":null,"md":"capstone.md","alt":{}},"sessions":[],"slides":[{"id":"title","n":1,"title":"Capstone: a service that meets its budget, defended on a failure","kind":"title","session":0,"hash":"f97bc701","md":"#### [capstone#title] Capstone: a service that meets its budget, defended on a failure\n\n*SDAIA Academy · Computer Vision Engineering*\n\nCapstone: An inspection or counting service for Al-Manar with its field-conditions test set, model card and release memo\n\nAI Engineering Track · 4 teaching days + capstone day · 8 min talk and demo · 4 min Q&A · AE-309","notes":"Today is theirs: keep your own talking to the opening and the closing. Confirm the running order and the demonstration setup first: screen sharing, the repository open, the evaluation notebook ready to re-run. Have the held-back condition ready for each project: a condition the participant has not reported (for an inspection service, for example dust or motion blur; for a counting service, a queue under a gantry).","minutes":null,"lo":[]},{"id":"agenda","n":2,"title":"How the day runs","kind":"content","session":0,"hash":"60f477ee","md":"#### [capstone#agenda] How the day runs\n\n*Capstone*\n\n- **The brief, the rubric and final prep**: what is submitted, how it is scored, a last rehearsal\n- **Defences**: eight minutes of talk, then four minutes on a failure case the assessor picks\n- **Review and closing**: peer feedback, the trainer's review, what next","notes":"The capstone is individual. Repositories were submitted before today; the assessor has read each one and has chosen its failure case. Breaks are not slides: press B when the room needs one.","minutes":null,"lo":[]},{"id":"the-brief","n":3,"title":"A service for Al-Manar that meets a budget you stated","kind":"content","session":0,"hash":"d9af5e91","md":"#### [capstone#the-brief] A service for Al-Manar that meets a budget you stated\n\n*The brief*\n\n- **Inspection.** Find potholes and patches, or segment cracks, in road frames. Accuracy is average precision or mask overlap, by lighting and district.\n- **Counting.** Count vehicles across a line in traffic clips. Accuracy is count error per clip, with identity switches reported beside it.\n\n> **You wrote the budget in lab 4.4:** a per-frame latency at the 95th percentile on the roadside unit, an accuracy floor, and at least three field conditions.","notes":"Either task may start from the course starter (the supplied checkpoints and roadkit) or from the participant's own model, and may use the course's synthetic pack or a public road-damage set under its own licence. What is assessed is the evidence, not the size of the model. AI assistants are unrestricted in the capstone; the defence shows who understands the result.","minutes":null,"lo":["LO1","LO3","LO4","LO5","LO6"]},{"id":"what-is-submitted","n":4,"title":"Six things the assessor looks for in the public repository","kind":"content","session":0,"hash":"a6d037c9","md":"#### [capstone#what-is-submitted] Six things the assessor looks for in the public repository\n\n*The repository*\n\n- **Data card and split report.** What the data is, the guideline, the agreement score, no site shared across splits.\n- **Field-conditions test set.** Paired with the clean test set, and how it was made.\n- **Benchmark table.** Latency, size and accuracy per operating point, the machine named, the chosen row marked.\n- **Model card.** Results per condition and district with intervals, the privacy controls and their measured recall, the monitors.\n- **Release memo.** One page: release, release with a human check, or hold, per condition, against a rule stated in advance.\n- **The trail.** Training logs, checkpoints, commit history, and one command that re-runs the evaluation.","notes":"The trail is the authenticity evidence: logs, checkpoints and a commit history that shows the work growing. In the defence the participant re-runs the evaluation on a held-back condition and explains the result, so the one command must work on the day. Faces and plates must not appear readable anywhere in a repository; the synthetic street frames are drawings.","minutes":null,"lo":["LO1","LO5","LO6"]},{"id":"rubric","n":5,"title":"The rubric","kind":"content","session":0,"hash":"ede56dd8","md":"#### [capstone#rubric] The rubric\n\n*How the repository is scored*\n\n| Item | Value |\n| --- | --- |\n| Data and splits | 20% |\n| Model quality and error analysis | 25% |\n| Latency budget | 20% |\n| Field-condition tests and privacy | 25% |\n| Reproducibility | 10% |\n\n> **A claim without a number is a plan, not a result.** And a number without its condition, its count and its interval is half a result.","notes":"Walk through each criterion with what full marks look like. Data and splits: a split report with no shared site and an agreement score for any label the participant added. Model quality and error analysis: the metric, an error breakdown by type and a justified next step. Latency budget: a table measured at more than one operating point, accuracy re-measured after each change. Field-condition tests and privacy: drops per condition with intervals, a blur recall, a decision. Reproducibility: the evaluation re-runs from a clean clone. Overall weighting of the course: the repository 60%, the live defence 20%, the supervised entry and exit checks 20%; passing is 70% overall and at least 60% on this rubric.","minutes":null,"lo":[]},{"id":"format","n":6,"title":"Eight minutes of talk, then four minutes on a failure the assessor picks","kind":"content","session":0,"hash":"e30cbeb7","md":"#### [capstone#format] Eight minutes of talk, then four minutes on a failure the assessor picks\n\n*Format*\n\n- **1 · The budget and the result.** The task, the budget you stated, the operating point you chose. Two minutes.\n- **2 · The evidence.** The table by condition with intervals, the error breakdown, the release decision. Four minutes.\n- **3 · What you would not release.** The weakest condition, what happens under it, the next step. Two minutes.\n\n> **Then the failure case.** The assessor shows one frame or clip your service gets wrong, and names a held-back condition. You re-run the evaluation on it and explain what you see.","notes":"The catalog entry asks for a defence on a failure case the assessor picks and states no lengths: eight and four minutes are this edition's choice. Pick the failure case from the participant's own error analysis or from a condition they did not test. Good questions: which error type is this, what would fix it and what would the fix cost, would your monitors have noticed, does your release memo cover it. After each defence everyone writes one strength, one question and one suggestion.","minutes":null,"lo":[]},{"id":"running-order","n":7,"title":"Who presents when","kind":"order","session":0,"hash":"60e91abe","md":"#### [capstone#running-order] Who presents when\n\n*Running order*\n\n| # | Presenter | Service |\n| --- | --- | --- |\n| 1 |  |  |\n| 2 |  |  |\n| 3 |  |  |\n| 4 |  |  |\n| 5 |  |  |\n| 6 |  |  |\n| 7 |  |  |\n| 8 |  |  |","notes":"Type the names in at the start; the fields can be edited live and are not saved, so keep the list in your notes too.","minutes":null,"lo":[]},{"id":"final-prep","n":8,"title":"Final prep · 20 minutes","kind":"content","session":0,"hash":"39731b66","md":"#### [capstone#final-prep] Final prep · 20 minutes\n\n*Before the first defence*\n\nClone your repository into a new folder and run the evaluation command once.","notes":"Press T to start the timer. A clean clone is the rehearsal that matters: it catches the file that was never committed. Breaks are not slides: press B when the room needs one.","minutes":null,"lo":[]},{"id":"now-presenting","n":9,"title":"Talk","kind":"presenting","session":0,"hash":"ce3d1528","md":"#### [capstone#now-presenting] Talk\n\n*Now presenting*\n\n##### Failure case","notes":"Type the presenter's name and press T to start the timers. Reuse this slide for every presenter. Stop the talk at eight minutes; the four minutes on the failure case are the assessor's.","minutes":null,"lo":[]},{"id":"review","n":10,"title":"What the defences showed","kind":"content","session":0,"hash":"4d14a588","md":"#### [capstone#review] What the defences showed\n\n*Trainer review*\n\n- **Strongest evidence.** Tables and decisions that several projects got right.\n- **Common gaps.** What most repositories would fix next.\n- **One surprise.** A failure nobody expected, and what it taught.","notes":"Fill these in from your scoring notes during the last break. Name projects for strengths; keep gaps anonymous. Usual gaps: a result without an interval, a field test on frames the model was trained on, a latency measured once, a blur whose recall was never measured.","minutes":null,"lo":[]},{"id":"what-next","n":11,"title":"Keep going","kind":"content","session":0,"hash":"56bb8340","md":"#### [capstone#what-next] Keep going\n\n*After the course*\n\n- **The follow-up task:** run your service on one condition you did not test this week, and add the row to your model card\n- **Your repository stays yours:** keep the evaluation command working as the model changes\n- **Next Academy course:** AE-408 Multimodal and Speech Systems Engineering, for vision-language models and multimodal applications","notes":"The format includes a tracked follow-up task: the extra condition is this edition's choice for it. Point to the AE Associate badge this course helps prepare for, without describing its exam.","minutes":null,"lo":[]},{"id":"thanks","n":12,"title":"Thank you","kind":"content","session":0,"hash":"63b2753a","md":"#### [capstone#thanks] Thank you\n\n*SDAIA Academy*\n\nComputer Vision Engineering","notes":"","minutes":null,"lo":[]}],"activities":[],"ai":{"context":{"course":"../context/course.md","courseJs":"../context/course.js","day":"capstone.md","llms":"../llms.txt"},"tasks":[],"tools":[]},"bridge":{"allowedOrigins":[]},"features":{},"strings":{}}</script>
+<script src="../_engine/academy.js"></script>
+</body>
+</html>

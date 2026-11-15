@@ -1,0 +1,11 @@
+{
+ "quick": {
+  "precision": "int8",
+  "size": 160,
+  "median_ms": 8.33,
+  "p95_ms": 10.18,
+  "unit_p95_ms": 30.5,
+  "file_mb": 0.93,
+  "ap50": 0.973
+ }
+}

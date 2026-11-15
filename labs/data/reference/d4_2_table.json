@@ -1,0 +1,58 @@
+{
+ "quick": [
+  {
+   "precision": "fp32",
+   "size": 192,
+   "median_ms": 25.34,
+   "p95_ms": 35.02,
+   "unit_p95_ms": 105.1,
+   "file_mb": 3.53,
+   "ap50": 0.973
+  },
+  {
+   "precision": "fp32",
+   "size": 160,
+   "median_ms": 18.02,
+   "p95_ms": 28.54,
+   "unit_p95_ms": 85.6,
+   "file_mb": 3.53,
+   "ap50": 0.973
+  },
+  {
+   "precision": "fp32",
+   "size": 128,
+   "median_ms": 10.09,
+   "p95_ms": 15.74,
+   "unit_p95_ms": 47.2,
+   "file_mb": 3.53,
+   "ap50": 0.921
+  },
+  {
+   "precision": "int8",
+   "size": 192,
+   "median_ms": 8.67,
+   "p95_ms": 41.67,
+   "unit_p95_ms": 125.0,
+   "file_mb": 0.93,
+   "ap50": 0.973
+  },
+  {
+   "precision": "int8",
+   "size": 160,
+   "median_ms": 8.33,
+   "p95_ms": 10.18,
+   "unit_p95_ms": 30.5,
+   "file_mb": 0.93,
+   "ap50": 0.973
+  },
+  {
+   "precision": "int8",
+   "size": 128,
+   "median_ms": 6.9,
+   "p95_ms": 10.32,
+   "unit_p95_ms": 31.0,
+   "file_mb": 0.93,
+   "ap50": 0.919
+  }
+ ]
+}

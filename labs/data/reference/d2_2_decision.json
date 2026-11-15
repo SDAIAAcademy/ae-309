@@ -1,0 +1,10 @@
+{
+ "quick": {
+  "next": "train",
+  "why": "On vit_tiny, ten times the labels add +0.003 accuracy; training every weight on the same 10% adds +0.267 over the probe."
+ },
+ "full": {
+  "next": "train",
+  "why": "On vit_tiny, ten times the labels add +0.014 accuracy; training every weight on the same 10% adds +0.163 over the probe."
+ }
+}
