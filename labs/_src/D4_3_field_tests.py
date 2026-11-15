@@ -179,7 +179,8 @@ U.save_reference("d4_3_memo", memo)
 # 1. The training data held some rain and night frames, and the detector still drops in this
 #    test. Why?
 # 2. Why does pairing the frames give a narrower interval than two separate test sets would?
-# 3. The moved camera is the worst condition. Is more night data the right next step?
+# 3. On another detector the moved camera is the worst condition. Is more night data the
+#    right next step?
 #
 # <details><summary>Answers</summary>
 #

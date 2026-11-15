@@ -172,7 +172,7 @@ U.save_reference("d1_1_note", note)
 # %% [markdown]
 # ## Check yourself
 #
-# 1. The pilot scored about 93% on its own validation crops and about a third on the field
+# 1. The pilot scored about 95% on its own validation crops and under half on the field
 #    batch. Was the validation number wrong?
 # 2. Why does the lab ask for a minimum count before naming the worst slice?
 # 3. Which of the three fields could the department fix without retraining?
