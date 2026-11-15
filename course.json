@@ -1,7 +1,7 @@
 {
   "$schema": "https://sdaiaacademy.github.io/engine/schemas/course.schema.json",
   "engine": "1",
-  "id": "computer-vision",
+  "id": "ae-309",
   "code": "AE-309",
   "version": "2027.1.0",
   "lang": "en",
@@ -26,8 +26,8 @@
     "Setup: Google Colab with a free GPU runtime, or a laptop with uv (every lab has a quick mode for a laptop processor). Day 2 downloads pretrained backbones from their public hubs. Run 00_setup_check before Day 1; see labs/README.md."
   ],
   "site": {
-    "url": "https://sdaiaacademy.github.io/computer-vision/",
-    "repo": "SDAIAAcademy/computer-vision"
+    "url": "https://sdaiaacademy.github.io/ae-309/",
+    "repo": "SDAIAAcademy/ae-309"
   },
   "outcomes": [
     {

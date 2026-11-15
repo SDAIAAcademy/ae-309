@@ -13,7 +13,7 @@ cell clones this repository and installs what Colab lacks (`requirements-colab.t
 **A laptop with [uv](https://docs.astral.sh/uv/).** Every lab has a quick mode that runs on a processor.
 
 ```
-git clone https://github.com/SDAIAAcademy/computer-vision
+git clone https://github.com/SDAIAAcademy/ae-309
 cd computer-vision/labs
 uv sync
 export CV_QUICK=1          # PowerShell: $env:CV_QUICK = "1"
@@ -74,23 +74,23 @@ Days 1, 3 and 4 run offline once the repository and its Python packages are inst
 
 | Lab | Notebook | AI policy |
 |---|---|---|
-| Setup | [`00_setup_check.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/computer-vision/blob/main/labs/00_setup_check.ipynb) | |
-| 1.1 Errors by condition | [`D1_1_errors_by_condition.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/computer-vision/blob/main/labs/D1_1_errors_by_condition.ipynb) | tutor |
-| 1.2 Agree on a new class | [`D1_2_annotation_agreement.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/computer-vision/blob/main/labs/D1_2_annotation_agreement.ipynb) | off |
-| 1.3 Split by road segment | [`D1_3_split_by_segment.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/computer-vision/blob/main/labs/D1_3_split_by_segment.ipynb) | tutor |
-| 1.4 Augment without changing labels | [`D1_4_augmentation.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/computer-vision/blob/main/labs/D1_4_augmentation.ipynb) | tutor |
-| 2.1 Two backbones by slice | [`D2_1_two_backbones.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/computer-vision/blob/main/labs/D2_1_two_backbones.ipynb) | tutor |
-| 2.2 Probe or fine-tune | [`D2_2_probe_or_finetune.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/computer-vision/blob/main/labs/D2_2_probe_or_finetune.ipynb) | tutor |
-| 2.3 The zero-shot floor | [`D2_3_zero_shot_floor.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/computer-vision/blob/main/labs/D2_3_zero_shot_floor.ipynb) | tutor |
-| 2.4 Which backbone may ship | [`D2_4_backbone_licences.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/computer-vision/blob/main/labs/D2_4_backbone_licences.ipynb) | tutor |
-| 3.1 Train and score a detector | [`D3_1_detector_ap.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/computer-vision/blob/main/labs/D3_1_detector_ap.ipynb) | tutor |
-| 3.2 Sort fifty errors | [`D3_2_error_analysis.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/computer-vision/blob/main/labs/D3_2_error_analysis.ipynb) | off |
-| 3.3 Segment cracks | [`D3_3_segment_cracks.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/computer-vision/blob/main/labs/D3_3_segment_cracks.ipynb) | tutor |
-| 3.4 Track and count | [`D3_4_track_count.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/computer-vision/blob/main/labs/D3_4_track_count.ipynb) | tutor |
-| 4.1 Export and check parity | [`D4_1_export_parity.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/computer-vision/blob/main/labs/D4_1_export_parity.ipynb) | tutor |
-| 4.2 Fit the latency budget | [`D4_2_latency_budget.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/computer-vision/blob/main/labs/D4_2_latency_budget.ipynb) | tutor |
-| 4.3 Field-condition tests | [`D4_3_field_tests.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/computer-vision/blob/main/labs/D4_3_field_tests.ipynb) | tutor |
-| 4.4 Blur, monitor, choose | [`D4_4_privacy_monitoring.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/computer-vision/blob/main/labs/D4_4_privacy_monitoring.ipynb) | tutor |
+| Setup | [`00_setup_check.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/00_setup_check.ipynb) | |
+| 1.1 Errors by condition | [`D1_1_errors_by_condition.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D1_1_errors_by_condition.ipynb) | tutor |
+| 1.2 Agree on a new class | [`D1_2_annotation_agreement.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D1_2_annotation_agreement.ipynb) | off |
+| 1.3 Split by road segment | [`D1_3_split_by_segment.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D1_3_split_by_segment.ipynb) | tutor |
+| 1.4 Augment without changing labels | [`D1_4_augmentation.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D1_4_augmentation.ipynb) | tutor |
+| 2.1 Two backbones by slice | [`D2_1_two_backbones.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D2_1_two_backbones.ipynb) | tutor |
+| 2.2 Probe or fine-tune | [`D2_2_probe_or_finetune.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D2_2_probe_or_finetune.ipynb) | tutor |
+| 2.3 The zero-shot floor | [`D2_3_zero_shot_floor.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D2_3_zero_shot_floor.ipynb) | tutor |
+| 2.4 Which backbone may ship | [`D2_4_backbone_licences.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D2_4_backbone_licences.ipynb) | tutor |
+| 3.1 Train and score a detector | [`D3_1_detector_ap.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D3_1_detector_ap.ipynb) | tutor |
+| 3.2 Sort fifty errors | [`D3_2_error_analysis.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D3_2_error_analysis.ipynb) | off |
+| 3.3 Segment cracks | [`D3_3_segment_cracks.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D3_3_segment_cracks.ipynb) | tutor |
+| 3.4 Track and count | [`D3_4_track_count.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D3_4_track_count.ipynb) | tutor |
+| 4.1 Export and check parity | [`D4_1_export_parity.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D4_1_export_parity.ipynb) | tutor |
+| 4.2 Fit the latency budget | [`D4_2_latency_budget.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D4_2_latency_budget.ipynb) | tutor |
+| 4.3 Field-condition tests | [`D4_3_field_tests.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D4_3_field_tests.ipynb) | tutor |
+| 4.4 Blur, monitor, choose | [`D4_4_privacy_monitoring.ipynb`](https://colab.research.google.com/github/SDAIAAcademy/ae-309/blob/main/labs/D4_4_privacy_monitoring.ipynb) | tutor |
 
 "Tutor" means an AI assistant may explain code and errors but does not write the pipeline. "Off" means no assistant.
 

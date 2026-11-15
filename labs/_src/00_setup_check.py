@@ -10,7 +10,7 @@ from pathlib import Path
 
 IN_COLAB = "google.colab" in sys.modules
 if IN_COLAB:
-    REPO_URL = "https://github.com/SDAIAAcademy/computer-vision.git"
+    REPO_URL = "https://github.com/SDAIAAcademy/ae-309.git"
     if not Path("/content/computer-vision").exists():
         subprocess.run(["git", "clone", "-q", REPO_URL, "/content/computer-vision"], check=True)
     os.chdir("/content/computer-vision/labs")

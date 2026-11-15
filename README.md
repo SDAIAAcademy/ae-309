@@ -11,7 +11,7 @@ Participants build vision systems for a fictional municipal roads and traffic de
 
 **Format:** Intensive: 4 teaching days of four sessions and a capstone day, with guided pre-work and a tracked follow-up task
 
-**Course page:** https://sdaiaacademy.github.io/computer-vision/
+**Course page:** https://sdaiaacademy.github.io/ae-309/
 <!-- /academy:title -->
 
 ## Outcomes
